@@ -7,20 +7,17 @@ import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
+import { Portfolio } from "@/components/portfolio";
 
 export default function IndexPage() {
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="inline-block max-w-lg text-center justify-center">
-          <span className={title()}>Make&nbsp;</span>
-          <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-          <br />
-          <span className={title()}>
-            websites regardless of your design experience.
-          </span>
+          <span className={title()}>Welcome to&nbsp;</span>
+          <span className={title({ color: "violet" })}>My Portfolio&nbsp;</span>
           <div className={subtitle({ class: "mt-4" })}>
-            Beautiful, fast and modern React UI library.
+            Check out my skills and projects below
           </div>
         </div>
 
@@ -39,21 +36,16 @@ export default function IndexPage() {
           <Link
             isExternal
             className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={siteConfig.links.github}
+            href={`https://github.com/${siteConfig.portfolio.social.github}`}
           >
             <GithubIcon size={20} />
             GitHub
           </Link>
         </div>
+      </section>
 
-        <div className="mt-8">
-          <Snippet hideCopyButton hideSymbol variant="bordered">
-            <span>
-              Get started by editing{" "}
-              <Code color="primary">pages/index.tsx</Code>
-            </span>
-          </Snippet>
-        </div>
+      <section className="py-8 md:py-10">
+        <Portfolio />
       </section>
     </DefaultLayout>
   );
