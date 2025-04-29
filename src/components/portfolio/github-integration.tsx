@@ -16,22 +16,36 @@ type Repository = {
 };
 
 export function GithubIntegration() {
-  const { portfolio } = siteConfig;
+  const [portfolioData, setPortfolioData] = useState(siteConfig.portfolio);
   const [repos, setRepos] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Load portfolio data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("portfolioData");
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setPortfolioData(parsedData);
+      } catch (error) {
+        console.error("Error parsing portfolio data from localStorage:", error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const fetchRepos = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
-          `https://api.github.com/users/${portfolio.social.github}/repos?sort=updated&per_page=5`
+          `https://api.github.com/users/${portfolioData.social.github}/repos?sort=updated&per_page=5`
         );
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch repositories");
         }
-        
+
         const data = await response.json();
         setRepos(data);
         setLoading(false);
@@ -43,7 +57,7 @@ export function GithubIntegration() {
     };
 
     fetchRepos();
-  }, [portfolio.social.github]);
+  }, [portfolioData.social.github]);
 
   return (
     <Card className="w-full">
@@ -80,7 +94,7 @@ export function GithubIntegration() {
       </CardBody>
       <CardFooter>
         <Link 
-          href={`https://github.com/${portfolio.social.github}`} 
+          href={`https://github.com/${portfolioData.social.github}`} 
           isExternal
           className="flex items-center gap-1"
         >

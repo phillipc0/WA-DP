@@ -1,9 +1,23 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
 import { siteConfig } from "@/config/site";
+import { useEffect, useState } from "react";
 
 export function Skills() {
-  const { portfolio } = siteConfig;
+  const [portfolioData, setPortfolioData] = useState(siteConfig.portfolio);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("portfolioData");
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setPortfolioData(parsedData);
+      } catch (error) {
+        console.error("Error parsing portfolio data from localStorage:", error);
+      }
+    }
+  }, []);
 
   return (
     <Card className="w-full">
@@ -11,7 +25,7 @@ export function Skills() {
         <h2 className="text-xl font-bold">Skills</h2>
       </CardHeader>
       <CardBody className="gap-4">
-        {portfolio.skills.map((skill, index) => (
+        {portfolioData.skills.map((skill, index) => (
           <div key={index} className="mb-4">
             <div className="flex justify-between mb-1">
               <span className="font-medium">{skill.name}</span>
