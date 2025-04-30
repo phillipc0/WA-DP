@@ -1,4 +1,3 @@
-import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
 import { Portfolio } from "@/components/portfolio";
 
