@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Vite + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Developer Portfolio",
+  description: "Generate your own developer portfolio in seconds.",
   navItems: [
     {
       label: "Home",
