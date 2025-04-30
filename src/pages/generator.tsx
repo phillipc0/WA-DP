@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Card, CardBody, CardHeader, CardFooter } from "@heroui/card";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Tabs, Tab } from "@heroui/tabs";
@@ -7,6 +7,7 @@ import { Divider } from "@heroui/divider";
 import { Tooltip } from "@heroui/tooltip";
 import { Switch } from "@heroui/switch";
 import { Avatar } from "@heroui/avatar";
+
 import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
 import { title, subtitle } from "@/components/primitives";
@@ -23,15 +24,15 @@ interface AlertProps {
   onConfirm?: () => void;
 }
 
-function Alert({ 
-  isOpen, 
-  onClose, 
-  title, 
-  message, 
-  type, 
-  confirmLabel = "OK", 
-  cancelLabel = "Cancel", 
-  onConfirm 
+function Alert({
+  isOpen,
+  onClose,
+  title,
+  message,
+  type,
+  confirmLabel = "OK",
+  cancelLabel = "Cancel",
+  onConfirm,
 }: AlertProps) {
   if (!isOpen) return null;
 
@@ -39,26 +40,28 @@ function Alert({
     success: "bg-success-100",
     warning: "bg-warning-100",
     error: "bg-danger-100",
-    info: "bg-primary-100"
+    info: "bg-primary-100",
   };
 
   const iconColors = {
     success: "text-success",
     warning: "text-warning",
     error: "text-danger",
-    info: "text-primary"
+    info: "text-primary",
   };
 
   const icons = {
     success: "✓",
     warning: "⚠",
     error: "✕",
-    info: "ℹ"
+    info: "ℹ",
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-      <div className={`w-full max-w-md p-6 rounded-lg shadow-lg ${bgColors[type]} border border-default-200`}>
+      <div
+        className={`w-full max-w-md p-6 rounded-lg shadow-lg ${bgColors[type]} border border-default-200`}
+      >
         <div className="flex items-start mb-4">
           <div className={`text-2xl mr-3 ${iconColors[type]}`}>
             {icons[type]}
@@ -70,16 +73,20 @@ function Alert({
         </div>
         <div className="flex justify-end gap-2 mt-6">
           {onConfirm && (
-            <Button 
-              color="default" 
-              variant="flat" 
-              onClick={onClose}
-            >
+            <Button color="default" variant="flat" onClick={onClose}>
               {cancelLabel}
             </Button>
           )}
-          <Button 
-            color={type === "error" ? "danger" : type === "warning" ? "warning" : type === "success" ? "success" : "primary"} 
+          <Button
+            color={
+              type === "error"
+                ? "danger"
+                : type === "warning"
+                  ? "warning"
+                  : type === "success"
+                    ? "success"
+                    : "primary"
+            }
             onClick={() => {
               if (onConfirm) onConfirm();
               else onClose();
@@ -103,6 +110,7 @@ export default function GeneratorPage() {
   // Initialize state with data from localStorage or default from siteConfig
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(() => {
     const savedData = localStorage.getItem("portfolioData");
+
     return savedData ? JSON.parse(savedData) : siteConfig.portfolio;
   });
 
@@ -132,11 +140,14 @@ export default function GeneratorPage() {
   }, [portfolioData.avatar]);
 
   // Handle input changes for basic info
-  const handleBasicInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleBasicInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setPortfolioData(prev => ({
+
+    setPortfolioData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // If avatar URL is changed manually, mark it as not an uploaded image
@@ -148,12 +159,16 @@ export default function GeneratorPage() {
   // Handle file selection for avatar
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
     // Check file size - limit to 5MB
     if (file.size > 5 * 1024 * 1024) {
-      setFileAlertMessage("Image is too large. Please select an image under 5MB.");
+      setFileAlertMessage(
+        "Image is too large. Please select an image under 5MB.",
+      );
       setFileAlert(true);
+
       return;
     }
 
@@ -166,8 +181,9 @@ export default function GeneratorPage() {
 
       img.onload = () => {
         // Create canvas for resizing
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
         if (!ctx) return;
 
         // Set maximum dimensions
@@ -196,12 +212,12 @@ export default function GeneratorPage() {
         ctx.drawImage(img, 0, 0, width, height);
 
         // Get resized image as data URL with reduced quality
-        const resizedImage = canvas.toDataURL('image/jpeg', 0.7);
+        const resizedImage = canvas.toDataURL("image/jpeg", 0.7);
 
         // Update state with resized image
-        setPortfolioData(prev => ({
+        setPortfolioData((prev) => ({
           ...prev,
-          avatar: resizedImage
+          avatar: resizedImage,
         }));
 
         // Mark as uploaded image
@@ -217,12 +233,13 @@ export default function GeneratorPage() {
   // Handle input changes for social links
   const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPortfolioData(prev => ({
+
+    setPortfolioData((prev) => ({
       ...prev,
       social: {
         ...prev.social,
-        [name]: value
-      }
+        [name]: value,
+      },
     }));
   };
 
@@ -230,9 +247,9 @@ export default function GeneratorPage() {
   const handleAddSkill = () => {
     if (newSkill.name.trim() === "") return;
 
-    setPortfolioData(prev => ({
+    setPortfolioData((prev) => ({
       ...prev,
-      skills: [...prev.skills, { ...newSkill }]
+      skills: [...prev.skills, { ...newSkill }],
     }));
 
     // Reset new skill input
@@ -241,77 +258,82 @@ export default function GeneratorPage() {
 
   // Handle removing a skill
   const handleRemoveSkill = (index: number) => {
-    setPortfolioData(prev => ({
+    setPortfolioData((prev) => ({
       ...prev,
-      skills: prev.skills.filter((_, i) => i !== index)
+      skills: prev.skills.filter((_, i) => i !== index),
     }));
   };
 
   // Handle skill input change
   const handleSkillChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewSkill(prev => ({
+
+    setNewSkill((prev) => ({
       ...prev,
-      [name]: name === "level" ? Number(value) : value
+      [name]: name === "level" ? Number(value) : value,
     }));
   };
 
   // Handle skill level change for existing skills
   const handleSkillLevelChange = (index: number, level: number) => {
     const updatedSkills = [...portfolioData.skills];
+
     updatedSkills[index] = { ...updatedSkills[index], level };
 
-    setPortfolioData(prev => ({
+    setPortfolioData((prev) => ({
       ...prev,
-      skills: updatedSkills
+      skills: updatedSkills,
     }));
   };
 
   // Handle skill name change for existing skills
   const handleSkillNameChange = (index: number, name: string) => {
     const updatedSkills = [...portfolioData.skills];
+
     updatedSkills[index] = { ...updatedSkills[index], name };
 
-    setPortfolioData(prev => ({
+    setPortfolioData((prev) => ({
       ...prev,
-      skills: updatedSkills
+      skills: updatedSkills,
     }));
   };
 
   // Handle drag and drop for skills reordering
   const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData('text/plain', index.toString());
-    e.currentTarget.classList.add('opacity-50');
+    e.dataTransfer.setData("text/plain", index.toString());
+    e.currentTarget.classList.add("opacity-50");
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.classList.add('bg-default-100');
+    e.currentTarget.classList.add("bg-default-100");
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.currentTarget.classList.remove('bg-default-100');
+    e.currentTarget.classList.remove("bg-default-100");
   };
 
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
-    e.currentTarget.classList.remove('bg-default-100');
+    e.currentTarget.classList.remove("bg-default-100");
 
-    const sourceIndex = Number(e.dataTransfer.getData('text/plain'));
+    const sourceIndex = Number(e.dataTransfer.getData("text/plain"));
+
     if (sourceIndex === targetIndex) return;
 
     const updatedSkills = [...portfolioData.skills];
     const [movedSkill] = updatedSkills.splice(sourceIndex, 1);
+
     updatedSkills.splice(targetIndex, 0, movedSkill);
 
-    setPortfolioData(prev => ({
+    setPortfolioData((prev) => ({
       ...prev,
-      skills: updatedSkills
+      skills: updatedSkills,
     }));
   };
 
   const handleDragEnd = (e: React.DragEvent) => {
-    e.currentTarget.classList.remove('opacity-50');
+    e.currentTarget.classList.remove("opacity-50");
   };
 
   // Reset all data to defaults
@@ -351,48 +373,48 @@ export default function GeneratorPage() {
                 <Input
                   label="Name"
                   name="name"
+                  placeholder="Your full name"
                   value={portfolioData.name}
                   onChange={handleBasicInfoChange}
-                  placeholder="Your full name"
                 />
                 <Input
                   label="Professional Title"
                   name="title"
+                  placeholder="e.g. Full Stack Developer"
                   value={portfolioData.title}
                   onChange={handleBasicInfoChange}
-                  placeholder="e.g. Full Stack Developer"
                 />
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium">Bio</label>
                   <textarea
+                    className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
                     name="bio"
+                    placeholder="Write a short bio about yourself"
                     value={portfolioData.bio}
                     onChange={handleBasicInfoChange}
-                    placeholder="Write a short bio about yourself"
-                    className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <Input
                   label="Location"
                   name="location"
+                  placeholder="e.g. New York, USA"
                   value={portfolioData.location}
                   onChange={handleBasicInfoChange}
-                  placeholder="e.g. New York, USA"
                 />
                 <Input
                   label="Email"
                   name="email"
+                  placeholder="your.email@example.com"
                   type="email"
                   value={portfolioData.email}
                   onChange={handleBasicInfoChange}
-                  placeholder="your.email@example.com"
                 />
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Profile Picture</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-default-500">URL</span>
-                      <Switch 
+                      <Switch
                         checked={!useUrlForAvatar}
                         onChange={() => setUseUrlForAvatar(!useUrlForAvatar)}
                       />
@@ -402,33 +424,33 @@ export default function GeneratorPage() {
 
                   <div className="flex gap-4 items-start">
                     <Avatar
-                      src={portfolioData.avatar}
                       alt="Profile Preview"
                       className="w-20 h-20"
+                      src={portfolioData.avatar}
                     />
 
                     {useUrlForAvatar ? (
                       <Input
+                        className="flex-1"
+                        description="Enter a URL to your profile image"
                         label="Avatar URL"
                         name="avatar"
+                        placeholder="URL to your profile picture"
                         value={isUploadedImage ? "" : portfolioData.avatar}
                         onChange={handleBasicInfoChange}
-                        placeholder="URL to your profile picture"
-                        description="Enter a URL to your profile image"
-                        className="flex-1"
                       />
                     ) : (
                       <div className="flex-1">
                         <input
-                          type="file"
                           ref={fileInputRef}
-                          onChange={handleFileSelect}
                           accept="image/*"
                           className="hidden"
+                          type="file"
+                          onChange={handleFileSelect}
                         />
-                        <Button 
-                          onClick={() => fileInputRef.current?.click()}
+                        <Button
                           className="mb-2"
+                          onClick={() => fileInputRef.current?.click()}
                         >
                           Select Image
                         </Button>
@@ -438,7 +460,6 @@ export default function GeneratorPage() {
                       </div>
                     )}
                   </div>
-
                 </div>
               </CardBody>
             </Card>
@@ -453,26 +474,32 @@ export default function GeneratorPage() {
                 <Input
                   label="GitHub Username"
                   name="github"
+                  placeholder="Your GitHub username"
+                  startContent={
+                    <span className="text-default-400">github.com/</span>
+                  }
                   value={portfolioData.social.github}
                   onChange={handleSocialChange}
-                  placeholder="Your GitHub username"
-                  startContent={<span className="text-default-400">github.com/</span>}
                 />
                 <Input
                   label="Twitter Username"
                   name="twitter"
+                  placeholder="Your Twitter username"
+                  startContent={
+                    <span className="text-default-400">twitter.com/</span>
+                  }
                   value={portfolioData.social.twitter}
                   onChange={handleSocialChange}
-                  placeholder="Your Twitter username"
-                  startContent={<span className="text-default-400">twitter.com/</span>}
                 />
                 <Input
                   label="LinkedIn Username"
                   name="linkedin"
+                  placeholder="Your LinkedIn username"
+                  startContent={
+                    <span className="text-default-400">linkedin.com/in/</span>
+                  }
                   value={portfolioData.social.linkedin}
                   onChange={handleSocialChange}
-                  placeholder="Your LinkedIn username"
-                  startContent={<span className="text-default-400">linkedin.com/in/</span>}
                 />
               </CardBody>
             </Card>
@@ -488,22 +515,23 @@ export default function GeneratorPage() {
                   <h3 className="text-lg font-medium mb-2">Add New Skill</h3>
                   <div className="flex gap-2 items-end">
                     <Input
+                      className="flex-1"
                       label="Skill Name"
                       name="name"
+                      placeholder="e.g. React"
                       value={newSkill.name}
                       onChange={handleSkillChange}
-                      placeholder="e.g. React"
-                      className="flex-1"
                     />
                     <Input
-                      type="number"
+                      className="w-32"
                       label="Proficiency Level (0-100)"
-                      name="level"
-                      min={0}
                       max={100}
+                      min={0}
+                      name="level"
+                      type="number"
+                      // @ts-ignore
                       value={newSkill.level}
                       onChange={handleSkillChange}
-                      className="w-32"
                     />
                     <Button color="primary" onClick={handleAddSkill}>
                       Add Skill
@@ -523,17 +551,17 @@ export default function GeneratorPage() {
                         Drag and drop skills to reorder them
                       </p>
                       {portfolioData.skills.map((skill, index) => (
-                        <div 
-                          key={index} 
-                          className="flex items-center gap-2 p-2 border border-default-200 rounded-md"
+                        <div
+                          key={index}
                           draggable
-                          onDragStart={(e) => handleDragStart(e, index)}
-                          onDragOver={handleDragOver}
-                          onDragLeave={handleDragLeave}
-                          onDrop={(e) => handleDrop(e, index)}
+                          className="flex items-center gap-2 p-2 border border-default-200 rounded-md"
                           onDragEnd={handleDragEnd}
+                          onDragLeave={handleDragLeave}
+                          onDragOver={handleDragOver}
+                          onDragStart={(e) => handleDragStart(e, index)}
+                          onDrop={(e) => handleDrop(e, index)}
                         >
-                          <div 
+                          <div
                             className="cursor-move p-1 text-default-400 hover:text-default-600"
                             title="Drag to reorder"
                           >
@@ -542,21 +570,29 @@ export default function GeneratorPage() {
                           <div className="flex-1">
                             <div className="flex justify-between mb-2">
                               <Input
-                                value={skill.name}
-                                onChange={(e) => handleSkillNameChange(index, e.target.value)}
+                                className="max-w-[70%]"
                                 placeholder="Skill name"
                                 size="sm"
-                                className="max-w-[70%]"
+                                value={skill.name}
+                                onChange={(e) =>
+                                  handleSkillNameChange(index, e.target.value)
+                                }
                               />
                               <span>{skill.level}%</span>
                             </div>
                             <Input
-                              type="range"
-                              min={0}
-                              max={100}
-                              value={skill.level}
-                              onChange={(e) => handleSkillLevelChange(index, Number(e.target.value))}
                               className="mt-1"
+                              max={100}
+                              min={0}
+                              type="range"
+                              // @ts-ignore
+                              value={skill.level}
+                              onChange={(e) =>
+                                handleSkillLevelChange(
+                                  index,
+                                  Number(e.target.value),
+                                )
+                              }
                             />
                           </div>
                           <Tooltip content="Remove skill">
@@ -590,43 +626,48 @@ export default function GeneratorPage() {
 
         <div className="mt-8 text-center">
           <p className="text-default-500">
-            Your changes are automatically saved to your browser's local storage.
+            Your changes are automatically saved to your browser's local
+            storage.
             <br />
-            Visit the <a href="/" className="text-primary">Home page</a> to see your updated portfolio.
+            Visit the{" "}
+            <a className="text-primary" href="/">
+              Home page
+            </a>{" "}
+            to see your updated portfolio.
           </p>
         </div>
       </div>
 
       {/* Alert for successful save */}
       <Alert
-        isOpen={saveAlert}
-        onClose={() => setSaveAlert(false)}
-        title="Success"
-        message="Your portfolio data has been saved successfully!"
-        type="success"
         confirmLabel="OK"
+        isOpen={saveAlert}
+        message="Your portfolio data has been saved successfully!"
+        title="Success"
+        type="success"
+        onClose={() => setSaveAlert(false)}
       />
 
       {/* Alert for reset confirmation */}
       <Alert
-        isOpen={resetAlert}
-        onClose={() => setResetAlert(false)}
-        title="Confirm Reset"
-        message="Are you sure you want to reset all data to defaults? This action cannot be undone."
-        type="warning"
-        confirmLabel="Reset"
         cancelLabel="Cancel"
+        confirmLabel="Reset"
+        isOpen={resetAlert}
+        message="Are you sure you want to reset all data to defaults? This action cannot be undone."
+        title="Confirm Reset"
+        type="warning"
+        onClose={() => setResetAlert(false)}
         onConfirm={confirmReset}
       />
 
       {/* Alert for file upload errors */}
       <Alert
-        isOpen={fileAlert}
-        onClose={() => setFileAlert(false)}
-        title="File Upload Error"
-        message={fileAlertMessage}
-        type="error"
         confirmLabel="OK"
+        isOpen={fileAlert}
+        message={fileAlertMessage}
+        title="File Upload Error"
+        type="error"
+        onClose={() => setFileAlert(false)}
       />
     </DefaultLayout>
   );

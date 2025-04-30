@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader, CardFooter } from "@heroui/card";
 import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
+
 import { GithubIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
@@ -24,9 +25,11 @@ export function GithubIntegration() {
   // Load portfolio data from localStorage on component mount
   useEffect(() => {
     const savedData = localStorage.getItem("portfolioData");
+
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
+
         setPortfolioData(parsedData);
       } catch (error) {
         console.error("Error parsing portfolio data from localStorage:", error);
@@ -39,7 +42,7 @@ export function GithubIntegration() {
       try {
         setLoading(true);
         const response = await fetch(
-          `https://api.github.com/users/${portfolioData.social.github}/repos?sort=updated&per_page=5`
+          `https://api.github.com/users/${portfolioData.social.github}/repos?sort=updated&per_page=5`,
         );
 
         if (!response.ok) {
@@ -47,6 +50,7 @@ export function GithubIntegration() {
         }
 
         const data = await response.json();
+
         setRepos(data);
         setLoading(false);
       } catch (err) {
@@ -78,10 +82,12 @@ export function GithubIntegration() {
           <div className="space-y-4">
             {repos.map((repo) => (
               <div key={repo.id} className="border-b pb-3 last:border-b-0">
-                <Link href={repo.html_url} isExternal className="font-medium">
+                <Link isExternal className="font-medium" href={repo.html_url}>
                   {repo.name}
                 </Link>
-                <p className="text-small text-default-500">{repo.description || "No description"}</p>
+                <p className="text-small text-default-500">
+                  {repo.description || "No description"}
+                </p>
                 <div className="flex gap-3 mt-2 text-small">
                   {repo.language && <span>Language: {repo.language}</span>}
                   <span>Stars: {repo.stargazers_count}</span>
@@ -93,10 +99,10 @@ export function GithubIntegration() {
         )}
       </CardBody>
       <CardFooter>
-        <Link 
-          href={`https://github.com/${portfolioData.social.github}`} 
+        <Link
           isExternal
           className="flex items-center gap-1"
+          href={`https://github.com/${portfolioData.social.github}`}
         >
           View all repositories
         </Link>
