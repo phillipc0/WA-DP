@@ -1,0 +1,45 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.15'
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Build Project
+        run: |
+          npm run build
+
+      - name: Remove Old Files
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ secrets.SSH_HOST }}"
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
+
+      - name: Transfer New Files
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          
+          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./dist/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
+          rm -f private_key.pem
