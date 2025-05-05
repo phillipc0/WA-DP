@@ -3,8 +3,6 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
   name: "Developer Portfolio",
   description: "Generate your own developer portfolio in seconds.",
-  name: "Vite + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
   // Personal information for portfolio
   portfolio: {
     name: "John Doe",
