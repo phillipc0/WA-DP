@@ -1,31 +1,44 @@
-name: Deploy to Server
+name: Test, Build and Deploy to Server
 
 on:
   push:
 
 jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15'
+      - name: Install Dependencies
+        run: npm install
+      - name: Run Tests
+        run: npm run test
+
   deploy:
+    name: Build and Deploy
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '22.15'
 
       - name: Install Dependencies
-        run: |
-          npm install
-
+        run: npm install
       - name: Build Project
-        run: |
-          npm run build
-
+        run: npm run build
       - name: Remove Old Files
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: "${{ secrets.SSH_HOST }}"
           username: ${{ secrets.SSH_USERNAME }}
