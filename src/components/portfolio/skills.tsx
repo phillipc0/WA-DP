@@ -50,7 +50,7 @@ export function Skills() {
 }
 
 // Helper function to get different colors for different skills
-function getColorForSkill(index: number) {
+export function getColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 
   return colors[index % colors.length] as
