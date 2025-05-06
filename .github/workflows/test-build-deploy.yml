@@ -32,22 +32,22 @@ jobs:
           path: eslint-report.xml
           reporter: junit
 
-format:
-  name: Check Formatting
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+  format:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with: { node-version: '22.15' }
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with: { node-version: '22.15' }
 
-    - name: Install Dependencies
-      run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Check Prettier
-      run: npx prettier --check .
+      - name: Check Prettier
+        run: npx prettier --check .
 
   unit:
     name: Unit Tests
