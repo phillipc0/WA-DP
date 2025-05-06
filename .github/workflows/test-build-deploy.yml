@@ -19,9 +19,18 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run ESLint
-        # adjust the path pattern or flags as needed, e.g. --max-warnings=0 to fail on warnings
-        run: npm run lint
+      - name: Run ESLint (JUnit XML)
+        run: |
+          npm install --no-save eslint-formatter-junit
+          eslint -c .eslintrc.json ./src --format junit --output-file eslint-report.xml
+
+      - name: Publish ESLint report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: ESLint
+          path: eslint-report.xml
+          reporter: junit
 
 format:
   name: Check Formatting
