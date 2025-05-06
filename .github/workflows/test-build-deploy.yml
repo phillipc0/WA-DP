@@ -19,9 +19,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Install ESLint
+        run: npm install --no-save eslint-formatter-junit
+
       - name: Run ESLint (JUnit XML)
-      - run: npm install --no-save eslint-formatter-junit
-      - run: npx eslint -c .eslintrc.json ./src \
+        run: npx eslint -c .eslintrc.json ./src \
           --format junit \
           --output-file eslint-report.xml
 
