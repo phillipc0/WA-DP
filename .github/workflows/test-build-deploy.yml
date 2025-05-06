@@ -20,17 +20,17 @@ jobs:
         run: npm ci
 
       - name: Run ESLint (JUnit XML)
-        run: |
-          npm install --no-save eslint-formatter-junit
-          eslint -c .eslintrc.json ./src --format junit --output-file eslint-report.xml
+      - run: npm install --no-save eslint-formatter-junit
+      - run: npx eslint -c .eslintrc.json ./src \
+          --format junit \
+          --output-file eslint-report.xml
 
-      - name: Publish ESLint report
+      - uses: dorny/test-reporter@v2
         if: always()
-        uses: dorny/test-reporter@v1
         with:
           name: ESLint
           path: eslint-report.xml
-          reporter: junit
+          reporter: java-junit
 
   format:
     name: Check Formatting
