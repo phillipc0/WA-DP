@@ -59,31 +59,22 @@ jobs:
       - name: Generate Prettier JUnit Report
         if: always()
         run: |
-          set +e
-          FILES=$(npx prettier --list-different .)
-          PRET_EXIT=$?
+          #!/usr/bin/env bash
           set -e
 
-          COUNT=$(echo "$FILES" | grep -c '^' || true)
+          FILES=$(npx prettier --list-different .)
 
-          cat <<EOF > prettier-report.xml
-          <?xml version="1.0" encoding="UTF-8"?>
-          <testsuites>
-            <testsuite name="Prettier Formatting" tests="$COUNT" failures="$COUNT">
-          EOF
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n' > prettier-report.xml
 
           for f in $FILES; do
-            cat <<EOF >> prettier-report.xml
-            <testcase classname="Prettier" name="$f">
-              <failure message="File is not formatted"/>
-            </testcase>
-          EOF
+            printf '<testsuite name="%s" tests="1" failures="1">\n' "$f" >> prettier-report.xml
+            printf '  <testcase classname="Prettier" name="%s">\n' "$f" >> prettier-report.xml
+            printf '    <failure message="File is not formatted"/>\n' >> prettier-report.xml
+            printf '  </testcase>\n' >> prettier-report.xml
+            printf '</testsuite>\n' >> prettier-report.xml
           done
 
-          cat <<EOF >> prettier-report.xml
-            </testsuite>
-          </testsuites>
-          EOF
+          printf '</testsuites>\n' >> prettier-report.xml
 
       - name: Publish Prettier Report
         if: always()
