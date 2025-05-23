@@ -31,7 +31,8 @@ jobs:
             --format junit \
             --output-file eslint-report.xml
 
-      - uses: dorny/test-reporter@v2
+      - name: Publish ESLint Report
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: ESLint
@@ -53,50 +54,67 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Prettier Check and Generate Report
+      - name: Check Prettier Formatting
         run: |
-          set -eo pipefail
-
-          set +e
-          PRETTIER_OUTPUT=$(npx prettier --check . 2>&1)
-          PRETTIER_STATUS=$?
-          set -e
-
-          REPORT_FILE="prettier-report.xml"
+          FILES=$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.css" -o -name "*.scss" -o -name "*.md" | grep -v node_modules | grep -v dist | grep -v build)
           
-          if [ $PRETTIER_STATUS -eq 0 ]; then
-            echo "Prettier found no formatting issues."
-            cat <<EOF > "$REPORT_FILE"
-          <testsuites name="Prettier Report" tests="1" failures="0" errors="0" time="1">
-            <testsuite name="Prettier" tests="1" failures="0" errors="0" time="1">
-              <testcase name="Code Formatting Check" classname="prettier.check" time="1"/>
-            </testsuite>
-          </testsuites>
+          TOTAL_FILES=0
+          FAILED_FILES=0
+          FAILED_FILE_LIST=""
+          
+          cat > prettier-report.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites name="Prettier Formatting Check">
+            <testsuite name="prettier" tests="0" failures="0" errors="0" time="0">
           EOF
-          else
-            echo "Prettier found formatting issues:"
-            echo "$PRETTIER_OUTPUT"
           
-            MESSAGE_ESCAPED=$(echo "Prettier found formatting issues" | sed 's/&/\&/g; s/</\</g; s/>/\>/g; s/"/\"/g; s/'"'"'/\'/g')
-            CDATA_CONTENT=$(echo "$PRETTIER_OUTPUT" | sed 's/]]>/]]>/g')
-
-            cat <<EOF > "$REPORT_FILE"
-          <testsuites name="Prettier Report" tests="1" failures="1" errors="0" time="1">
-            <testsuite name="Prettier" tests="1" failures="1" errors="0" time="1">
-              <testcase name="Code Formatting Check" classname="prettier.check" time="1">
-                <failure message="$MESSAGE_ESCAPED"><![CDATA[$CDATA_CONTENT]]></failure>
+          for file in $FILES; do
+            TOTAL_FILES=$((TOTAL_FILES + 1))
+          
+            if ! npx prettier --check "$file" > /dev/null 2>&1; then
+              FAILED_FILES=$((FAILED_FILES + 1))
+              FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
+          
+              cat >> prettier-report.xml << EOF
+              <testcase classname="prettier" name="$file" time="0">
+                <failure message="File is not properly formatted" type="formatting">
+          File '$file' is not properly formatted according to Prettier rules.
+          Run 'npx prettier --write $file' to fix formatting.
+                </failure>
               </testcase>
+          EOF
+            else
+              cat >> prettier-report.xml << EOF
+              <testcase classname="prettier" name="$file" time="0"/>
+          EOF
+            fi
+          done
+          
+          cat >> prettier-report.xml << 'EOF'
             </testsuite>
           </testsuites>
           EOF
+          
+          sed -i "s/tests=\"0\"/tests=\"$TOTAL_FILES\"/" prettier-report.xml
+          sed -i "s/failures=\"0\"/failures=\"$FAILED_FILES\"/" prettier-report.xml
+          
+          echo "Prettier Check Results:"
+          echo "Total files checked: $TOTAL_FILES"
+          echo "Files with formatting issues: $FAILED_FILES"
+          
+          if [ $FAILED_FILES -gt 0 ]; then
+            echo "Files that need formatting:"
+            echo -e "$FAILED_FILE_LIST"
+            exit 1
+          else
+            echo "All files are properly formatted!"
           fi
-          exit $PRETTIER_STATUS
 
-      - name: Publish Prettier Report
+      - name: Upload Prettier Report
         uses: dorny/test-reporter@v2
         if: always()
         with:
-          name: Prettier Format
+          name: Prettier Formatting
           path: prettier-report.xml
           reporter: java-junit
 
@@ -162,10 +180,11 @@ jobs:
 
       - name: Build Project
         run: npm run build
+
       - name: Remove Old Files on Server
         uses: appleboy/ssh-action@v1.2.2
         with:
-          host: "${{ secrets.SSH_HOST }}"
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
