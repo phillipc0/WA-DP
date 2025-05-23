@@ -58,34 +58,68 @@ jobs:
 
       - name: Generate Prettier JUnit Report
         if: failure()
+        shell: bash
         run: |
-          #!/usr/bin/env bash
+          echo "Generating Prettier JUnit report..."
           
-          FILES=$(npx prettier --list-different .)
+          FILES_OUTPUT=$(npx prettier --list-different .)
+          PRETTIER_LD_EXIT_CODE=$?
+
+          echo "--- Prettier --list-different output (exit code: ${PRETTIER_LD_EXIT_CODE}) ---"
+          if [ -n "$FILES_OUTPUT" ]; then
+            echo "${FILES_OUTPUT}"
+          else
+            echo "(No files listed by --list-different)"
+          fi
+          echo "-------------------------------------------------"
+
+          if [ "$PRETTIER_LD_EXIT_CODE" -gt 1 ]; then
+            echo "Error: 'npx prettier --list-different .' failed with critical exit code $PRETTIER_LD_EXIT_CODE."
+            printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites name="PrettierInternalError">\n' > prettier-report.xml
+            printf '  <testsuite name="PrettierExecution" tests="1" failures="1">\n' >> prettier-report.xml
+            printf '    <testcase classname="Prettier" name="ListDifferentError">\n' >> prettier-report.xml
+            printf '      <failure message="npx prettier --list-different . failed with exit code %s"/>\n' "$PRETTIER_LD_EXIT_CODE" >> prettier-report.xml
+            printf '    </testcase>\n  </testsuite>\n</testsuites>\n' >> prettier-report.xml
+            echo "Prettier JUnit report generated with internal error."
+            cat prettier-report.xml
+            exit 0 
+          fi
 
           printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n' > prettier-report.xml
 
-          for f in $FILES; do
-            f_escaped=$(echo "$f" | sed 's/&/\&/g; s/</\</g; s/>/\>/g; s/"/\"/g; s/'"'"'/\'/g')
-            printf '<testsuite name="%s" tests="1" failures="1">\n' "$f_escaped" >> prettier-report.xml
-            printf '  <testcase classname="Prettier" name="%s">\n' "$f_escaped" >> prettier-report.xml
-            printf '    <failure message="File is not formatted"/>\n' >> prettier-report.xml
+          if [ -z "$FILES_OUTPUT" ]; then
+            echo "Warning: Prettier --check failed, but --list-different returned no files. Reporting a generic failure."
+            printf '<testsuite name="PrettierGlobal" tests="1" failures="1">\n' >> prettier-report.xml
+            printf '  <testcase classname="Prettier" name="FormattingFailureUnspecifiedFile">\n' >> prettier-report.xml
+            printf '    <failure message="Prettier --check found issues, but no specific files were listed by --list-different. Check Prettier logs for global errors."/>\n' >> prettier-report.xml
             printf '  </testcase>\n' >> prettier-report.xml
             printf '</testsuite>\n' >> prettier-report.xml
-          done
+          else
+            echo "$FILES_OUTPUT" | while IFS= read -r f; do
+              if [ -z "$f" ]; then
+                continue
+              fi
+              f_escaped=$(echo "$f" | sed 's/&/\&/g; s/</\</g; s/>/\>/g; s/"/\"/g; s/'"'"'/\'/g')
+              printf '<testsuite name="%s" tests="1" failures="1">\n' "$f_escaped" >> prettier-report.xml
+              printf '  <testcase classname="Prettier" name="%s">\n' "$f_escaped" >> prettier-report.xml
+              printf '    <failure message="File is not formatted"/>\n' >> prettier-report.xml
+              printf '  </testcase>\n' >> prettier-report.xml
+              printf '</testsuite>\n' >> prettier-report.xml
+            done
+          fi
 
           printf '</testsuites>\n' >> prettier-report.xml
+          echo "Prettier JUnit report generated successfully at prettier-report.xml:"
+          cat prettier-report.xml
 
       - name: Publish Prettier Report
-        if: failure()
+        if: always()
         uses: dorny/test-reporter@v2
         with:
           name: Prettier
           path: prettier-report.xml
           reporter: java-junit
           fail-on-error: true
-          fail-on-empty: true
-
 
   unit:
     name: Unit Tests
