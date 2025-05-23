@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { Tabs, Tab } from "@heroui/tabs";
+import { Tab, Tabs } from "@heroui/tabs";
 import { Divider } from "@heroui/divider";
 import { Tooltip } from "@heroui/tooltip";
 import { Switch } from "@heroui/switch";
@@ -10,7 +10,7 @@ import { Avatar } from "@heroui/avatar";
 
 import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
-import { title, subtitle } from "@/components/primitives";
+import { subtitle, title } from "@/components/primitives";
 
 // Custom Alert Component
 interface AlertProps {
@@ -385,9 +385,12 @@ export default function GeneratorPage() {
                   onChange={handleBasicInfoChange}
                 />
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium">Bio</label>
+                  <label className="text-sm font-medium" htmlFor="bio">
+                    Bio
+                  </label>
                   <textarea
                     className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                    id="bio"
                     name="bio"
                     placeholder="Write a short bio about yourself"
                     value={portfolioData.bio}
@@ -626,7 +629,7 @@ export default function GeneratorPage() {
 
         <div className="mt-8 text-center">
           <p className="text-default-500">
-            Your changes are automatically saved to your browser's local
+            Your changes are automatically saved to your browser&#39;s local
             storage.
             <br />
             Visit the{" "}
