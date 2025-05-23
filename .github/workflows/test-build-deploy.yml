@@ -57,18 +57,18 @@ jobs:
         run: npx prettier --check .
 
       - name: Generate Prettier JUnit Report
-        if: always()
+        if: failure()
         run: |
           #!/usr/bin/env bash
-          set -e
-
+          
           FILES=$(npx prettier --list-different .)
 
           printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n' > prettier-report.xml
 
           for f in $FILES; do
-            printf '<testsuite name="%s" tests="1" failures="1">\n' "$f" >> prettier-report.xml
-            printf '  <testcase classname="Prettier" name="%s">\n' "$f" >> prettier-report.xml
+            f_escaped=$(echo "$f" | sed 's/&/\&/g; s/</\</g; s/>/\>/g; s/"/\"/g; s/'"'"'/\'/g')
+            printf '<testsuite name="%s" tests="1" failures="1">\n' "$f_escaped" >> prettier-report.xml
+            printf '  <testcase classname="Prettier" name="%s">\n' "$f_escaped" >> prettier-report.xml
             printf '    <failure message="File is not formatted"/>\n' >> prettier-report.xml
             printf '  </testcase>\n' >> prettier-report.xml
             printf '</testsuite>\n' >> prettier-report.xml
@@ -77,13 +77,14 @@ jobs:
           printf '</testsuites>\n' >> prettier-report.xml
 
       - name: Publish Prettier Report
-        if: always()
+        if: failure()
         uses: dorny/test-reporter@v2
         with:
           name: Prettier
           path: prettier-report.xml
           reporter: java-junit
           fail-on-error: true
+          fail-on-empty: true
 
 
   unit:
