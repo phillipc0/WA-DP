@@ -57,6 +57,7 @@ jobs:
         run: npx prettier --check .
 
       - name: Generate Prettier JUnit Report
+        if: always()
         run: |
           set +e
           FILES=$(npx prettier --list-different .)
