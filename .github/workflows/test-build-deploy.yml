@@ -47,13 +47,52 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with: { node-version: '22.15' }
+        with:
+          node-version: '22.15'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Check Prettier
         run: npx prettier --check .
+
+      - name: Generate Prettier JUnit Report
+        run: |
+          set +e
+          FILES=$(npx prettier --list-different .)
+          PRET_EXIT=$?
+          set -e
+
+          COUNT=$(echo "$FILES" | grep -c '^' || true)
+
+          cat <<EOF > prettier-report.xml
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites>
+            <testsuite name="Prettier Formatting" tests="$COUNT" failures="$COUNT">
+          EOF
+
+          for f in $FILES; do
+            cat <<EOF >> prettier-report.xml
+            <testcase classname="Prettier" name="$f">
+              <failure message="File is not formatted"/>
+            </testcase>
+          EOF
+          done
+
+          cat <<EOF >> prettier-report.xml
+            </testsuite>
+          </testsuites>
+          EOF
+
+      - name: Publish Prettier Report
+        if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: Prettier
+          path: prettier-report.xml
+          reporter: java-junit
+          fail-on-error: true
+
 
   unit:
     name: Unit Tests
