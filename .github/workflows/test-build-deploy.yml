@@ -14,7 +14,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.15'
+          node-version: "22.15"
 
       - name: Install Dependencies
         run: npm ci
@@ -49,7 +49,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.15'
+          node-version: "22.15"
 
       - name: Install Dependencies
         run: npm ci
@@ -57,24 +57,24 @@ jobs:
       - name: Check Prettier Formatting
         run: |
           FILES=$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.css" -o -name "*.scss" -o -name "*.md" | grep -v node_modules | grep -v dist | grep -v build)
-          
+
           TOTAL_FILES=0
           FAILED_FILES=0
           FAILED_FILE_LIST=""
-          
+
           cat > prettier-report.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <testsuites name="Prettier Formatting Check">
             <testsuite name="prettier" tests="0" failures="0" errors="0" time="0">
           EOF
-          
+
           for file in $FILES; do
             TOTAL_FILES=$((TOTAL_FILES + 1))
-          
+
             if ! npx prettier --check "$file" > /dev/null 2>&1; then
               FAILED_FILES=$((FAILED_FILES + 1))
               FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
-          
+
               cat >> prettier-report.xml << EOF
               <testcase classname="prettier" name="$file" time="0">
                 <failure message="File is not properly formatted" type="formatting">
@@ -89,19 +89,19 @@ jobs:
           EOF
             fi
           done
-          
+
           cat >> prettier-report.xml << 'EOF'
             </testsuite>
           </testsuites>
           EOF
-          
+
           sed -i "s/tests=\"0\"/tests=\"$TOTAL_FILES\"/" prettier-report.xml
           sed -i "s/failures=\"0\"/failures=\"$FAILED_FILES\"/" prettier-report.xml
-          
+
           echo "Prettier Check Results:"
           echo "Total files checked: $TOTAL_FILES"
           echo "Files with formatting issues: $FAILED_FILES"
-          
+
           if [ $FAILED_FILES -gt 0 ]; then
             echo "Files that need formatting:"
             echo -e "$FAILED_FILE_LIST"
@@ -121,7 +121,7 @@ jobs:
   unit:
     name: Unit Tests
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [lint, format]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -129,7 +129,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.15'
+          node-version: "22.15"
 
       - name: Install Dependencies
         run: npm ci
@@ -140,7 +140,7 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [lint, format]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -148,7 +148,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.15'
+          node-version: "22.15"
 
       - name: Install Dependencies
         run: npm ci
@@ -163,7 +163,7 @@ jobs:
 
   deploy:
     name: Build and Deploy
-    needs: [ unit, e2e ]
+    needs: [unit, e2e]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
@@ -173,7 +173,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.15'
+          node-version: "22.15"
 
       - name: Install Dependencies
         run: npm ci
