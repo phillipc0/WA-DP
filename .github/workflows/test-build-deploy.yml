@@ -53,73 +53,52 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Check Prettier
-        run: npx prettier --check .
-
-      - name: Generate Prettier JUnit Report
-        if: failure()
-        shell: bash
+      - name: Run Prettier Check and Generate Report
         run: |
-          echo "Generating Prettier JUnit report..."
+          set -eo pipefail
+
+          set +e
+          PRETTIER_OUTPUT=$(npx prettier --check . 2>&1)
+          PRETTIER_STATUS=$?
+          set -e
+
+          REPORT_FILE="prettier-report.xml"
           
-          FILES_OUTPUT=$(npx prettier --list-different .)
-          PRETTIER_LD_EXIT_CODE=$?
-
-          echo "--- Prettier --list-different output (exit code: ${PRETTIER_LD_EXIT_CODE}) ---"
-          if [ -n "$FILES_OUTPUT" ]; then
-            echo "${FILES_OUTPUT}"
+          if [ $PRETTIER_STATUS -eq 0 ]; then
+            echo "Prettier found no formatting issues."
+            cat <<EOF > "$REPORT_FILE"
+          <testsuites name="Prettier Report" tests="1" failures="0" errors="0" time="1">
+            <testsuite name="Prettier" tests="1" failures="0" errors="0" time="1">
+              <testcase name="Code Formatting Check" classname="prettier.check" time="1"/>
+            </testsuite>
+          </testsuites>
+          EOF
           else
-            echo "(No files listed by --list-different)"
+            echo "Prettier found formatting issues:"
+            echo "$PRETTIER_OUTPUT"
+          
+            MESSAGE_ESCAPED=$(echo "Prettier found formatting issues" | sed 's/&/\&/g; s/</\</g; s/>/\>/g; s/"/\"/g; s/'"'"'/\'/g')
+            CDATA_CONTENT=$(echo "$PRETTIER_OUTPUT" | sed 's/]]>/]]>/g')
+
+            cat <<EOF > "$REPORT_FILE"
+          <testsuites name="Prettier Report" tests="1" failures="1" errors="0" time="1">
+            <testsuite name="Prettier" tests="1" failures="1" errors="0" time="1">
+              <testcase name="Code Formatting Check" classname="prettier.check" time="1">
+                <failure message="$MESSAGE_ESCAPED"><![CDATA[$CDATA_CONTENT]]></failure>
+              </testcase>
+            </testsuite>
+          </testsuites>
+          EOF
           fi
-          echo "-------------------------------------------------"
-
-          if [ "$PRETTIER_LD_EXIT_CODE" -gt 1 ]; then
-            echo "Error: 'npx prettier --list-different .' failed with critical exit code $PRETTIER_LD_EXIT_CODE."
-            printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites name="PrettierInternalError">\n' > prettier-report.xml
-            printf '  <testsuite name="PrettierExecution" tests="1" failures="1">\n' >> prettier-report.xml
-            printf '    <testcase classname="Prettier" name="ListDifferentError">\n' >> prettier-report.xml
-            printf '      <failure message="npx prettier --list-different . failed with exit code %s"/>\n' "$PRETTIER_LD_EXIT_CODE" >> prettier-report.xml
-            printf '    </testcase>\n  </testsuite>\n</testsuites>\n' >> prettier-report.xml
-            echo "Prettier JUnit report generated with internal error."
-            cat prettier-report.xml
-            exit 0 
-          fi
-
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n' > prettier-report.xml
-
-          if [ -z "$FILES_OUTPUT" ]; then
-            echo "Warning: Prettier --check failed, but --list-different returned no files. Reporting a generic failure."
-            printf '<testsuite name="PrettierGlobal" tests="1" failures="1">\n' >> prettier-report.xml
-            printf '  <testcase classname="Prettier" name="FormattingFailureUnspecifiedFile">\n' >> prettier-report.xml
-            printf '    <failure message="Prettier --check found issues, but no specific files were listed by --list-different. Check Prettier logs for global errors."/>\n' >> prettier-report.xml
-            printf '  </testcase>\n' >> prettier-report.xml
-            printf '</testsuite>\n' >> prettier-report.xml
-          else
-            echo "$FILES_OUTPUT" | while IFS= read -r f; do
-              if [ -z "$f" ]; then
-                continue
-              fi
-              f_escaped=$(echo "$f" | sed 's/&/\&/g; s/</\</g; s/>/\>/g; s/"/\"/g; s/'"'"'/\'/g')
-              printf '<testsuite name="%s" tests="1" failures="1">\n' "$f_escaped" >> prettier-report.xml
-              printf '  <testcase classname="Prettier" name="%s">\n' "$f_escaped" >> prettier-report.xml
-              printf '    <failure message="File is not formatted"/>\n' >> prettier-report.xml
-              printf '  </testcase>\n' >> prettier-report.xml
-              printf '</testsuite>\n' >> prettier-report.xml
-            done
-          fi
-
-          printf '</testsuites>\n' >> prettier-report.xml
-          echo "Prettier JUnit report generated successfully at prettier-report.xml:"
-          cat prettier-report.xml
+          exit $PRETTIER_STATUS
 
       - name: Publish Prettier Report
-        if: always()
         uses: dorny/test-reporter@v2
+        if: always()
         with:
-          name: Prettier
+          name: Prettier Format
           path: prettier-report.xml
           reporter: java-junit
-          fail-on-error: true
 
   unit:
     name: Unit Tests
