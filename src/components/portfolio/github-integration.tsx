@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, CardBody, CardHeader, CardFooter } from "@heroui/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
 
