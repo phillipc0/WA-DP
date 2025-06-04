@@ -16,23 +16,16 @@ for (const [file, stats] of Object.entries(raw)) {
     modules[mod] = (modules[mod] ?? 0) + code;
   }
 
+  const testPatterns = ["tests/", "cypress/"];
+  const libPatterns = [
+    "/lib/", "lib/", "/libs/", "libs/", "src/lib/", "src/libs/",
+    "/config/", "config/", "src/config", "/types/", "types/", "src/types/"
+  ];
+
   let layer;
-  if (filePath.startsWith("tests/") || filePath.startsWith("cypress/")) {
+  if (matchesAnyPattern(filePath, testPatterns)) {
     layer = "Tests";
-  } else if (
-    filePath.includes("/lib/") ||
-    filePath.startsWith("lib/") ||
-    filePath.includes("/libs/") ||
-    filePath.startsWith("libs/") ||
-    filePath.startsWith("src/lib/") ||
-    filePath.startsWith("src/libs/") ||
-    filePath.includes("/config/") ||
-    filePath.startsWith("config/") ||
-    filePath.startsWith("src/config") ||
-    filePath.includes("/types/") ||
-    filePath.startsWith("types/") ||
-    filePath.startsWith("src/types/")
-  ) {
+  } else if (matchesAnyPattern(filePath, libPatterns)) {
     layer = "Libs";
   } else {
     layer = "App";
