@@ -5,7 +5,8 @@ const raw = JSON.parse(fs.readFileSync("cloc-files.json", "utf8"));
 const modules = {};
 const layers = { App: 0, Libs: 0, Tests: 0 };
 
-for (const [file, stats] of Object.entries(raw.files)) {
+for (const [file, stats] of Object.entries(raw)) {
+  if (file === "header" || file === "SUM") continue;
   const code = stats.code || 0;
   const filePath = file.replace(/\\/g, "/");
 
@@ -54,7 +55,7 @@ console.table(
     .map(([layer, loc]) => ({ layer, loc })),
 );
 
-let summary = "# Code Overview\n\n";
+let summary = "# Quellcode-Übersicht\n\n";
 summary += "## LOC per Module\n\n";
 summary += "| Module | LOC |\n|-------|----:|\n";
 for (const [module, loc] of Object.entries(modules).sort(
