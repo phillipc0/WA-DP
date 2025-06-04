@@ -1,0 +1,199 @@
+name: Test, Build and Deploy to Server
+
+on:
+  push:
+
+jobs:
+  lint:
+    name: Lint Codebase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install ESLint
+        run: npm install --no-save eslint-formatter-junit
+
+      - name: Run ESLint (JUnit XML)
+        run: |
+          npx eslint \
+            -c .eslintrc.json \
+            --ext .js,.jsx,.ts,.tsx \
+            src \
+            --format junit \
+            --output-file eslint-report.xml
+
+      - name: Publish ESLint Report
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: ESLint
+          path: eslint-report.xml
+          reporter: java-junit
+
+  format:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Check Prettier Formatting
+        run: |
+          FILES=$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.css" -o -name "*.scss" -o -name "*.md" | grep -v node_modules | grep -v dist | grep -v build)
+
+          TOTAL_FILES=0
+          FAILED_FILES=0
+          FAILED_FILE_LIST=""
+
+          cat > prettier-report.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites name="Prettier Formatting Check">
+            <testsuite name="prettier" tests="0" failures="0" errors="0" time="0">
+          EOF
+
+          for file in $FILES; do
+            TOTAL_FILES=$((TOTAL_FILES + 1))
+
+            if ! npx prettier --check "$file" > /dev/null 2>&1; then
+              FAILED_FILES=$((FAILED_FILES + 1))
+              FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
+
+              cat >> prettier-report.xml << EOF
+              <testcase classname="prettier" name="$file" time="0">
+                <failure message="File is not properly formatted" type="formatting">
+          File '$file' is not properly formatted according to Prettier rules.
+          Run 'npx prettier --write $file' to fix formatting.
+                </failure>
+              </testcase>
+          EOF
+            else
+              cat >> prettier-report.xml << EOF
+              <testcase classname="prettier" name="$file" time="0"/>
+          EOF
+            fi
+          done
+
+          cat >> prettier-report.xml << 'EOF'
+            </testsuite>
+          </testsuites>
+          EOF
+
+          sed -i "s/tests=\"0\"/tests=\"$TOTAL_FILES\"/" prettier-report.xml
+          sed -i "s/failures=\"0\"/failures=\"$FAILED_FILES\"/" prettier-report.xml
+
+          echo "Prettier Check Results:"
+          echo "Total files checked: $TOTAL_FILES"
+          echo "Files with formatting issues: $FAILED_FILES"
+
+          if [ $FAILED_FILES -gt 0 ]; then
+            echo "Files that need formatting:"
+            echo -e "$FAILED_FILE_LIST"
+            exit 1
+          else
+            echo "All files are properly formatted!"
+          fi
+
+      - name: Upload Prettier Report
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: Prettier Formatting
+          path: prettier-report.xml
+          reporter: java-junit
+
+  unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [lint, format]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npm run test
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [lint, format]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Cypress E2E Tests
+        uses: cypress-io/github-action@v6.9.0
+        with:
+          start: npm run dev
+          wait-on: http://localhost:5173
+          wait-on-timeout: 60
+          command: npm run e2e:run
+
+  deploy:
+    name: Build and Deploy
+    needs: [unit, e2e]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Remove Old Files on Server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
+
+      - name: Transfer New Files
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./dist/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
+          rm -f private_key.pem
