@@ -29,7 +29,7 @@ export function Skills() {
       </CardHeader>
       <CardBody className="gap-4">
         {portfolioData.skills.map((skill, index) => (
-          <div key={index} className="mb-4">
+          <div key={skill.name} className="mb-4">
             <div className="flex justify-between mb-1">
               <span className="font-medium">{skill.name}</span>
               <span className="text-small text-default-500">
