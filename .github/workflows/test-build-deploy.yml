@@ -153,11 +153,14 @@ jobs:
           # vitest-config-path: ./vitest.config.ts
           # Optional: If your coverage-summary.json is not at the default location
           json-summary-path: ./coverage/coverage-summary.json
-          file-coverage-mode: "all"
-          # Optional: Set a name for the coverage check (shows up in PR checks)
-          # name: "Unit Test Coverage"
-          # Optional: Fail the build if coverage is below a certain threshold (can also be set in vitest.config.ts)
-          # threshold: 80
+          # Conditionally set file-coverage-mode
+          # github.event_name == 'push' for any push
+          # github.ref_name == 'main' for the main branch (more specific than github.ref == 'refs/heads/main')
+          file-coverage-mode: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'all' || 'changes' }}
+          # For PRs, it will be 'changes'. For push to main, it will be 'all'.
+          # For pushes to other branches, it will also be 'changes'.
+          # You could also use 'none' if you don't want detailed file lists for PRs:
+          # file-coverage-mode: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'all' || 'none' }}
 
   e2e:
     name: E2E Tests
