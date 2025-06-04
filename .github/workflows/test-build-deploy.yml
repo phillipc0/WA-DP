@@ -161,6 +161,36 @@ jobs:
           wait-on-timeout: 60
           command: npm run e2e:run
 
+  loc:
+    name: LOC Statistik
+    runs-on: ubuntu-latest
+    needs: [lint, format]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Count LOC
+        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
+
+      - name: Create LOC Summary
+        run: node tools/loc-summary.mjs
+
+      - name: Add LOC Summary to Job Summary
+        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: loc-summary
+          path: loc-summary.md
+
   deploy:
     name: Build and Deploy
     needs: [unit, e2e]
