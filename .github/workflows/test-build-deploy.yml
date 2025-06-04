@@ -199,32 +199,67 @@ jobs:
           rm -f private_key.pem
 
   lighthouse_summary:
-    name: Lighthouse CLI Summary
+    name: Lighthouse Report
     runs-on: ubuntu-latest
     needs: [lint, format]
     steps:
-      - name: Add Lighthouse instructions to summary
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Install serve
+        run: npm install -g serve
+
+      - name: Start server
         run: |
-          cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
-          ## Lighthouse-Bericht via CLI erstellen
+          serve -s dist -l 5000 &
+          echo $! > serve.pid
 
-          1. Produktions-Build erzeugen
-             ```bash
-             npm run build
-             ```
+      - name: Run Lighthouse
+        run: |
+          npx lighthouse http://localhost:5000 \
+            --preset=desktop \
+            --output html json \
+            --output-path ./lighthouse-report \
+            --chrome-flags="--headless"
 
-          2. Build lokal serven (optional)
-             ```bash
-             npm install -g serve
-             serve -s build -l 5000
-             ```
+      - name: Stop server
+        run: |
+          kill $(cat serve.pid)
 
-          3. Lighthouse starten
-             ```bash
-             npx lighthouse http://localhost:5000 \
-               --preset=desktop \
-               --output html,json \
-               --output-path ./reports/report.html \
-               --chrome-flags="--headless"
-             ```
+      - name: Write report summary
+        run: |
+          PERFORMANCE=$(jq '.categories.performance.score' < ./lighthouse-report.report.json)
+          ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report.report.json)
+          BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report.report.json)
+          SEO=$(jq '.categories.seo.score' < ./lighthouse-report.report.json)
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          ## Lighthouse Report
+
+          | Category | Score |
+          | -------- | ----- |
+          | Performance | $PERFORMANCE |
+          | Accessibility | $ACCESSIBILITY |
+          | Best Practices | $BEST |
+          | SEO | $SEO |
+
+          Der komplette HTML-Bericht ist als Build-Artefakt beigefügt.
           EOF
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: |
+            lighthouse-report.report.html
+            lighthouse-report.report.json
