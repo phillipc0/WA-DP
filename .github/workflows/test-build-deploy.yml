@@ -153,6 +153,7 @@ jobs:
           # vitest-config-path: ./vitest.config.ts
           # Optional: If your coverage-summary.json is not at the default location
           json-summary-path: ./coverage/coverage-summary.json
+          file-coverage-mode: "all"
           # Optional: Set a name for the coverage check (shows up in PR checks)
           # name: "Unit Test Coverage"
           # Optional: Fail the build if coverage is below a certain threshold (can also be set in vitest.config.ts)
