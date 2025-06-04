@@ -55,7 +55,7 @@ console.table(
     .map(([layer, loc]) => ({ layer, loc })),
 );
 
-let summary = "# Quellcode-Übersicht\n\n";
+let summary = "# Code Overview\n\n";
 summary += "## LOC per Module\n\n";
 summary += "| Module | LOC |\n|-------|----:|\n";
 for (const [module, loc] of Object.entries(modules).sort(
