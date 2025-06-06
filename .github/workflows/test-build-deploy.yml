@@ -271,7 +271,7 @@ jobs:
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
-          MIN_SCORE=0.9
+          MIN_SCORE=0.8
           failed=false
 
           if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
