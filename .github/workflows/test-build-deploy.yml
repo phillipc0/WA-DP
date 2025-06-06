@@ -260,18 +260,19 @@ jobs:
           SEO=$(jq '.categories.seo.score' < ./lighthouse-report.report.json)
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Lighthouse Report
+          
+          MIN_SCORE=0.8
 
           | Category        | Score |
           | --------------- | ----- |
-          | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
           EOF
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
-          MIN_SCORE=0.8
           failed=false
 
           if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
