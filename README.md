@@ -1,8 +1,9 @@
-# Vite & HeroUI Template
+# Webanwendungen - Developer Portfolio
 
-This is a template for creating applications using Vite and HeroUI (v2).
-
-[Try it on CodeSandbox](https://githubbox.com/frontio-ai/vite-template)
+## Deadlines:
+* Wichtigste Funktionen (Trennung & CV): 06.07.2025
+* Code Fertig: 10.08.2025
+* Doku fertig: 22.08.2025
 
 ## Technologies Used
 
