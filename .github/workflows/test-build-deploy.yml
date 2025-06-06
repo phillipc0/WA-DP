@@ -270,34 +270,33 @@ jobs:
           EOF
 
           MIN_SCORE=0.9
-
           failed=false
 
           if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
-            echo "❌ PERFORMANCE score ($PERFORMANCE) is below threshold ($MIN_SCORE)."
+            echo "❌ PERFORMANCE score ($PERFORMANCE) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
             failed=true
           fi
 
           if (( $(echo "$ACCESSIBILITY < $MIN_SCORE" | bc -l) )); then
-            echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)."
+            echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
             failed=true
           fi
 
           if (( $(echo "$BEST < $MIN_SCORE" | bc -l) )); then
-            echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)."
+            echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
             failed=true
           fi
 
           if (( $(echo "$SEO < $MIN_SCORE" | bc -l) )); then
-            echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)."
+            echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
             failed=true
           fi
 
           if [ "$failed" = true ]; then
-            echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job."
+            echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job." >> "$GITHUB_STEP_SUMMARY"
             exit 1
           else
-            echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE."
+            echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Upload Lighthouse report
