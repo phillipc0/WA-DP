@@ -28,7 +28,7 @@ export function PersonalInfo() {
   return (
     <Card className="w-full">
       <CardHeader className="flex gap-3">
-        <div className="w-20 h-20 rounded-full bg-zinc-800">
+        <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
           <img
             alt={portfolioData.name}
             className="w-full h-full object-cover"
