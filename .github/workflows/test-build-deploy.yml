@@ -2,6 +2,7 @@ name: Test, Build and Deploy to Server
 
 on:
   push:
+  pull_request:
 
 jobs:
   lint:
