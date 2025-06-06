@@ -258,10 +258,9 @@ jobs:
           ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report.report.json)
           BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report.report.json)
           SEO=$(jq '.categories.seo.score' < ./lighthouse-report.report.json)
+          MIN_SCORE=0.8
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Lighthouse Report
-          
-          MIN_SCORE=0.8
 
           | Category        | Score |
           | --------------- | ----- |
