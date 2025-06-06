@@ -6,7 +6,6 @@ import { Tab, Tabs } from "@heroui/tabs";
 import { Divider } from "@heroui/divider";
 import { Tooltip } from "@heroui/tooltip";
 import { Switch } from "@heroui/switch";
-import { Avatar } from "@heroui/avatar";
 
 import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
@@ -426,9 +425,9 @@ export default function GeneratorPage() {
                   </div>
 
                   <div className="flex gap-4 items-start">
-                    <Avatar
+                    <img
                       alt="Profile Preview"
-                      className="w-20 h-20"
+                      className="w-20 h-20 rounded-full bg-zinc-800"
                       src={portfolioData.avatar}
                     />
 
