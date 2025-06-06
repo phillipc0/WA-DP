@@ -27,7 +27,7 @@ for (const [file, stats] of Object.entries(raw)) {
     "src/libs/",
     "/config/",
     "config/",
-    "src/config",
+    "src/config/",
     "/types/",
     "types/",
     "src/types/",
