@@ -261,13 +261,44 @@ jobs:
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Lighthouse Report
 
-          | Category | Score |
-          | -------- | ----- |
-          | Performance | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Accessibility | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Best Practices | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | SEO | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Category        | Score |
+          | --------------- | ----- |
+          | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
           EOF
+
+          MIN_SCORE=0.9
+
+          failed=false
+
+          if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
+            echo "❌ PERFORMANCE score ($PERFORMANCE) is below threshold ($MIN_SCORE)."
+            failed=true
+          fi
+
+          if (( $(echo "$ACCESSIBILITY < $MIN_SCORE" | bc -l) )); then
+            echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)."
+            failed=true
+          fi
+
+          if (( $(echo "$BEST < $MIN_SCORE" | bc -l) )); then
+            echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)."
+            failed=true
+          fi
+
+          if (( $(echo "$SEO < $MIN_SCORE" | bc -l) )); then
+            echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)."
+            failed=true
+          fi
+
+          if [ "$failed" = true ]; then
+            echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job."
+            exit 1
+          else
+            echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE."
+          fi
 
       - name: Upload Lighthouse report
         uses: actions/upload-artifact@v4
