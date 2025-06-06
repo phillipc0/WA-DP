@@ -28,3 +28,5 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb
 /coverage/
+docs/dependency-graph.svg
+docs/dependency-metrics.json

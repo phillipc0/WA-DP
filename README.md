@@ -48,6 +48,20 @@ public-hoist-pattern[]=*@heroui/*
 After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed
 correctly.
 
+### Generate dependency graph
+
+Madge is included to visualize module dependencies and compute simple metrics. Run the following command to generate an
+SVG graph and metrics file under `docs/`:
+
+```bash
+npm run deps:madge
+```
+
+This creates `docs/dependency-graph.svg` and `docs/dependency-metrics.json` with coupling and cohesion values for each
+module.
+The generated files are excluded from version control via `.gitignore`.
+Make sure [Graphviz](https://graphviz.org/download/) is installed locally so Madge can create the SVG image.
+
 ## License
 
 Licensed under the [MIT license](https://github.com/frontio-ai/vite-template/blob/main/LICENSE).
