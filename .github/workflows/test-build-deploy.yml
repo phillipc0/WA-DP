@@ -2,6 +2,7 @@ name: Test, Build and Deploy to Server
 
 on:
   push:
+  pull_request:
 
 jobs:
   lint:
@@ -176,11 +177,9 @@ jobs:
           wait-on-timeout: 60
           command: npm run e2e:run
 
-  deploy:
-    name: Build and Deploy
-    needs: [unit, e2e]
+  loc:
+    name: LOC Statistics
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -193,25 +192,19 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Project
-        run: npm run build
+      - name: Count LOC
+        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
 
-      - name: Remove Old Files on Server
-        uses: appleboy/ssh-action@v1.2.2
+      - name: Create LOC Summary
+        run: node tools/loc-summary.mjs
+
+      - name: Add LOC Summary to Job Summary
+        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
-
-      - name: Transfer New Files
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./dist/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
-          rm -f private_key.pem
+          name: loc-summary
+          path: loc-summary.md
 
   lighthouse_summary:
     name: Lighthouse Report
@@ -308,3 +301,40 @@ jobs:
           path: |
             lighthouse-report.report.html
             lighthouse-report.report.json
+
+  deploy:
+    name: Build and Deploy
+    needs: [unit, e2e, lighthouse_summary]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Remove Old Files on Server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
+
+      - name: Transfer New Files
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./dist/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
+          rm -f private_key.pem
