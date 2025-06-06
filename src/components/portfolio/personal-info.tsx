@@ -1,5 +1,4 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Avatar } from "@heroui/avatar";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
@@ -29,12 +28,13 @@ export function PersonalInfo() {
   return (
     <Card className="w-full">
       <CardHeader className="flex gap-3">
-        <Avatar
-          alt={portfolioData.name}
-          className="w-20 h-20"
-          size="lg"
-          src={portfolioData.avatar}
-        />
+        <div className="w-20 h-20 rounded-full bg-zinc-800">
+          <img
+            alt={portfolioData.name}
+            className="w-full h-full object-cover"
+            src={portfolioData.avatar}
+          />
+        </div>
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
           <p className="text-default-500">{portfolioData.title}</p>

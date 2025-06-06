@@ -1,9 +1,10 @@
 # Webanwendungen - Developer Portfolio
 
 ## Deadlines:
-* Wichtigste Funktionen (Trennung & CV): 06.07.2025
-* Code Fertig: 10.08.2025
-* Doku fertig: 22.08.2025
+
+- Wichtigste Funktionen (Trennung & CV): 06.07.2025
+- Code Fertig: 10.08.2025
+- Doku fertig: 22.08.2025
 
 ## Technologies Used
 
@@ -44,7 +45,8 @@ If you are using `pnpm`, you need to add the following code to your `.npmrc` fil
 public-hoist-pattern[]=*@heroui/*
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed
+correctly.
 
 ## License
 
