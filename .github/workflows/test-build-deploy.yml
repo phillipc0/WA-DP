@@ -269,6 +269,8 @@ jobs:
           | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= 0.5" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
           EOF
 
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
           MIN_SCORE=0.9
           failed=false
 
