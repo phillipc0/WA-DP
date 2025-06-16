@@ -2,6 +2,8 @@ name: Test, Build and Deploy to Server
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
@@ -119,6 +121,143 @@ jobs:
           path: prettier-report.xml
           reporter: java-junit
 
+  loc:
+    name: LOC Statistics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Count LOC
+        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
+
+      - name: Create LOC Summary
+        run: node tools/loc-summary.mjs
+
+      - name: Add LOC Summary to Job Summary
+        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: loc-summary
+          path: loc-summary.md
+
+  lighthouse_summary:
+    name: Lighthouse Report
+    runs-on: ubuntu-latest
+    needs: [lint, format]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Install serve
+        run: npm install -g serve
+
+      - name: Start server
+        run: |
+          serve -s dist -l 5000 &
+          echo $! > serve.pid
+
+      - name: Run Lighthouse 5 times
+        run: |
+          RUNS=5
+          for i in $(seq 1 $RUNS); do
+            echo "Running Lighthouse (iteration $i/$RUNS)"
+            npx lighthouse http://localhost:5000 \
+              --preset=desktop \
+              --output html json \
+              --output-path ./lighthouse-report-${i} \
+              --chrome-flags="--headless"
+          done
+
+      - name: Stop server
+        run: |
+          kill $(cat serve.pid)
+
+      - name: Write report summary (average performance)
+        run: |
+          RUNS=5
+          PERF_TOTAL=0
+          for i in $(seq 1 $RUNS); do
+            SCORE=$(jq '.categories.performance.score' < ./lighthouse-report-${i}.report.json)
+            PERF_TOTAL=$(echo "$PERF_TOTAL + $SCORE" | bc -l)
+          done
+          PERFORMANCE=$(echo "scale=4; $PERF_TOTAL / $RUNS" | bc -l)
+
+          # Use the first run for the other categories (feel free to average these too)
+          ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report-1.report.json)
+          BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report-1.report.json)
+          SEO=$(jq '.categories.seo.score' < ./lighthouse-report-1.report.json)
+
+          MIN_SCORE=0.8
+
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          ## Lighthouse Report (average over $RUNS runs)
+
+          | Category        | Score |
+          | --------------- | ----- |
+          | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+          EOF
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          failed=false
+
+          if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
+            echo "❌ PERFORMANCE average score ($PERFORMANCE) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+            failed=true
+          fi
+          if (( $(echo "$ACCESSIBILITY < $MIN_SCORE" | bc -l) )); then
+            echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+            failed=true
+          fi
+          if (( $(echo "$BEST < $MIN_SCORE" | bc -l) )); then
+            echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+            failed=true
+          fi
+          if (( $(echo "$SEO < $MIN_SCORE" | bc -l) )); then
+            echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+            failed=true
+          fi
+
+          if [ "$failed" = true ]; then
+            echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          else
+            echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: |
+            lighthouse-report-*.report.html
+            lighthouse-report-*.report.json
+
+
   unit:
     name: Unit Tests & Coverage
     runs-on: ubuntu-latest
@@ -176,131 +315,6 @@ jobs:
           wait-on: http://localhost:5173
           wait-on-timeout: 60
           command: npm run e2e:run
-
-  loc:
-    name: LOC Statistics
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Count LOC
-        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
-
-      - name: Create LOC Summary
-        run: node tools/loc-summary.mjs
-
-      - name: Add LOC Summary to Job Summary
-        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: loc-summary
-          path: loc-summary.md
-
-  lighthouse_summary:
-    name: Lighthouse Report
-    runs-on: ubuntu-latest
-    needs: [lint, format]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Install serve
-        run: npm install -g serve
-
-      - name: Start server
-        run: |
-          serve -s dist -l 5000 &
-          echo $! > serve.pid
-
-      - name: Run Lighthouse
-        run: |
-          npx lighthouse http://localhost:5000 \
-            --preset=desktop \
-            --output html json \
-            --output-path ./lighthouse-report \
-            --chrome-flags="--headless"
-
-      - name: Stop server
-        run: |
-          kill $(cat serve.pid)
-
-      - name: Write report summary
-        run: |
-          PERFORMANCE=$(jq '.categories.performance.score' < ./lighthouse-report.report.json)
-          ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report.report.json)
-          BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report.report.json)
-          SEO=$(jq '.categories.seo.score' < ./lighthouse-report.report.json)
-          MIN_SCORE=0.8
-          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
-          ## Lighthouse Report
-
-          | Category        | Score |
-          | --------------- | ----- |
-          | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          EOF
-
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          failed=false
-
-          if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
-            echo "❌ PERFORMANCE score ($PERFORMANCE) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-
-          if (( $(echo "$ACCESSIBILITY < $MIN_SCORE" | bc -l) )); then
-            echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-
-          if (( $(echo "$BEST < $MIN_SCORE" | bc -l) )); then
-            echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-
-          if (( $(echo "$SEO < $MIN_SCORE" | bc -l) )); then
-            echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-
-          if [ "$failed" = true ]; then
-            echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job." >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          else
-            echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE." >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-      - name: Upload Lighthouse report
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report
-          path: |
-            lighthouse-report.report.html
-            lighthouse-report.report.json
 
   deploy:
     name: Build and Deploy
