@@ -177,9 +177,9 @@ jobs:
           serve -s dist -l 5000 &
           echo $! > serve.pid
 
-      - name: Run Lighthouse 5 times
+      - name: Run Lighthouse multiple times
         run: |
-          RUNS=5
+          RUNS=3
           for i in $(seq 1 $RUNS); do
             echo "Running Lighthouse (iteration $i/$RUNS)"
             npx lighthouse http://localhost:5000 \
@@ -195,13 +195,13 @@ jobs:
 
       - name: Write report summary (average performance)
         run: |
-          RUNS=5
+          RUNS=3
           PERF_TOTAL=0
           for i in $(seq 1 $RUNS); do
             SCORE=$(jq '.categories.performance.score' < ./lighthouse-report-${i}.report.json)
             PERF_TOTAL=$(echo "$PERF_TOTAL + $SCORE" | bc -l)
           done
-          PERFORMANCE=$(echo "scale=4; $PERF_TOTAL / $RUNS" | bc -l)
+          PERFORMANCE=$(echo "scale=2; $PERF_TOTAL / $RUNS" | bc -l)
 
           # Use the first run for the other categories (feel free to average these too)
           ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report-1.report.json)
