@@ -187,6 +187,7 @@ jobs:
         with:
           name: loc-summary
           path: loc-summary.md
+          retention-days: 14
 
   lighthouse_summary:
     name: Lighthouse Report
@@ -294,6 +295,7 @@ jobs:
           path: |
             lighthouse-report-*.report.html
             lighthouse-report-*.report.json
+          retention-days: 14
 
   unit:
     name: Unit Tests & Coverage
@@ -362,7 +364,7 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/screenshots/
-          retention-days: 7
+          retention-days: 14
 
   deploy:
     name: Build and Deploy
