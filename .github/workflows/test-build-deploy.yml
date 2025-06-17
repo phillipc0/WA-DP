@@ -77,10 +77,49 @@ jobs:
               FAILED_FILES=$((FAILED_FILES + 1))
               FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
 
+              # Generate diff between current file and prettier formatted version
+              PRETTIER_FORMATTED=$(npx prettier "$file" 2>/dev/null || echo "Error formatting file")
+              DIFF_OUTPUT=$(diff -u "$file" <(echo "$PRETTIER_FORMATTED") 2>/dev/null | head -20 || echo "Unable to generate diff")
+
+              # Create a concise error message with line numbers and changes
+              ERROR_MESSAGE="Formatting issues found"
+              if [ -n "$DIFF_OUTPUT" ] && [ "$DIFF_OUTPUT" != "Unable to generate diff" ]; then
+                # Extract changes from diff output with proper line numbers
+                CHANGES=""
+                CURRENT_LINE=0
+                while IFS= read -r line; do
+                  if echo "$line" | grep -q "^@@"; then
+                    # Extract starting line number from diff header (e.g., @@ -10,4 +10,4 @@)
+                    CURRENT_LINE=$(echo "$line" | sed 's/^@@ -\([0-9]*\),.*/\1/')
+                  elif echo "$line" | grep -q "^---\|^+++"; then
+                    # Skip file header lines
+                    continue
+                  elif echo "$line" | grep -q "^-"; then
+                    # Removed line - preserve exact content including quotes
+                    CONTENT="${line#-}"
+                    CHANGES="${CHANGES}L${CURRENT_LINE}: Remove '${CONTENT}'; "
+                    CURRENT_LINE=$((CURRENT_LINE + 1))
+                  elif echo "$line" | grep -q "^+"; then
+                    # Added line - preserve exact content including quotes
+                    CONTENT="${line#+}"
+                    CHANGES="${CHANGES}Add '${CONTENT}'; "
+                  elif echo "$line" | grep -q "^ "; then
+                    # Context line - increment line number
+                    CURRENT_LINE=$((CURRENT_LINE + 1))
+                  fi
+                done <<< "$DIFF_OUTPUT"
+
+                if [ -n "$CHANGES" ]; then
+                  ERROR_MESSAGE="$CHANGES"
+                fi
+              fi
+
+              # Escape XML characters in error message
+              ESCAPED_MESSAGE=$(echo "$ERROR_MESSAGE" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+
               cat >> prettier-report.xml << EOF
               <testcase classname="prettier" name="$file" time="0">
-                <failure message="File is not properly formatted" type="formatting">
-          File '$file' is not properly formatted according to Prettier rules.
+                <failure message="$ESCAPED_MESSAGE" type="formatting">
           Run 'npx prettier --write $file' to fix formatting.
                 </failure>
               </testcase>
@@ -255,7 +294,6 @@ jobs:
           path: |
             lighthouse-report-*.report.html
             lighthouse-report-*.report.json
-
 
   unit:
     name: Unit Tests & Coverage
