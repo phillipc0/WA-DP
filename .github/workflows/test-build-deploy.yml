@@ -380,22 +380,23 @@ jobs:
         with:
           node-version: "22.15"
 
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
       - name: Install Frontend Dependencies
         run: npm ci
 
       - name: Build Frontend
         run: npm run build
 
-      - name: Move Frontend Build to Backend Public Directory
+      - name: Move Frontend Build to Backend Frontend Directory
         run: |
-          mkdir -p backend/public
-          cp -r dist/* backend/public/
-
-      - name: Install Backend Dependencies
-        run: cd backend && npm ci
-
-      - name: Build Backend
-        run: cd backend && npm run build
+          mkdir -p backend/frontend
+          cp -r dist/* backend/frontend/
+          mv backend/ wa-dp/
 
       - name: Remove Old Files on Server
         uses: appleboy/ssh-action@v1.2.2
@@ -411,7 +412,7 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./backend/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
+          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./wa-dp/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
           rm -f private_key.pem
 
       - name: Start Backend Server
@@ -424,6 +425,6 @@ jobs:
           script: |
             cd ~/Webserver/WA-DP
             # Kill existing tmux session if it exists
-            tmux kill-session -t wa-dp-backend 2>/dev/null || true
+            tmux kill-session -t WA-DP 2>/dev/null || true
             # Start new tmux session with backend
-            tmux new-session -d -s wa-dp-backend 'npm start'
+            tmux new-session -d -s wa-dp 'npm start'
