@@ -380,14 +380,14 @@ jobs:
         with:
           node-version: "22.15"
 
+      - name: Install Frontend Dependencies
+        run: npm ci
+
       - name: Install Backend Dependencies
         run: cd backend && npm ci
 
       - name: Build Backend
         run: cd backend && npm run build
-
-      - name: Install Frontend Dependencies
-        run: npm ci
 
       - name: Build Frontend
         run: npm run build
