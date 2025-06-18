@@ -77,10 +77,49 @@ jobs:
               FAILED_FILES=$((FAILED_FILES + 1))
               FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
 
+              # Generate diff between current file and prettier formatted version
+              PRETTIER_FORMATTED=$(npx prettier "$file" 2>/dev/null || echo "Error formatting file")
+              DIFF_OUTPUT=$(diff -u "$file" <(echo "$PRETTIER_FORMATTED") 2>/dev/null | head -20 || echo "Unable to generate diff")
+
+              # Create a concise error message with line numbers and changes
+              ERROR_MESSAGE="Formatting issues found"
+              if [ -n "$DIFF_OUTPUT" ] && [ "$DIFF_OUTPUT" != "Unable to generate diff" ]; then
+                # Extract changes from diff output with proper line numbers
+                CHANGES=""
+                CURRENT_LINE=0
+                while IFS= read -r line; do
+                  if echo "$line" | grep -q "^@@"; then
+                    # Extract starting line number from diff header (e.g., @@ -10,4 +10,4 @@)
+                    CURRENT_LINE=$(echo "$line" | sed 's/^@@ -\([0-9]*\),.*/\1/')
+                  elif echo "$line" | grep -q "^---\|^+++"; then
+                    # Skip file header lines
+                    continue
+                  elif echo "$line" | grep -q "^-"; then
+                    # Removed line - preserve exact content including quotes
+                    CONTENT="${line#-}"
+                    CHANGES="${CHANGES}L${CURRENT_LINE}: Remove '${CONTENT}'; "
+                    CURRENT_LINE=$((CURRENT_LINE + 1))
+                  elif echo "$line" | grep -q "^+"; then
+                    # Added line - preserve exact content including quotes
+                    CONTENT="${line#+}"
+                    CHANGES="${CHANGES}Add '${CONTENT}'; "
+                  elif echo "$line" | grep -q "^ "; then
+                    # Context line - increment line number
+                    CURRENT_LINE=$((CURRENT_LINE + 1))
+                  fi
+                done <<< "$DIFF_OUTPUT"
+
+                if [ -n "$CHANGES" ]; then
+                  ERROR_MESSAGE="$CHANGES"
+                fi
+              fi
+
+              # Escape XML characters in error message
+              ESCAPED_MESSAGE=$(echo "$ERROR_MESSAGE" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+
               cat >> prettier-report.xml << EOF
               <testcase classname="prettier" name="$file" time="0">
-                <failure message="File is not properly formatted" type="formatting">
-          File '$file' is not properly formatted according to Prettier rules.
+                <failure message="$ESCAPED_MESSAGE" type="formatting">
           Run 'npx prettier --write $file' to fix formatting.
                 </failure>
               </testcase>
@@ -148,6 +187,7 @@ jobs:
         with:
           name: loc-summary
           path: loc-summary.md
+          retention-days: 14
 
   lighthouse_summary:
     name: Lighthouse Report
@@ -255,7 +295,7 @@ jobs:
           path: |
             lighthouse-report-*.report.html
             lighthouse-report-*.report.json
-
+          retention-days: 14
 
   unit:
     name: Unit Tests & Coverage
@@ -307,6 +347,9 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci
+
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v6.10.1
         with:
@@ -314,6 +357,14 @@ jobs:
           wait-on: http://localhost:5173
           wait-on-timeout: 60
           command: npm run e2e:run
+
+      - name: Upload E2E Test Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+          retention-days: 14
 
   deploy:
     name: Build and Deploy
@@ -329,11 +380,23 @@ jobs:
         with:
           node-version: "22.15"
 
-      - name: Install Dependencies
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Install Frontend Dependencies
         run: npm ci
 
-      - name: Build Project
+      - name: Build Frontend
         run: npm run build
+
+      - name: Move Frontend Build to Backend Frontend Directory
+        run: |
+          mkdir -p backend/frontend
+          cp -r dist/* backend/frontend/
+          mv backend/ wa-dp/
 
       - name: Remove Old Files on Server
         uses: appleboy/ssh-action@v1.2.2
@@ -345,9 +408,23 @@ jobs:
           script: |
             find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
 
-      - name: Transfer New Files
+      - name: Transfer Backend with Frontend
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./dist/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
+          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./wa-dp/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
           rm -f private_key.pem
+
+      - name: Start Backend Server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/Webserver/WA-DP
+            # Kill existing tmux session if it exists
+            tmux kill-session -t WA-DP 2>/dev/null || true
+            # Start new tmux session with backend
+            tmux new-session -d -s WA-DP 'npm start'

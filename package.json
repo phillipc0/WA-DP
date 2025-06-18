@@ -4,7 +4,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev:frontend": "vite",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "build": "tsc && vite build",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview",
@@ -37,6 +39,7 @@
     "@react-aria/visually-hidden": "3.8.22",
     "@react-types/shared": "3.30.0",
     "clsx": "2.1.1",
+    "concurrently": "^9.1.2",
     "framer-motion": "11.15.0",
     "nvm": "^0.0.4",
     "react": "19.1.0",

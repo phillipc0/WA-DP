@@ -28,3 +28,8 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb
 /coverage/
+
+# Backend
+/backend/.next
+/backend/users.json
+/backend/node_modules

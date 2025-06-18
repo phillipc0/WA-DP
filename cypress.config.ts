@@ -1,5 +1,6 @@
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import path, { dirname } from "path";
+import fs from "fs";
 
 import { defineConfig } from "cypress";
 import createBundler from "@cypress/webpack-preprocessor";
@@ -54,6 +55,23 @@ export default defineConfig({
           },
         }),
       );
+
+      // Add task for cleaning up test data
+      on("task", {
+        deleteUserFile() {
+          const userFilePath = path.join(
+            process.cwd(),
+            "backend",
+            "users.json",
+          );
+
+          if (fs.existsSync(userFilePath)) {
+            fs.unlinkSync(userFilePath);
+          }
+
+          return null;
+        },
+      });
 
       return config;
     },

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
@@ -72,7 +73,7 @@ function Alert({
         </div>
         <div className="flex justify-end gap-2 mt-6">
           {onConfirm && (
-            <Button color="default" variant="flat" onClick={onClose}>
+            <Button color="default" variant="flat" onPress={onClose}>
               {cancelLabel}
             </Button>
           )}
@@ -86,7 +87,7 @@ function Alert({
                     ? "success"
                     : "primary"
             }
-            onClick={() => {
+            onPress={() => {
               if (onConfirm) onConfirm();
               else onClose();
             }}
@@ -106,6 +107,15 @@ type Skill = { name: string; level: number };
 // No image cropper component needed anymore
 
 export default function GeneratorPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+    if (!isAdmin) {
+      navigate("/");
+    }
+  }, [navigate]);
   // Initialize state with data from localStorage or default from siteConfig
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(() => {
     const savedData = localStorage.getItem("portfolioData");
@@ -452,7 +462,7 @@ export default function GeneratorPage() {
                         />
                         <Button
                           className="mb-2"
-                          onClick={() => fileInputRef.current?.click()}
+                          onPress={() => fileInputRef.current?.click()}
                         >
                           Select Image
                         </Button>
@@ -535,7 +545,7 @@ export default function GeneratorPage() {
                       value={newSkill.level}
                       onChange={handleSkillChange}
                     />
-                    <Button color="primary" onClick={handleAddSkill}>
+                    <Button color="primary" onPress={handleAddSkill}>
                       Add Skill
                     </Button>
                   </div>
@@ -602,7 +612,7 @@ export default function GeneratorPage() {
                               isIconOnly
                               color="danger"
                               variant="light"
-                              onClick={() => handleRemoveSkill(index)}
+                              onPress={() => handleRemoveSkill(index)}
                             >
                               ✕
                             </Button>
@@ -618,10 +628,10 @@ export default function GeneratorPage() {
         </Tabs>
 
         <div className="flex justify-between mt-6">
-          <Button color="danger" variant="flat" onClick={handleReset}>
+          <Button color="danger" variant="flat" onPress={handleReset}>
             Reset to Defaults
           </Button>
-          <Button color="success" onClick={handleSave}>
+          <Button color="success" onPress={handleSave}>
             Save Changes
           </Button>
         </div>
