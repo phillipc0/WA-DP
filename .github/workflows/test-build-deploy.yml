@@ -426,4 +426,4 @@ jobs:
             # Kill existing tmux session if it exists
             tmux kill-session -t WA-DP 2>/dev/null || true
             # Start new tmux session with backend
-            tmux new-session -d -s WA-DP "cd ~/Webserver/WA-DP &&  ~/.nvm/versions/node/v22.16.0/bin/npm start; exec bash"
+            tmux new-session -d -s WA-DP "cd ~/Webserver/WA-DP &&  ~/.nvm/versions/node/v22.16.0/bin/npm start"
