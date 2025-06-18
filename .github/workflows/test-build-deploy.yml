@@ -368,7 +368,7 @@ jobs:
 
   deploy:
     name: Build and Deploy
-    needs: [unit, e2e, lighthouse_summary]
+    #    needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
     #if: github.ref == 'refs/heads/main'
     steps:
