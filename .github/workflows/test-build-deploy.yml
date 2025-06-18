@@ -370,7 +370,7 @@ jobs:
     name: Build and Deploy
     needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    #if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -427,4 +427,4 @@ jobs:
             # Kill existing tmux session if it exists
             tmux kill-session -t WA-DP 2>/dev/null || true
             # Start new tmux session with backend
-            tmux new-session -d -s WA-DP 'npm start'
+            tmux new-session -d -s WA-DP "npm start; exec bash"
