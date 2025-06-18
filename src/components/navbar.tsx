@@ -148,6 +148,7 @@ export const Navbar = () => {
           <NavbarItem className="hidden md:flex">
             <Button
               color={isAdmin ? "danger" : "primary"}
+              data-testid={isAdmin ? "logout-button" : "login-button"}
               onPress={handleLoginClick}
             >
               {isAdmin ? "Logout" : "Login"}

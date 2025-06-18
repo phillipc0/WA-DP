@@ -58,18 +58,23 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+      data-testid="login-modal"
+    >
       <div className="bg-background p-6 rounded-lg w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-4">
           {exists ? "Login" : "Create Admin Account"}
         </h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <Input
+            data-testid="username-input"
             label="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
           <Input
+            data-testid="password-input"
             label="Password"
             type="password"
             value={password}
