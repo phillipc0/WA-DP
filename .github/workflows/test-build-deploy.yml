@@ -249,6 +249,7 @@ jobs:
           fi
 
       - name: Upload Lighthouse reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
