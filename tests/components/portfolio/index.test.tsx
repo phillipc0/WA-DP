@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Portfolio } from "@/components/portfolio/index";
+import { Portfolio } from "@/components/portfolio";
 
 // Mock child components
 vi.mock("@/components/portfolio/personal-info", () => ({
@@ -28,7 +28,11 @@ vi.mock("@/components/portfolio/github-integration", () => ({
 }));
 
 vi.mock("@/components/portfolio/unsaved-changes-banner", () => ({
-  UnsavedChangesBanner: ({ onDiscardChanges }: { onDiscardChanges: () => void }) => (
+  UnsavedChangesBanner: ({
+    onDiscardChanges,
+  }: {
+    onDiscardChanges: () => void;
+  }) => (
     <div data-testid="unsaved-changes-banner">
       <button onClick={onDiscardChanges} data-testid="discard-changes">
         Discard Changes
@@ -74,21 +78,27 @@ describe("Portfolio", () => {
 
   it("does not show unsaved changes banner when user is not authenticated", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { clearDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
 
     isAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
 
     await waitFor(() => {
-      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("unsaved-changes-banner"),
+      ).not.toBeInTheDocument();
       expect(clearDraftFromCookies).toHaveBeenCalled();
     });
   });
 
   it("does not show unsaved changes banner when authenticated but no draft exists", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
 
     isAuthenticated.mockReturnValue(true);
     loadDraftFromCookies.mockReturnValue(null);
@@ -96,13 +106,17 @@ describe("Portfolio", () => {
     render(<Portfolio />);
 
     await waitFor(() => {
-      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("unsaved-changes-banner"),
+      ).not.toBeInTheDocument();
     });
   });
 
   it("shows unsaved changes banner when authenticated with draft and no saved data", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = { name: "Draft User", title: "Draft Title" };
@@ -120,7 +134,8 @@ describe("Portfolio", () => {
 
   it("shows unsaved changes banner when draft differs from saved data", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies, hasChangesComparedToSaved } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies, hasChangesComparedToSaved } =
+      await vi.importMock("@/lib/cookie-persistence");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = { name: "Draft User", title: "Draft Title" };
@@ -135,13 +150,17 @@ describe("Portfolio", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
-      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(draftData, savedData);
+      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(
+        draftData,
+        savedData,
+      );
     });
   });
 
   it("does not show unsaved changes banner when draft matches saved data", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies, hasChangesComparedToSaved } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies, hasChangesComparedToSaved } =
+      await vi.importMock("@/lib/cookie-persistence");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = { name: "Same User", title: "Same Title" };
@@ -155,14 +174,21 @@ describe("Portfolio", () => {
     render(<Portfolio />);
 
     await waitFor(() => {
-      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
-      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(draftData, savedData);
+      expect(
+        screen.queryByTestId("unsaved-changes-banner"),
+      ).not.toBeInTheDocument();
+      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(
+        draftData,
+        savedData,
+      );
     });
   });
 
   it("shows unsaved changes banner when getPortfolioData throws an error", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -177,7 +203,10 @@ describe("Portfolio", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
-      expect(consoleSpy).toHaveBeenCalledWith("Error checking for unsaved changes:", error);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error checking for unsaved changes:",
+        error,
+      );
     });
 
     consoleSpy.mockRestore();
@@ -185,7 +214,8 @@ describe("Portfolio", () => {
 
   it("hides unsaved changes banner and increments refresh trigger when discard is clicked", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies, hasChangesComparedToSaved } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies, hasChangesComparedToSaved } =
+      await vi.importMock("@/lib/cookie-persistence");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = { name: "Draft User", title: "Draft Title" };
@@ -204,7 +234,10 @@ describe("Portfolio", () => {
     });
 
     // Check initial refresh trigger
-    expect(screen.getByTestId("personal-info")).toHaveAttribute("data-refresh-trigger", "0");
+    expect(screen.getByTestId("personal-info")).toHaveAttribute(
+      "data-refresh-trigger",
+      "0",
+    );
 
     // Click discard
     const discardButton = screen.getByTestId("discard-changes");
@@ -212,8 +245,13 @@ describe("Portfolio", () => {
 
     // Banner should be hidden and refresh trigger should increment
     await waitFor(() => {
-      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
-      expect(screen.getByTestId("personal-info")).toHaveAttribute("data-refresh-trigger", "1");
+      expect(
+        screen.queryByTestId("unsaved-changes-banner"),
+      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("personal-info")).toHaveAttribute(
+        "data-refresh-trigger",
+        "1",
+      );
     });
   });
 
@@ -223,9 +261,18 @@ describe("Portfolio", () => {
 
     render(<Portfolio />);
 
-    expect(screen.getByTestId("personal-info")).toHaveAttribute("data-refresh-trigger", "0");
-    expect(screen.getByTestId("skills")).toHaveAttribute("data-refresh-trigger", "0");
-    expect(screen.getByTestId("github-integration")).toHaveAttribute("data-refresh-trigger", "0");
+    expect(screen.getByTestId("personal-info")).toHaveAttribute(
+      "data-refresh-trigger",
+      "0",
+    );
+    expect(screen.getByTestId("skills")).toHaveAttribute(
+      "data-refresh-trigger",
+      "0",
+    );
+    expect(screen.getByTestId("github-integration")).toHaveAttribute(
+      "data-refresh-trigger",
+      "0",
+    );
   });
 
   it("renders components in correct grid layout", async () => {
@@ -234,7 +281,9 @@ describe("Portfolio", () => {
 
     render(<Portfolio />);
 
-    const container = screen.getByTestId("personal-info").closest(".md\\:col-span-2");
+    const container = screen
+      .getByTestId("personal-info")
+      .closest(".md\\:col-span-2");
     expect(container).toBeInTheDocument();
 
     const gridContainer = screen.getByTestId("personal-info").closest(".grid");
@@ -243,12 +292,14 @@ describe("Portfolio", () => {
 
   it("handles authentication state correctly in useEffect", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
 
     // Test that authentication functions are called during component lifecycle
     isAuthenticated.mockReturnValue(true);
     loadDraftFromCookies.mockReturnValue({ name: "User" });
-    
+
     render(<Portfolio />);
 
     // Wait for the effect to run
@@ -264,7 +315,9 @@ describe("Portfolio", () => {
 
     render(<Portfolio />);
 
-    const mainContainer = screen.getByTestId("personal-info").closest(".space-y-6");
+    const mainContainer = screen
+      .getByTestId("personal-info")
+      .closest(".space-y-6");
     expect(mainContainer).toBeInTheDocument();
   });
 });

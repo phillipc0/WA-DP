@@ -13,19 +13,26 @@ vi.mock("@/components/icons", () => ({
 }));
 
 vi.mock("@/components/login-modal", () => ({
-  LoginModal: ({ isOpen, onClose, onSuccess }: { 
-    isOpen: boolean; 
-    onClose: () => void; 
+  LoginModal: ({
+    isOpen,
+    onClose,
+    onSuccess,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
     onSuccess: () => void;
-  }) => (
+  }) =>
     isOpen ? (
       <div data-testid="login-modal">
-        <button onClick={onClose} data-testid="modal-close">Close</button>
-        <button onClick={onSuccess} data-testid="modal-success">Success</button>
+        <button onClick={onClose} data-testid="modal-close">
+          Close
+        </button>
+        <button onClick={onSuccess} data-testid="modal-success">
+          Success
+        </button>
         Login Modal
       </div>
-    ) : null
-  ),
+    ) : null,
 }));
 
 vi.mock("@/config/site", () => ({
@@ -73,7 +80,7 @@ const renderNavbar = () => {
   return render(
     <BrowserRouter>
       <Navbar />
-    </BrowserRouter>
+    </BrowserRouter>,
   );
 };
 
@@ -88,9 +95,12 @@ describe("Navbar", () => {
 
     expect(screen.getByTestId("logo")).toBeInTheDocument();
     expect(screen.getByText("WA-DP")).toBeInTheDocument();
-    
+
     const brandLink = screen.getByRole("link", { name: /logo wa-dp/i });
-    expect(brandLink).toHaveAttribute("href", "https://github.com/phillipc0/WA-DP");
+    expect(brandLink).toHaveAttribute(
+      "href",
+      "https://github.com/phillipc0/WA-DP",
+    );
     expect(brandLink).toHaveAttribute("target", "_blank");
   });
 
@@ -102,8 +112,9 @@ describe("Navbar", () => {
   });
 
   it("shows login button when user is not authenticated", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -116,8 +127,9 @@ describe("Navbar", () => {
   });
 
   it("shows logout button when user is authenticated", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(true);
     validateToken.mockResolvedValue(true);
 
@@ -130,8 +142,9 @@ describe("Navbar", () => {
   });
 
   it("opens login modal when login button is clicked", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -147,8 +160,9 @@ describe("Navbar", () => {
   });
 
   it("calls logout and reloads page when logout button is clicked", async () => {
-    const { isAuthenticated, validateToken, logout } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken, logout } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(true);
     validateToken.mockResolvedValue(true);
 
@@ -165,8 +179,9 @@ describe("Navbar", () => {
   });
 
   it("navigates to home when logout is clicked from edit page", async () => {
-    const { isAuthenticated, validateToken, logout } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken, logout } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(true);
     validateToken.mockResolvedValue(true);
     window.location.pathname = "/edit";
@@ -185,8 +200,9 @@ describe("Navbar", () => {
   });
 
   it("handles successful login by closing modal and navigating to edit", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -208,8 +224,9 @@ describe("Navbar", () => {
   });
 
   it("closes login modal when close button is clicked", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -229,8 +246,9 @@ describe("Navbar", () => {
   });
 
   it("shows edit nav item only when user is authenticated", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     // First test unauthenticated state
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
@@ -245,8 +263,9 @@ describe("Navbar", () => {
   });
 
   it("renders navigation items with correct links", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(true);
     validateToken.mockResolvedValue(true);
 
@@ -256,7 +275,7 @@ describe("Navbar", () => {
       // Home should be available for authenticated users
       const homeLinks = screen.getAllByText("Home");
       expect(homeLinks.length).toBeGreaterThan(0);
-      
+
       // Check that navigation structure exists
       const navigation = screen.getByRole("navigation");
       expect(navigation).toBeInTheDocument();
@@ -264,8 +283,9 @@ describe("Navbar", () => {
   });
 
   it("renders mobile menu structure", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -275,7 +295,7 @@ describe("Navbar", () => {
       // Check that mobile menu toggle exists
       const menuToggle = screen.getByText(/open navigation menu/i);
       expect(menuToggle).toBeInTheDocument();
-      
+
       // Home should always be present in navigation
       const homeLinks = screen.getAllByText("Home");
       expect(homeLinks.length).toBeGreaterThan(0);
@@ -283,8 +303,9 @@ describe("Navbar", () => {
   });
 
   it("renders basic navigation structure", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -294,7 +315,7 @@ describe("Navbar", () => {
       // Check that basic navigation links exist
       const links = screen.getAllByRole("link");
       expect(links.length).toBeGreaterThan(0);
-      
+
       // Check that theme switches are present
       const themeSwitches = screen.getAllByTestId("theme-switch");
       expect(themeSwitches.length).toBeGreaterThan(0);
@@ -302,8 +323,9 @@ describe("Navbar", () => {
   });
 
   it("calls migrateOldAuth on component mount", async () => {
-    const { migrateOldAuth, isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { migrateOldAuth, isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);
 
@@ -315,8 +337,9 @@ describe("Navbar", () => {
   });
 
   it("validates token when user is authenticated", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(true);
     validateToken.mockResolvedValue(true);
 
@@ -328,8 +351,9 @@ describe("Navbar", () => {
   });
 
   it("sets admin state to false when token validation fails", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     isAuthenticated.mockReturnValue(true);
     validateToken.mockResolvedValue(false);
 
@@ -345,9 +369,10 @@ describe("Navbar", () => {
     renderNavbar();
 
     // Check that the navbar container exists
-    const navbar = document.querySelector("[data-slot='base']") || 
-                   document.querySelector(".heroui-navbar") ||
-                   screen.getByRole("navigation");
+    const navbar =
+      document.querySelector("[data-slot='base']") ||
+      document.querySelector(".heroui-navbar") ||
+      screen.getByRole("navigation");
     expect(navbar).toBeInTheDocument();
   });
 
@@ -357,14 +382,15 @@ describe("Navbar", () => {
     // The NavbarMenuToggle should be rendered - check for the hamburger menu button
     const menuToggle = screen.getByText(/open navigation menu/i);
     expect(menuToggle).toBeInTheDocument();
-    
+
     // Also verify navigation structure exists
     expect(screen.getByRole("navigation")).toBeInTheDocument();
   });
 
   it("handles authentication state changes correctly", async () => {
-    const { isAuthenticated, validateToken } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken } =
+      await vi.importMock("@/lib/auth");
+
     // Start unauthenticated
     isAuthenticated.mockReturnValue(false);
     validateToken.mockResolvedValue(false);

@@ -1,14 +1,18 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ThemeSwitch } from "@/components/theme-switch";
 
 // Mock icons
 vi.mock("@/components/icons", () => ({
   SunFilledIcon: ({ size }: { size: number }) => (
-    <div data-testid="sun-icon" data-size={size}>Sun</div>
+    <div data-testid="sun-icon" data-size={size}>
+      Sun
+    </div>
   ),
   MoonFilledIcon: ({ size }: { size: number }) => (
-    <div data-testid="moon-icon" data-size={size}>Moon</div>
+    <div data-testid="moon-icon" data-size={size}>
+      Moon
+    </div>
   ),
 }));
 
@@ -34,7 +38,6 @@ describe("ThemeSwitch", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-
 
   it("renders moon icon when theme is light (switch is selected)", async () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");

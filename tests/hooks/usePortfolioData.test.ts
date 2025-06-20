@@ -45,7 +45,9 @@ describe("usePortfolioData", () => {
 
   it("loads draft data when user is authenticated and draft exists", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = {
@@ -69,7 +71,9 @@ describe("usePortfolioData", () => {
 
   it("loads portfolio data when user is authenticated but no draft exists", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const serverData = {
@@ -94,7 +98,9 @@ describe("usePortfolioData", () => {
 
   it("loads portfolio data when user is not authenticated", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const serverData = {
@@ -157,7 +163,10 @@ describe("usePortfolioData", () => {
       title: "Default Title",
       bio: "Default bio",
     });
-    expect(consoleSpy).toHaveBeenCalledWith("Error loading portfolio data:", error);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error loading portfolio data:",
+      error,
+    );
 
     consoleSpy.mockRestore();
   });
@@ -183,7 +192,7 @@ describe("usePortfolioData", () => {
 
     const { result, rerender } = renderHook(
       ({ trigger }) => usePortfolioData(trigger),
-      { initialProps: { trigger: 1 } }
+      { initialProps: { trigger: 1 } },
     );
 
     await waitFor(() => {
@@ -207,7 +216,9 @@ describe("usePortfolioData", () => {
 
   it("handles authentication state changes with draft data priority", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = {
@@ -218,7 +229,7 @@ describe("usePortfolioData", () => {
 
     const serverData = {
       name: "Server Name",
-      title: "Server Title",  
+      title: "Server Title",
       bio: "Server bio",
     };
 
@@ -243,13 +254,13 @@ describe("usePortfolioData", () => {
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     isAuthenticated.mockReturnValue(false);
-    
+
     // Create a promise that we can control
     let resolvePromise: (value: any) => void;
     const controlledPromise = new Promise((resolve) => {
       resolvePromise = resolve;
     });
-    
+
     getPortfolioData.mockReturnValue(controlledPromise);
 
     const { result } = renderHook(() => usePortfolioData());
@@ -267,11 +278,17 @@ describe("usePortfolioData", () => {
 
   it("prioritizes draft data over server data when both exist", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
     const draftData = { name: "Draft", title: "Draft Title", bio: "Draft bio" };
-    const serverData = { name: "Server", title: "Server Title", bio: "Server bio" };
+    const serverData = {
+      name: "Server",
+      title: "Server Title",
+      bio: "Server bio",
+    };
 
     isAuthenticated.mockReturnValue(true);
     loadDraftFromCookies.mockReturnValue(draftData);

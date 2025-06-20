@@ -63,8 +63,10 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("calls clearDraftFromCookies and reloads page when discard is clicked", async () => {
-    const { clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
-    
+    const { clearDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
+
     render(<UnsavedChangesBanner />);
 
     fireEvent.click(screen.getByText("Discard Changes"));
@@ -74,9 +76,11 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("calls onDiscardChanges callback when provided after discard", async () => {
-    const { clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { clearDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const mockOnDiscardChanges = vi.fn();
-    
+
     render(<UnsavedChangesBanner onDiscardChanges={mockOnDiscardChanges} />);
 
     fireEvent.click(screen.getByText("Discard Changes"));
@@ -87,13 +91,15 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("saves changes and reloads page when save is clicked successfully", async () => {
-    const { loadDraftFromCookies, clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies, clearDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
-    
+
     const mockData = { name: "Test User" };
     loadDraftFromCookies.mockReturnValue(mockData);
     savePortfolioData.mockResolvedValue(true);
-    
+
     render(<UnsavedChangesBanner />);
 
     fireEvent.click(screen.getByText("Save Changes"));
@@ -107,14 +113,16 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("calls onDiscardChanges callback when save is successful and callback provided", async () => {
-    const { loadDraftFromCookies, clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies, clearDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
     const mockOnDiscardChanges = vi.fn();
-    
+
     const mockData = { name: "Test User" };
     loadDraftFromCookies.mockReturnValue(mockData);
     savePortfolioData.mockResolvedValue(true);
-    
+
     render(<UnsavedChangesBanner onDiscardChanges={mockOnDiscardChanges} />);
 
     fireEvent.click(screen.getByText("Save Changes"));
@@ -128,11 +136,13 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("does nothing when save is clicked but no draft data exists", async () => {
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
-    
+
     loadDraftFromCookies.mockReturnValue(null);
-    
+
     render(<UnsavedChangesBanner />);
 
     fireEvent.click(screen.getByText("Save Changes"));
@@ -144,14 +154,16 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("logs error when save fails", async () => {
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     const mockData = { name: "Test User" };
     loadDraftFromCookies.mockReturnValue(mockData);
     savePortfolioData.mockResolvedValue(false);
-    
+
     render(<UnsavedChangesBanner />);
 
     fireEvent.click(screen.getByText("Save Changes"));
@@ -165,22 +177,27 @@ describe("UnsavedChangesBanner", () => {
   });
 
   it("logs error when save throws exception", async () => {
-    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { loadDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
     const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     const mockData = { name: "Test User" };
     const mockError = new Error("Network error");
     loadDraftFromCookies.mockReturnValue(mockData);
     savePortfolioData.mockRejectedValue(mockError);
-    
+
     render(<UnsavedChangesBanner />);
 
     fireEvent.click(screen.getByText("Save Changes"));
 
     await waitFor(() => {
       expect(savePortfolioData).toHaveBeenCalledWith(mockData);
-      expect(consoleSpy).toHaveBeenCalledWith("Error saving portfolio data:", mockError);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error saving portfolio data:",
+        mockError,
+      );
     });
 
     consoleSpy.mockRestore();
