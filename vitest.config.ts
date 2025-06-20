@@ -19,7 +19,7 @@ export default defineConfig({
         "src/provider.tsx",
         "src/vite-env.d.ts",
         "src/components/icons.tsx",
-        "src/components/primitives.ts",
+        "src/components/primitives.tsx",
         "src/config/site.ts",
         "src/layouts/default.tsx",
         "src/types/**/*.ts",
