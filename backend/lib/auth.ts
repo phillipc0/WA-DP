@@ -41,6 +41,7 @@ export const verifyToken = (token: string): AuthenticatedUser | null => {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     return { username: decoded.username };
   } catch (error) {
+    console.error("Token verification failed:", error);
     return null;
   }
 };
