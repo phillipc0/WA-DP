@@ -9,11 +9,11 @@ export const Logo: React.FC<IconSvgProps> = ({
 }) => (
   // @ts-ignore
   <img
-    src="https://raw.githubusercontent.com/phillipc0/WA-DP/refs/heads/main/assets/favicon.png"
     alt="Logo"
     height={size || height}
-    width={size || height}
+    src="https://raw.githubusercontent.com/phillipc0/WA-DP/refs/heads/main/assets/favicon.png"
     style={{ objectFit: "contain" }}
+    width={size || height}
     {...props}
   />
 );
