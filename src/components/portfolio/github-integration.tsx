@@ -4,8 +4,7 @@ import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
 
 import { GithubIcon } from "@/components/icons";
-import { siteConfig } from "@/config/site";
-import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 type Repository = {
   id: number;
@@ -17,28 +16,15 @@ type Repository = {
   language: string;
 };
 
-export function GithubIntegration() {
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(
-    siteConfig.portfolio,
-  );
+interface GithubIntegrationProps {
+  refreshTrigger?: number;
+}
+
+export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
+  const { portfolioData } = usePortfolioData(refreshTrigger);
   const [repos, setRepos] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await getPortfolioData();
-        if (data) {
-          setPortfolioData(data);
-        }
-      } catch (error) {
-        console.error("Error loading portfolio data:", error);
-      }
-    };
-
-    loadData();
-  }, []);
 
   useEffect(() => {
     const fetchRepos = async () => {

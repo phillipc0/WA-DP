@@ -72,7 +72,7 @@ export function Portfolio() {
           <Skills refreshTrigger={refreshTrigger} />
         </div>
         <div>
-          <GithubIntegration />
+          <GithubIntegration refreshTrigger={refreshTrigger} />
         </div>
       </div>
     </div>
