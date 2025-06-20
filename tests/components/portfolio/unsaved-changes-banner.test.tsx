@@ -1,10 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UnsavedChangesBanner } from "@/components/portfolio/unsaved-changes-banner";
 
-// Mock clearDraftFromCookies
+// Mock cookie persistence functions
 vi.mock("@/lib/cookie-persistence", () => ({
   clearDraftFromCookies: vi.fn(),
+  loadDraftFromCookies: vi.fn(),
+}));
+
+// Mock portfolio functions
+vi.mock("@/lib/portfolio", () => ({
+  savePortfolioData: vi.fn(),
 }));
 
 // Mock window.location.reload
@@ -31,14 +37,15 @@ describe("UnsavedChangesBanner", () => {
     render(<UnsavedChangesBanner />);
 
     expect(screen.getByText("Discard Changes")).toBeInTheDocument();
-    expect(screen.getByText("Go to Editor")).toBeInTheDocument();
+    expect(screen.getByText("Save Changes")).toBeInTheDocument();
   });
 
-  it("Go to Editor button has correct href", () => {
+  it("Save Changes button has correct styling", () => {
     render(<UnsavedChangesBanner />);
 
-    const editorLink = screen.getByText("Go to Editor");
-    expect(editorLink.closest("a")).toHaveAttribute("href", "/edit");
+    const saveButton = screen.getByText("Save Changes");
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).toHaveAttribute("type", "button");
   });
 
   it("has correct styling classes", () => {
@@ -53,5 +60,129 @@ describe("UnsavedChangesBanner", () => {
 
     const chip = screen.getByText("Unsaved changes");
     expect(chip).toBeInTheDocument();
+  });
+
+  it("calls clearDraftFromCookies and reloads page when discard is clicked", async () => {
+    const { clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    
+    render(<UnsavedChangesBanner />);
+
+    fireEvent.click(screen.getByText("Discard Changes"));
+
+    expect(clearDraftFromCookies).toHaveBeenCalled();
+    expect(window.location.reload).toHaveBeenCalled();
+  });
+
+  it("calls onDiscardChanges callback when provided after discard", async () => {
+    const { clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const mockOnDiscardChanges = vi.fn();
+    
+    render(<UnsavedChangesBanner onDiscardChanges={mockOnDiscardChanges} />);
+
+    fireEvent.click(screen.getByText("Discard Changes"));
+
+    expect(clearDraftFromCookies).toHaveBeenCalled();
+    expect(mockOnDiscardChanges).toHaveBeenCalled();
+    expect(window.location.reload).not.toHaveBeenCalled();
+  });
+
+  it("saves changes and reloads page when save is clicked successfully", async () => {
+    const { loadDraftFromCookies, clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
+    
+    const mockData = { name: "Test User" };
+    loadDraftFromCookies.mockReturnValue(mockData);
+    savePortfolioData.mockResolvedValue(true);
+    
+    render(<UnsavedChangesBanner />);
+
+    fireEvent.click(screen.getByText("Save Changes"));
+
+    await waitFor(() => {
+      expect(loadDraftFromCookies).toHaveBeenCalled();
+      expect(savePortfolioData).toHaveBeenCalledWith(mockData);
+      expect(clearDraftFromCookies).toHaveBeenCalled();
+      expect(window.location.reload).toHaveBeenCalled();
+    });
+  });
+
+  it("calls onDiscardChanges callback when save is successful and callback provided", async () => {
+    const { loadDraftFromCookies, clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
+    const mockOnDiscardChanges = vi.fn();
+    
+    const mockData = { name: "Test User" };
+    loadDraftFromCookies.mockReturnValue(mockData);
+    savePortfolioData.mockResolvedValue(true);
+    
+    render(<UnsavedChangesBanner onDiscardChanges={mockOnDiscardChanges} />);
+
+    fireEvent.click(screen.getByText("Save Changes"));
+
+    await waitFor(() => {
+      expect(savePortfolioData).toHaveBeenCalledWith(mockData);
+      expect(clearDraftFromCookies).toHaveBeenCalled();
+      expect(mockOnDiscardChanges).toHaveBeenCalled();
+      expect(window.location.reload).not.toHaveBeenCalled();
+    });
+  });
+
+  it("does nothing when save is clicked but no draft data exists", async () => {
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
+    
+    loadDraftFromCookies.mockReturnValue(null);
+    
+    render(<UnsavedChangesBanner />);
+
+    fireEvent.click(screen.getByText("Save Changes"));
+
+    await waitFor(() => {
+      expect(loadDraftFromCookies).toHaveBeenCalled();
+      expect(savePortfolioData).not.toHaveBeenCalled();
+    });
+  });
+
+  it("logs error when save fails", async () => {
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    
+    const mockData = { name: "Test User" };
+    loadDraftFromCookies.mockReturnValue(mockData);
+    savePortfolioData.mockResolvedValue(false);
+    
+    render(<UnsavedChangesBanner />);
+
+    fireEvent.click(screen.getByText("Save Changes"));
+
+    await waitFor(() => {
+      expect(savePortfolioData).toHaveBeenCalledWith(mockData);
+      expect(consoleSpy).toHaveBeenCalledWith("Failed to save portfolio data");
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it("logs error when save throws exception", async () => {
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { savePortfolioData } = await vi.importMock("@/lib/portfolio");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    
+    const mockData = { name: "Test User" };
+    const mockError = new Error("Network error");
+    loadDraftFromCookies.mockReturnValue(mockData);
+    savePortfolioData.mockRejectedValue(mockError);
+    
+    render(<UnsavedChangesBanner />);
+
+    fireEvent.click(screen.getByText("Save Changes"));
+
+    await waitFor(() => {
+      expect(savePortfolioData).toHaveBeenCalledWith(mockData);
+      expect(consoleSpy).toHaveBeenCalledWith("Error saving portfolio data:", mockError);
+    });
+
+    consoleSpy.mockRestore();
   });
 });

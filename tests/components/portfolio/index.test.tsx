@@ -1,0 +1,270 @@
+import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Portfolio } from "@/components/portfolio/index";
+
+// Mock child components
+vi.mock("@/components/portfolio/personal-info", () => ({
+  PersonalInfo: ({ refreshTrigger }: { refreshTrigger: number }) => (
+    <div data-testid="personal-info" data-refresh-trigger={refreshTrigger}>
+      Personal Info Component
+    </div>
+  ),
+}));
+
+vi.mock("@/components/portfolio/skills", () => ({
+  Skills: ({ refreshTrigger }: { refreshTrigger: number }) => (
+    <div data-testid="skills" data-refresh-trigger={refreshTrigger}>
+      Skills Component
+    </div>
+  ),
+}));
+
+vi.mock("@/components/portfolio/github-integration", () => ({
+  GithubIntegration: ({ refreshTrigger }: { refreshTrigger: number }) => (
+    <div data-testid="github-integration" data-refresh-trigger={refreshTrigger}>
+      GitHub Integration Component
+    </div>
+  ),
+}));
+
+vi.mock("@/components/portfolio/unsaved-changes-banner", () => ({
+  UnsavedChangesBanner: ({ onDiscardChanges }: { onDiscardChanges: () => void }) => (
+    <div data-testid="unsaved-changes-banner">
+      <button onClick={onDiscardChanges} data-testid="discard-changes">
+        Discard Changes
+      </button>
+      Unsaved Changes Banner
+    </div>
+  ),
+}));
+
+// Mock auth
+vi.mock("@/lib/auth", () => ({
+  isAuthenticated: vi.fn(),
+}));
+
+// Mock cookie persistence
+vi.mock("@/lib/cookie-persistence", () => ({
+  clearDraftFromCookies: vi.fn(),
+  hasChangesComparedToSaved: vi.fn(),
+  loadDraftFromCookies: vi.fn(),
+}));
+
+// Mock portfolio
+vi.mock("@/lib/portfolio", () => ({
+  getPortfolioData: vi.fn(),
+}));
+
+describe("Portfolio", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("renders all portfolio components", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    isAuthenticated.mockReturnValue(false);
+
+    render(<Portfolio />);
+
+    expect(screen.getByTestId("personal-info")).toBeInTheDocument();
+    expect(screen.getByTestId("skills")).toBeInTheDocument();
+    expect(screen.getByTestId("github-integration")).toBeInTheDocument();
+  });
+
+  it("does not show unsaved changes banner when user is not authenticated", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { clearDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+
+    isAuthenticated.mockReturnValue(false);
+
+    render(<Portfolio />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
+      expect(clearDraftFromCookies).toHaveBeenCalled();
+    });
+  });
+
+  it("does not show unsaved changes banner when authenticated but no draft exists", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue(null);
+
+    render(<Portfolio />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
+    });
+  });
+
+  it("shows unsaved changes banner when authenticated with draft and no saved data", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+
+    const draftData = { name: "Draft User", title: "Draft Title" };
+
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue(draftData);
+    getPortfolioData.mockResolvedValue(null);
+
+    render(<Portfolio />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
+    });
+  });
+
+  it("shows unsaved changes banner when draft differs from saved data", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies, hasChangesComparedToSaved } = await vi.importMock("@/lib/cookie-persistence");
+    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+
+    const draftData = { name: "Draft User", title: "Draft Title" };
+    const savedData = { name: "Saved User", title: "Saved Title" };
+
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue(draftData);
+    getPortfolioData.mockResolvedValue(savedData);
+    hasChangesComparedToSaved.mockReturnValue(true);
+
+    render(<Portfolio />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
+      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(draftData, savedData);
+    });
+  });
+
+  it("does not show unsaved changes banner when draft matches saved data", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies, hasChangesComparedToSaved } = await vi.importMock("@/lib/cookie-persistence");
+    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+
+    const draftData = { name: "Same User", title: "Same Title" };
+    const savedData = { name: "Same User", title: "Same Title" };
+
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue(draftData);
+    getPortfolioData.mockResolvedValue(savedData);
+    hasChangesComparedToSaved.mockReturnValue(false);
+
+    render(<Portfolio />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
+      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(draftData, savedData);
+    });
+  });
+
+  it("shows unsaved changes banner when getPortfolioData throws an error", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const draftData = { name: "Draft User", title: "Draft Title" };
+    const error = new Error("Network error");
+
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue(draftData);
+    getPortfolioData.mockRejectedValue(error);
+
+    render(<Portfolio />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
+      expect(consoleSpy).toHaveBeenCalledWith("Error checking for unsaved changes:", error);
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it("hides unsaved changes banner and increments refresh trigger when discard is clicked", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies, hasChangesComparedToSaved } = await vi.importMock("@/lib/cookie-persistence");
+    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+
+    const draftData = { name: "Draft User", title: "Draft Title" };
+    const savedData = { name: "Saved User", title: "Saved Title" };
+
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue(draftData);
+    getPortfolioData.mockResolvedValue(savedData);
+    hasChangesComparedToSaved.mockReturnValue(true);
+
+    render(<Portfolio />);
+
+    // Wait for banner to appear
+    await waitFor(() => {
+      expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
+    });
+
+    // Check initial refresh trigger
+    expect(screen.getByTestId("personal-info")).toHaveAttribute("data-refresh-trigger", "0");
+
+    // Click discard
+    const discardButton = screen.getByTestId("discard-changes");
+    discardButton.click();
+
+    // Banner should be hidden and refresh trigger should increment
+    await waitFor(() => {
+      expect(screen.queryByTestId("unsaved-changes-banner")).not.toBeInTheDocument();
+      expect(screen.getByTestId("personal-info")).toHaveAttribute("data-refresh-trigger", "1");
+    });
+  });
+
+  it("passes refresh trigger to all child components", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    isAuthenticated.mockReturnValue(false);
+
+    render(<Portfolio />);
+
+    expect(screen.getByTestId("personal-info")).toHaveAttribute("data-refresh-trigger", "0");
+    expect(screen.getByTestId("skills")).toHaveAttribute("data-refresh-trigger", "0");
+    expect(screen.getByTestId("github-integration")).toHaveAttribute("data-refresh-trigger", "0");
+  });
+
+  it("renders components in correct grid layout", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    isAuthenticated.mockReturnValue(false);
+
+    render(<Portfolio />);
+
+    const container = screen.getByTestId("personal-info").closest(".md\\:col-span-2");
+    expect(container).toBeInTheDocument();
+
+    const gridContainer = screen.getByTestId("personal-info").closest(".grid");
+    expect(gridContainer).toHaveClass("grid-cols-1", "md:grid-cols-2", "gap-6");
+  });
+
+  it("handles authentication state correctly in useEffect", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies } = await vi.importMock("@/lib/cookie-persistence");
+
+    // Test that authentication functions are called during component lifecycle
+    isAuthenticated.mockReturnValue(true);
+    loadDraftFromCookies.mockReturnValue({ name: "User" });
+    
+    render(<Portfolio />);
+
+    // Wait for the effect to run
+    await waitFor(() => {
+      expect(isAuthenticated).toHaveBeenCalled();
+      expect(loadDraftFromCookies).toHaveBeenCalled();
+    });
+  });
+
+  it("applies correct CSS classes to main container", async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    isAuthenticated.mockReturnValue(false);
+
+    render(<Portfolio />);
+
+    const mainContainer = screen.getByTestId("personal-info").closest(".space-y-6");
+    expect(mainContainer).toBeInTheDocument();
+  });
+});
