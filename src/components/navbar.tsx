@@ -18,26 +18,43 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
 import { LoginModal } from "@/components/login-modal";
+import {
+  isAuthenticated,
+  logout,
+  migrateOldAuth,
+  validateToken,
+} from "@/lib/auth";
 
 export const Navbar = () => {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(
-    typeof window !== "undefined" && localStorage.getItem("isAdmin") === "true",
-  );
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setIsAdmin(
-      typeof window !== "undefined" &&
-        localStorage.getItem("isAdmin") === "true",
-    );
+    const checkAuth = async () => {
+      migrateOldAuth();
+
+      if (!isAuthenticated()) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const isValidToken = await validateToken();
+      setIsAdmin(isValidToken);
+    };
+
+    checkAuth();
   }, []);
 
   const handleLoginClick = () => {
     if (isAdmin) {
-      localStorage.removeItem("isAdmin");
+      logout();
       setIsAdmin(false);
-      navigate("/");
+      if (window.location.pathname === "/edit") {
+        navigate("/");
+      } else {
+        window.location.reload();
+      }
     } else {
       setIsModalOpen(true);
     }

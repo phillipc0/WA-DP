@@ -33,3 +33,5 @@ bun.lockb
 /backend/.next
 /backend/users.json
 /backend/node_modules
+/backend/portfolio.json
+/backend/frontend/

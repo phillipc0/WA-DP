@@ -2,7 +2,6 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
-import { useEffect, useState } from "react";
 
 import {
   GithubIcon,
@@ -11,25 +10,14 @@ import {
   DiscordIcon,
   RedditIcon,
 } from "@/components/icons";
-import { siteConfig } from "@/config/site";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
-export function PersonalInfo() {
-  const [portfolioData, setPortfolioData] = useState(siteConfig.portfolio);
+interface PersonalInfoProps {
+  refreshTrigger?: number;
+}
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("portfolioData");
-
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-
-        setPortfolioData(parsedData);
-      } catch (error) {
-        console.error("Error parsing portfolio data from localStorage:", error);
-      }
-    }
-  }, []);
+export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
+  const { portfolioData } = usePortfolioData(refreshTrigger);
 
   return (
     <Card className="w-full">
