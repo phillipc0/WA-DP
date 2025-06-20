@@ -27,24 +27,40 @@ import {
   TwitterIcon,
 } from "@/components/icons";
 import { LoginModal } from "@/components/login-modal";
+import {
+  isAuthenticated,
+  logout,
+  migrateOldAuth,
+  validateToken,
+} from "@/lib/auth";
 
 export const Navbar = () => {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(
-    typeof window !== "undefined" && localStorage.getItem("isAdmin") === "true",
-  );
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setIsAdmin(
-      typeof window !== "undefined" &&
-        localStorage.getItem("isAdmin") === "true",
-    );
+    const checkAuth = async () => {
+      // Handle migration from old auth system
+      migrateOldAuth();
+
+      // Basic check first
+      if (!isAuthenticated()) {
+        setIsAdmin(false);
+        return;
+      }
+
+      // Server-side validation
+      const isValidToken = await validateToken();
+      setIsAdmin(isValidToken);
+    };
+
+    checkAuth();
   }, []);
 
   const handleLoginClick = () => {
     if (isAdmin) {
-      localStorage.removeItem("isAdmin");
+      logout();
       setIsAdmin(false);
       navigate("/");
     } else {

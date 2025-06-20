@@ -11,6 +11,7 @@ import { Switch } from "@heroui/switch";
 import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
 import { subtitle, title } from "@/components/primitives";
+import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth";
 
 // Custom Alert Component
 interface AlertProps {
@@ -110,11 +111,24 @@ export default function GeneratorPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
+    const checkAuthentication = async () => {
+      // Handle migration from old auth system
+      migrateOldAuth();
 
-    if (!isAdmin) {
-      navigate("/");
-    }
+      // First check if basic auth data exists
+      if (!isAuthenticated()) {
+        navigate("/");
+        return;
+      }
+
+      // Then validate token with server
+      const isValidToken = await validateToken();
+      if (!isValidToken) {
+        navigate("/");
+      }
+    };
+
+    checkAuthentication();
   }, [navigate]);
   // Initialize state with data from localStorage or default from siteConfig
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(() => {

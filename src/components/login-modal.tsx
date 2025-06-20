@@ -37,10 +37,13 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       const data = await res.json();
 
       if (res.ok && (data.created || data.authenticated)) {
-        localStorage.setItem("isAdmin", "true");
+        // Store the JWT token instead of just a boolean flag
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.removeItem("isAdmin"); // Remove old auth method
         onSuccess();
       } else {
-        setError("Invalid credentials");
+        setError(data.error || "Invalid credentials");
       }
     } catch {
       setError("Server error");

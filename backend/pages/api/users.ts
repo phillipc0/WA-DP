@@ -1,64 +1,78 @@
-import fs from "fs";
-import path from "path";
-
 import { NextApiRequest, NextApiResponse } from "next";
+import {
+  generateToken,
+  handleError,
+  hashPassword,
+  verifyPassword,
+} from "../../lib/auth";
+import {
+  createUser,
+  findUserByUsername,
+  hasAnyUsers,
+} from "../../lib/userService";
 
-const USERS_FILE = path.join(process.cwd(), "users.json");
-
-type User = {
-  username: string;
-  password: string;
-};
-
-function readUser(): User | null {
-  if (fs.existsSync(USERS_FILE)) {
-    try {
-      const data = fs.readFileSync(USERS_FILE, "utf-8");
-
-      return JSON.parse(data) as User;
-    } catch {
-      return null;
-    }
-  }
-
-  return null;
-}
-
-function writeUser(user: User) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(user), "utf-8");
-}
-
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const user = readUser();
-
-  if (req.method === "GET") {
-    res.status(200).json({ exists: !!user });
-
-    return;
-  }
-
-  if (req.method === "POST") {
-    const { username, password } = req.body as Partial<User>;
-
-    if (!username || !password) {
-      res.status(400).json({ message: "missing credentials" });
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  try {
+    if (req.method === "GET") {
+      // Check if any admin user exists
+      const userExists = hasAnyUsers();
+      res.status(200).json({ exists: userExists });
       return;
     }
-    if (!user) {
-      writeUser({ username, password });
-      res.status(200).json({ created: true });
 
+    if (req.method === "POST") {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        res.status(400).json({ error: "Username and password are required" });
+        return;
+      }
+
+      const existingUser = findUserByUsername(username);
+
+      if (!existingUser) {
+        // Create new user (only if no users exist yet)
+        if (hasAnyUsers()) {
+          res.status(409).json({ error: "Admin user already exists" });
+          return;
+        }
+
+        const hashedPassword = await hashPassword(password);
+        createUser(username, hashedPassword);
+
+        const token = generateToken({ username });
+        res.status(201).json({
+          created: true,
+          token,
+          user: { username },
+        });
+        return;
+      }
+
+      // Authenticate existing user
+      const isValidPassword = await verifyPassword(
+        password,
+        existingUser.password,
+      );
+
+      if (isValidPassword) {
+        const token = generateToken({ username });
+        res.status(200).json({
+          authenticated: true,
+          token,
+          user: { username },
+        });
+      } else {
+        res.status(401).json({ error: "Invalid credentials" });
+      }
       return;
     }
-    if (user.username === username && user.password === password) {
-      res.status(200).json({ authenticated: true });
-    } else {
-      res.status(401).json({ authenticated: false });
-    }
 
-    return;
+    res.status(405).json({ error: "Method not allowed" });
+  } catch (error) {
+    handleError(res, error, "Authentication failed");
   }
-
-  res.status(405).end();
 }
