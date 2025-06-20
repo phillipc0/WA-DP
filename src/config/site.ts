@@ -16,6 +16,8 @@ export const siteConfig = {
       github: "johndoe",
       twitter: "johndoe",
       linkedin: "johndoe",
+      discord: "johndoe",
+      reddit: "johndoe",
     },
     skills: [
       { name: "React", level: 90 },
@@ -32,49 +34,22 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Generator",
-      href: "/generator",
+      label: "Edit",
+      href: "/edit",
     },
   ],
   navMenuItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      label: "Home",
+      href: "/",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
-    },
-    {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
+      label: "Edit",
+      href: "/edit",
     },
     {
       label: "Logout",
       href: "/logout",
     },
   ],
-  links: {
-    github: "https://github.com/frontio-ai/heroui",
-    twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
-  },
 };

@@ -26,9 +26,9 @@ When("I navigate to the home page", () => {
   cy.get('a[href="/"]').first().click({ force: true });
 });
 
-When("I navigate back to the generator", () => {
+When("I navigate back to the editor", () => {
   // Force click to bypass any modal overlays
-  cy.get('a[href="/generator"]').first().click({ force: true });
+  cy.get('a[href="/edit"]').first().click({ force: true });
 });
 
 // Authentication steps
@@ -70,9 +70,9 @@ When(
   },
 );
 
-Then("I should be logged in and see the portfolio generator", () => {
-  cy.url().should("include", "/generator");
-  cy.contains("Portfolio Generator").should("be.visible");
+Then("I should be logged in and see the portfolio editor", () => {
+  cy.url().should("include", "/edit");
+  cy.contains("Portfolio Edit Page").should("be.visible");
   cy.get('[data-testid="login-modal"]').should("not.exist");
 });
 
@@ -81,7 +81,7 @@ When("I log out", () => {
 });
 
 Then("I should be redirected to the home page", () => {
-  cy.url().should("not.include", "/generator");
+  cy.url().should("not.include", "/edit");
   cy.url().should("match", /\/$|\/index\.html$/);
 });
 
@@ -89,8 +89,8 @@ Then("I should be redirected to the home page", () => {
 When(
   "I update my portfolio with name {string} and title {string}",
   (name: string, title: string) => {
-    // Wait for the generator page to load
-    cy.contains("Portfolio Generator").should("be.visible");
+    // Wait for the editor page to load
+    cy.contains("Portfolio Edit Page").should("be.visible");
 
     // Clear and type new name
     cy.get('input[name="name"]').clear().type(name);
