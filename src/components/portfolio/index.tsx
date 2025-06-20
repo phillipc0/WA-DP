@@ -8,23 +8,46 @@ import { UnsavedChangesBanner } from "./unsaved-changes-banner";
 import { isAuthenticated } from "@/lib/auth";
 import {
   clearDraftFromCookies,
-  hasDraftChanges,
+  hasChangesComparedToSaved,
+  loadDraftFromCookies,
 } from "@/lib/cookie-persistence";
+import { getPortfolioData } from "@/lib/portfolio";
 
 export function Portfolio() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
   useEffect(() => {
-    const userIsAuthenticated = isAuthenticated();
-    setIsUserAuthenticated(userIsAuthenticated);
+    const checkUnsavedChanges = async () => {
+      const userIsAuthenticated = isAuthenticated();
+      setIsUserAuthenticated(userIsAuthenticated);
 
-    if (userIsAuthenticated) {
-      setHasUnsavedChanges(hasDraftChanges());
-    } else {
-      clearDraftFromCookies();
-      setHasUnsavedChanges(false);
-    }
+      if (userIsAuthenticated) {
+        const draftData = loadDraftFromCookies();
+        if (draftData) {
+          try {
+            const savedData = await getPortfolioData();
+            if (savedData) {
+              setHasUnsavedChanges(
+                hasChangesComparedToSaved(draftData, savedData),
+              );
+            } else {
+              setHasUnsavedChanges(true);
+            }
+          } catch (error) {
+            console.error("Error checking for unsaved changes:", error);
+            setHasUnsavedChanges(true);
+          }
+        } else {
+          setHasUnsavedChanges(false);
+        }
+      } else {
+        clearDraftFromCookies();
+        setHasUnsavedChanges(false);
+      }
+    };
+
+    checkUnsavedChanges();
   }, []);
 
   const handleDiscardChanges = () => {

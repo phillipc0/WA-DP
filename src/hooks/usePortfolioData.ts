@@ -16,7 +16,6 @@ export function usePortfolioData() {
       try {
         setIsLoading(true);
 
-        // Only check for draft data if user is authenticated
         if (isAuthenticated()) {
           const draftData = loadDraftFromCookies();
           if (draftData) {

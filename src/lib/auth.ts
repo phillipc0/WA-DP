@@ -25,7 +25,6 @@ export const isAuthenticated = (): boolean => {
   return !!(token && user);
 };
 
-// Server-side token validation
 export const validateToken = async (): Promise<boolean> => {
   const token = getAuthToken();
 
@@ -46,7 +45,6 @@ export const validateToken = async (): Promise<boolean> => {
     } else {
       // Token is invalid, clean up
       logout();
-
       return false;
     }
   } catch (error) {

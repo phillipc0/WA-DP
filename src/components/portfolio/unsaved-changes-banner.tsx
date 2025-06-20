@@ -16,7 +16,6 @@ export function UnsavedChangesBanner({
     if (onDiscardChanges) {
       onDiscardChanges();
     } else {
-      // Default behavior: reload the page to show saved data
       window.location.reload();
     }
   };

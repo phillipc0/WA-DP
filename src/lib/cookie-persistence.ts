@@ -68,13 +68,6 @@ export function loadDraftFromCookies(): PortfolioData | null {
 }
 
 /**
- * Check if there are unsaved changes in cookies
- */
-export function hasDraftChanges(): boolean {
-  return getCookie(COOKIE_NAME) !== null;
-}
-
-/**
  * Clear draft data from cookies
  */
 export function clearDraftFromCookies(): void {
