@@ -423,8 +423,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ~/Webserver/WA-DP
             # Kill existing tmux session if it exists
             tmux kill-session -t WA-DP 2>/dev/null || true
             # Start new tmux session with backend
-            tmux new-session -d -s WA-DP 'npm start'
+            tmux new-session -d -s WA-DP
+            tmux send-keys -t WA-DP "cd ~/Webserver/WA-DP" C-m
+            tmux send-keys -t WA-DP "clear" C-m
+            tmux send-keys -t WA-DP "npm start" C-m
+            tmux send-keys -t WA-DP "exec bash" C-m
