@@ -42,7 +42,7 @@ export const validateToken = async (): Promise<boolean> => {
     if (response.ok) {
       const data = await response.json();
 
-      return data.valid === true;
+      return data.valid;
     } else {
       // Token is invalid, clean up
       logout();
@@ -50,6 +50,7 @@ export const validateToken = async (): Promise<boolean> => {
       return false;
     }
   } catch (error) {
+    console.error("Error validating token:", error);
     // Network error or other issue, assume invalid
     logout();
 
