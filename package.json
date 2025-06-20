@@ -6,7 +6,10 @@
   "scripts": {
     "dev:frontend": "vite",
     "dev:backend": "cd backend && npm run dev",
+    "inst:frontend": "npm install",
+    "inst:backend": "cd backend && npm install",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "install-dev": "concurrently \"npm run inst:frontend\" \"npm run inst:backend\"",
     "build": "tsc && vite build",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview",
