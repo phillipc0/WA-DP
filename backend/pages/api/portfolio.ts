@@ -11,7 +11,6 @@ import {
 
 const PORTFOLIO_FILE = path.join(process.cwd(), "portfolio.json");
 
-// Sample portfolio structure - this should match the frontend
 interface PortfolioData {
   name: string;
   title: string;
@@ -55,7 +54,6 @@ const savePortfolioData = (data: PortfolioData): void => {
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   try {
     if (req.method === "GET") {
-      // Anyone can read portfolio data (for display purposes)
       const portfolioData = getPortfolioData();
 
       if (!portfolioData) {
@@ -68,10 +66,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     }
 
     if (req.method === "POST" || req.method === "PUT") {
-      // Only authenticated users can update portfolio data
       const portfolioData = req.body as PortfolioData;
 
-      // Basic validation
       if (!portfolioData.name || !portfolioData.email) {
         res.status(400).json({ error: "Name and email are required" });
         return;
@@ -91,16 +87,13 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-// Apply authentication middleware only to write operations
 export default function protectedHandler(
   req: AuthenticatedRequest,
   res: NextApiResponse,
 ) {
   if (req.method === "GET") {
-    // GET requests don't need authentication
     return handler(req, res);
   }
 
-  // POST/PUT requests need authentication
   return authenticateToken(handler)(req, res);
 }

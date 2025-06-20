@@ -1,7 +1,8 @@
 import { NextApiResponse } from "next";
+
 import {
-  authenticateToken,
   AuthenticatedRequest,
+  authenticateToken,
   handleError,
 } from "../../lib/auth";
 
@@ -12,7 +13,6 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       return;
     }
 
-    // If we reach here, the token is valid (middleware validated it)
     res.status(200).json({
       valid: true,
       user: req.user,
@@ -22,5 +22,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
-// Always require authentication for this endpoint
 export default authenticateToken(handler);

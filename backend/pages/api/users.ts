@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+
 import {
   generateToken,
   handleError,
@@ -17,7 +18,6 @@ export default async function handler(
 ) {
   try {
     if (req.method === "GET") {
-      // Check if any admin user exists
       const userExists = hasAnyUsers();
       res.status(200).json({ exists: userExists });
       return;
@@ -34,7 +34,6 @@ export default async function handler(
       const existingUser = findUserByUsername(username);
 
       if (!existingUser) {
-        // Create new user (only if no users exist yet)
         if (hasAnyUsers()) {
           res.status(409).json({ error: "Admin user already exists" });
           return;
@@ -52,7 +51,6 @@ export default async function handler(
         return;
       }
 
-      // Authenticate existing user
       const isValidPassword = await verifyPassword(
         password,
         existingUser.password,

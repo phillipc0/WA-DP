@@ -41,16 +41,13 @@ export const Navbar = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Handle migration from old auth system
       migrateOldAuth();
 
-      // Basic check first
       if (!isAuthenticated()) {
         setIsAdmin(false);
         return;
       }
 
-      // Server-side validation
       const isValidToken = await validateToken();
       setIsAdmin(isValidToken);
     };

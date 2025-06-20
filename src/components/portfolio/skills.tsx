@@ -3,14 +3,13 @@ import { Progress } from "@heroui/progress";
 import { useEffect, useState } from "react";
 
 import { siteConfig } from "@/config/site";
-import { PortfolioData, getPortfolioData } from "@/lib/portfolio";
+import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
 
 export function Skills() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(
     siteConfig.portfolio,
   );
 
-  // Load data from API on component mount
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -53,7 +52,6 @@ export function Skills() {
   );
 }
 
-// Helper function to get different colors for different skills
 export function getColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 

@@ -60,22 +60,19 @@ export const savePortfolioData = async (
   }
 };
 
-// Migration utility to move data from localStorage to server
 export const migratePortfolioData = async (): Promise<void> => {
   const localData = localStorage.getItem("portfolioData");
 
   if (!localData) {
-    return; // No local data to migrate
+    return;
   }
 
   try {
     const portfolioData = JSON.parse(localData) as PortfolioData;
 
-    // Try to save to server
     const success = await savePortfolioData(portfolioData);
 
     if (success) {
-      // Migration successful, remove from localStorage
       localStorage.removeItem("portfolioData");
     }
   } catch (error) {

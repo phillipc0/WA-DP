@@ -107,15 +107,11 @@ function Alert({
   );
 }
 
-// Define skill type
 type Skill = { name: string; level: number };
-
-// No image cropper component needed anymore
 
 export default function GeneratorPage() {
   const navigate = useNavigate();
 
-  // Initialize state with empty data, will be loaded from server
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
     null,
   );
@@ -123,16 +119,13 @@ export default function GeneratorPage() {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      // Handle migration from old auth system
       migrateOldAuth();
 
-      // First check if basic auth data exists
       if (!isAuthenticated()) {
         navigate("/");
         return;
       }
 
-      // Then validate token with server
       const isValidToken = await validateToken();
       if (!isValidToken) {
         navigate("/");
@@ -142,27 +135,22 @@ export default function GeneratorPage() {
     checkAuthentication();
   }, [navigate]);
 
-  // Load portfolio data from server
   useEffect(() => {
     const loadPortfolioData = async () => {
       try {
         setIsLoading(true);
 
-        // First try to migrate any localStorage data
         await migratePortfolioData();
 
-        // Then load from server
         const data = await getPortfolioData();
 
         if (data) {
           setPortfolioData(data);
         } else {
-          // If no data on server, use default from siteConfig
           setPortfolioData(siteConfig.portfolio);
         }
       } catch (error) {
         console.error("Error loading portfolio data:", error);
-        // Fallback to default data
         setPortfolioData(siteConfig.portfolio);
       } finally {
         setIsLoading(false);
@@ -172,29 +160,23 @@ export default function GeneratorPage() {
     loadPortfolioData();
   }, []);
 
-  // State for skills management
   const [newSkill, setNewSkill] = useState<Skill>({ name: "", level: 50 });
 
-  // State for avatar management
   const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
   const [isUploadedImage, setIsUploadedImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // State for alert dialogs
   const [saveAlert, setSaveAlert] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
   const [fileAlertMessage, setFileAlertMessage] = useState("");
 
-  // Check if avatar is a data URL (uploaded image) when portfolio data loads
   useEffect(() => {
     if (portfolioData?.avatar) {
-      // Check if avatar starts with "data:" which indicates it's a data URL (uploaded image)
       setIsUploadedImage(portfolioData.avatar.startsWith("data:"));
     }
   }, [portfolioData?.avatar]);
 
-  // Handle input changes for basic info
   const handleBasicInfoChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -208,13 +190,11 @@ export default function GeneratorPage() {
       };
     });
 
-    // If avatar URL is changed manually, mark it as not an uploaded image
     if (name === "avatar") {
       setIsUploadedImage(false);
     }
   };
 
-  // Handle file selection for avatar
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 

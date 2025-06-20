@@ -37,7 +37,6 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       const data = await res.json();
 
       if (res.ok && (data.created || data.authenticated)) {
-        // Store the JWT token instead of just a boolean flag
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.removeItem("isAdmin"); // Remove old auth method

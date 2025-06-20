@@ -5,7 +5,7 @@ import { Spinner } from "@heroui/spinner";
 
 import { GithubIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
-import { PortfolioData, getPortfolioData } from "@/lib/portfolio";
+import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
 
 type Repository = {
   id: number;
@@ -25,7 +25,6 @@ export function GithubIntegration() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load portfolio data from API on component mount
   useEffect(() => {
     const loadData = async () => {
       try {

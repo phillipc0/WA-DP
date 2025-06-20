@@ -6,14 +6,13 @@ import { useEffect, useState } from "react";
 
 import { GithubIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
-import { PortfolioData, getPortfolioData } from "@/lib/portfolio";
+import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
 
 export function PersonalInfo() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(
     siteConfig.portfolio,
   );
 
-  // Load data from API on component mount
   useEffect(() => {
     const loadData = async () => {
       try {

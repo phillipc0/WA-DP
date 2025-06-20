@@ -51,7 +51,6 @@ export const validateToken = async (): Promise<boolean> => {
     }
   } catch (error) {
     console.error("Error validating token:", error);
-    // Network error or other issue, assume invalid
     logout();
 
     return false;
@@ -70,7 +69,6 @@ export const getAuthHeaders = (): Record<string, string> => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// Utility to make authenticated API calls
 export const authenticatedFetch = async (
   url: string,
   options: RequestInit = {},
@@ -86,23 +84,18 @@ export const authenticatedFetch = async (
     headers,
   });
 
-  // If token is invalid/expired, logout user
   if (response.status === 401 || response.status === 403) {
     logout();
-    // Optionally redirect to login or home page
     window.location.href = "/";
   }
 
   return response;
 };
 
-// Migration utility to handle old authentication method
 export const migrateOldAuth = (): void => {
   const oldAuth = localStorage.getItem("isAdmin");
 
   if (oldAuth === "true") {
-    // User was authenticated with old method, but we need to force re-login
     localStorage.removeItem("isAdmin");
-    // Authentication system has been updated - user will need to re-login
   }
 };

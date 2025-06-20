@@ -16,7 +16,6 @@ export const getUsersFromFile = (): StoredUser[] => {
     const data = fs.readFileSync(USERS_FILE, "utf8");
     const parsed = JSON.parse(data);
 
-    // Handle both single user object and array formats
     if (Array.isArray(parsed)) {
       return parsed;
     } else if (parsed.username && parsed.password) {
@@ -50,8 +49,6 @@ export const createUser = (
   const users = getUsersFromFile();
   const newUser: StoredUser = { username, password: hashedPassword };
 
-  // For this simple app, we only support one admin user
-  // Replace any existing users
   saveUsersToFile([newUser]);
 
   return newUser;
