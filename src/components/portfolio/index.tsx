@@ -16,6 +16,7 @@ import { getPortfolioData } from "@/lib/portfolio";
 export function Portfolio() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const checkUnsavedChanges = async () => {
@@ -52,6 +53,8 @@ export function Portfolio() {
 
   const handleDiscardChanges = () => {
     setHasUnsavedChanges(false);
+    // Trigger a refresh of portfolio data to show server version
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -63,10 +66,10 @@ export function Portfolio() {
       {/* Portfolio Content */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="md:col-span-2">
-          <PersonalInfo />
+          <PersonalInfo refreshTrigger={refreshTrigger} />
         </div>
         <div>
-          <Skills />
+          <Skills refreshTrigger={refreshTrigger} />
         </div>
         <div>
           <GithubIntegration />

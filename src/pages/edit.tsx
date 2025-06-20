@@ -455,7 +455,7 @@ export default function EditPage() {
       <DefaultLayout>
         <div className="py-8 md:py-10">
           <div className="text-center">
-            <h1 className={title()}>Portfolio Generator</h1>
+            <h1 className={title()}>Portfolio Editor</h1>
             <p className={subtitle({ class: "mt-4" })}>
               Loading portfolio data...
             </p>

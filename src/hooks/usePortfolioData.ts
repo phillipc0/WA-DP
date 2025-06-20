@@ -5,7 +5,7 @@ import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
 import { loadDraftFromCookies } from "@/lib/cookie-persistence";
 import { isAuthenticated } from "@/lib/auth";
 
-export function usePortfolioData() {
+export function usePortfolioData(refreshTrigger?: number) {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(
     siteConfig.portfolio,
   );
@@ -36,7 +36,7 @@ export function usePortfolioData() {
     };
 
     loadData();
-  }, []);
+  }, [refreshTrigger]);
 
   return { portfolioData, isLoading };
 }

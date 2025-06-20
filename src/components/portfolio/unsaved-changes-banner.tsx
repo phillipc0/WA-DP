@@ -41,7 +41,7 @@ export function UnsavedChangesBanner({
             >
               Discard Changes
             </Button>
-            <Button as="a" color="warning" href="/generator" size="sm">
+            <Button as="a" color="warning" href="/edit" size="sm">
               Go to Editor
             </Button>
           </div>

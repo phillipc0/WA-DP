@@ -11,6 +11,8 @@ export interface PortfolioData {
     github: string;
     twitter: string;
     linkedin: string;
+    discord?: string;
+    reddit?: string;
   };
   skills: Array<{
     name: string;

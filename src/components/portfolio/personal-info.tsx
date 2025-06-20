@@ -12,8 +12,12 @@ import {
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
-export function PersonalInfo() {
-  const { portfolioData } = usePortfolioData();
+interface PersonalInfoProps {
+  refreshTrigger?: number;
+}
+
+export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
+  const { portfolioData } = usePortfolioData(refreshTrigger);
 
   return (
     <Card className="w-full">

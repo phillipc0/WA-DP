@@ -3,8 +3,12 @@ import { Progress } from "@heroui/progress";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
-export function Skills() {
-  const { portfolioData } = usePortfolioData();
+interface SkillsProps {
+  refreshTrigger?: number;
+}
+
+export function Skills({ refreshTrigger }: SkillsProps) {
+  const { portfolioData } = usePortfolioData(refreshTrigger);
 
   return (
     <Card className="w-full">

@@ -50,7 +50,7 @@ export const Navbar = () => {
     if (isAdmin) {
       logout();
       setIsAdmin(false);
-      if (window.location.pathname === "/generator") {
+      if (window.location.pathname === "/edit") {
         navigate("/");
       } else {
         window.location.reload();
