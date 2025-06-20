@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { GithubIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
+import { loadDraftFromCookies } from "@/lib/cookie-persistence";
+import { isAuthenticated } from "@/lib/auth";
 
 export function PersonalInfo() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(
@@ -16,6 +18,15 @@ export function PersonalInfo() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Only check for draft data if user is authenticated
+        if (isAuthenticated()) {
+          const draftData = loadDraftFromCookies();
+          if (draftData) {
+            setPortfolioData(draftData);
+            return;
+          }
+        }
+
         const data = await getPortfolioData();
         if (data) {
           setPortfolioData(data);

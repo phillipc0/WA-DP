@@ -18,6 +18,11 @@ import {
   PortfolioData,
   savePortfolioData,
 } from "@/lib/portfolio";
+import {
+  clearDraftFromCookies,
+  loadDraftFromCookies,
+  saveDraftToCookies,
+} from "@/lib/cookie-persistence";
 
 // Custom Alert Component
 interface AlertProps {
@@ -142,6 +147,14 @@ export default function GeneratorPage() {
 
         await migratePortfolioData();
 
+        // Check for draft data first
+        const draftData = loadDraftFromCookies();
+        if (draftData) {
+          setPortfolioData(draftData);
+          setIsLoading(false);
+          return;
+        }
+
         const data = await getPortfolioData();
 
         if (data) {
@@ -176,6 +189,13 @@ export default function GeneratorPage() {
       setIsUploadedImage(portfolioData.avatar.startsWith("data:"));
     }
   }, [portfolioData?.avatar]);
+
+  // Save portfolio data to cookies whenever it changes
+  useEffect(() => {
+    if (portfolioData && !isLoading) {
+      saveDraftToCookies(portfolioData);
+    }
+  }, [portfolioData, isLoading]);
 
   const handleBasicInfoChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -418,6 +438,7 @@ export default function GeneratorPage() {
     try {
       const success = await savePortfolioData(portfolioData);
       if (success) {
+        clearDraftFromCookies();
         setSaveAlert(true);
       } else {
         // Handle save error - could show error alert
