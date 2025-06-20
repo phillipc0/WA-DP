@@ -10,7 +10,7 @@ import { Switch } from "@heroui/switch";
 
 import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
-import { subtitle, title } from "@/components/primitives";
+import { subtitle, title } from "@/components/primitives.tsx";
 import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth";
 import {
   getPortfolioData,
@@ -114,7 +114,7 @@ function Alert({
 
 type Skill = { name: string; level: number };
 
-export default function GeneratorPage() {
+export default function EditPage() {
   const navigate = useNavigate();
 
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
@@ -469,7 +469,7 @@ export default function GeneratorPage() {
     <DefaultLayout>
       <div className="py-8 md:py-10">
         <div className="text-center mb-8">
-          <h1 className={title()}>Portfolio Generator</h1>
+          <h1 className={title()}>Portfolio Edit Page</h1>
           <p className={subtitle({ class: "mt-4" })}>
             Customize your portfolio information
           </p>
@@ -616,6 +616,26 @@ export default function GeneratorPage() {
                   value={portfolioData.social.linkedin}
                   onChange={handleSocialChange}
                 />
+                <Input
+                  label="Discord Username"
+                  name="discord"
+                  placeholder="Your Discord username"
+                  startContent={
+                    <span className="text-default-400">discord.com/users/</span>
+                  }
+                  value={portfolioData.social.discord}
+                  onChange={handleSocialChange}
+                />
+                <Input
+                  label="Reddit Username"
+                  name="reddit"
+                  placeholder="Your Reddit username"
+                  startContent={
+                    <span className="text-default-400">reddit.com/user/</span>
+                  }
+                  value={portfolioData.social.reddit}
+                  onChange={handleSocialChange}
+                />
               </CardBody>
             </Card>
           </Tab>
@@ -737,19 +757,6 @@ export default function GeneratorPage() {
           <Button color="success" onPress={handleSave}>
             Save Changes
           </Button>
-        </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-default-500">
-            Your changes are automatically saved to your browser&#39;s local
-            storage.
-            <br />
-            Visit the{" "}
-            <a className="text-primary" href="/">
-              Home page
-            </a>{" "}
-            to see your updated portfolio.
-          </p>
         </div>
       </div>
 

@@ -3,7 +3,13 @@ import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
 
-import { GithubIcon } from "@/components/icons";
+import {
+  GithubIcon,
+  TwitterIcon,
+  LinkedInIcon,
+  DiscordIcon,
+  RedditIcon,
+} from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export function PersonalInfo() {
@@ -15,7 +21,7 @@ export function PersonalInfo() {
         <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
           <img
             alt={portfolioData.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-full"
             src={portfolioData.avatar}
           />
         </div>
@@ -36,26 +42,56 @@ export function PersonalInfo() {
       <CardBody>
         <p className="mb-4">{portfolioData.bio}</p>
         <div className="flex gap-3">
-          <Link
-            isExternal
-            className="flex items-center gap-1"
-            href={`https://github.com/${portfolioData.social.github}`}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link>
-          <Link
-            isExternal
-            href={`https://twitter.com/${portfolioData.social.twitter}`}
-          >
-            Twitter
-          </Link>
-          <Link
-            isExternal
-            href={`https://linkedin.com/in/${portfolioData.social.linkedin}`}
-          >
-            LinkedIn
-          </Link>
+          {portfolioData.social.github && (
+            <Link
+              isExternal
+              className="flex items-center gap-1"
+              href={`https://github.com/${portfolioData.social.github}`}
+            >
+              <GithubIcon size={20} />
+              GitHub
+            </Link>
+          )}
+          {portfolioData.social.twitter && (
+            <Link
+              isExternal
+              className="flex items-center gap-1"
+              href={`https://twitter.com/${portfolioData.social.twitter}`}
+            >
+              <TwitterIcon size={20} />
+              Twitter
+            </Link>
+          )}
+          {portfolioData.social.linkedin && (
+            <Link
+              isExternal
+              className="flex items-center gap-1"
+              href={`https://linkedin.com/in/${portfolioData.social.linkedin}`}
+            >
+              <LinkedInIcon size={20} />
+              LinkedIn
+            </Link>
+          )}
+          {portfolioData.social.discord && (
+            <Link
+              isExternal
+              className="flex items-center gap-1"
+              href={`https://discord.com/users/${portfolioData.social.discord}`}
+            >
+              <DiscordIcon size={20} />
+              Discord
+            </Link>
+          )}
+          {portfolioData.social.reddit && (
+            <Link
+              isExternal
+              className="flex items-center gap-1"
+              href={`https://reddit.com/user/${portfolioData.social.reddit}`}
+            >
+              <RedditIcon size={20} />
+              Reddit
+            </Link>
+          )}
         </div>
       </CardBody>
     </Card>
