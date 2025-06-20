@@ -30,8 +30,7 @@ export function UnsavedChangesBanner({
               Unsaved changes
             </Chip>
             <span className="text-sm text-default-600">
-              You have unsaved changes that haven&#39;t been saved to the server
-              yet.
+              You are viewing a preview of your changes.
             </span>
           </div>
           <div className="flex gap-2">
