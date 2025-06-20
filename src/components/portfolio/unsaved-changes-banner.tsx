@@ -2,7 +2,11 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 
-import { clearDraftFromCookies } from "@/lib/cookie-persistence";
+import {
+  clearDraftFromCookies,
+  loadDraftFromCookies,
+} from "@/lib/cookie-persistence";
+import { savePortfolioData } from "@/lib/portfolio";
 
 interface UnsavedChangesBannerProps {
   onDiscardChanges?: () => void;
@@ -17,6 +21,27 @@ export function UnsavedChangesBanner({
       onDiscardChanges();
     } else {
       window.location.reload();
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    const draftData = loadDraftFromCookies();
+    if (!draftData) return;
+
+    try {
+      const success = await savePortfolioData(draftData);
+      if (success) {
+        clearDraftFromCookies();
+        if (onDiscardChanges) {
+          onDiscardChanges();
+        } else {
+          window.location.reload();
+        }
+      } else {
+        console.error("Failed to save portfolio data");
+      }
+    } catch (error) {
+      console.error("Error saving portfolio data:", error);
     }
   };
 
@@ -41,8 +66,8 @@ export function UnsavedChangesBanner({
             >
               Discard Changes
             </Button>
-            <Button as="a" color="warning" href="/edit" size="sm">
-              Go to Editor
+            <Button color="success" size="sm" onPress={handleSaveChanges}>
+              Save Changes
             </Button>
           </div>
         </div>
