@@ -1,15 +1,17 @@
-import { NextApiResponse } from "next";
-import {
-  authenticateToken,
-  AuthenticatedRequest,
-  handleError,
-} from "../../lib/auth";
 import fs from "fs";
 import path from "path";
 
+import { NextApiResponse } from "next";
+
+import {
+  AuthenticatedRequest,
+  authenticateToken,
+  handleError,
+} from "../../lib/auth";
+
 const PORTFOLIO_FILE = path.join(process.cwd(), "portfolio.json");
 
-// Sample portfolio structure - this should match your frontend
+// Sample portfolio structure - this should match the frontend
 interface PortfolioData {
   name: string;
   title: string;
@@ -76,12 +78,10 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       savePortfolioData(portfolioData);
-      res
-        .status(200)
-        .json({
-          message: "Portfolio data saved successfully",
-          data: portfolioData,
-        });
+      res.status(200).json({
+        message: "Portfolio data saved successfully",
+        data: portfolioData,
+      });
       return;
     }
 

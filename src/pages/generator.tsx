@@ -12,6 +12,12 @@ import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
 import { subtitle, title } from "@/components/primitives";
 import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth";
+import {
+  getPortfolioData,
+  migratePortfolioData,
+  PortfolioData,
+  savePortfolioData,
+} from "@/lib/portfolio";
 
 // Custom Alert Component
 interface AlertProps {
@@ -101,14 +107,19 @@ function Alert({
   );
 }
 
-// Define the portfolio data structure
-type PortfolioData = typeof siteConfig.portfolio;
+// Define skill type
 type Skill = { name: string; level: number };
 
 // No image cropper component needed anymore
 
 export default function GeneratorPage() {
   const navigate = useNavigate();
+
+  // Initialize state with empty data, will be loaded from server
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -130,12 +141,36 @@ export default function GeneratorPage() {
 
     checkAuthentication();
   }, [navigate]);
-  // Initialize state with data from localStorage or default from siteConfig
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(() => {
-    const savedData = localStorage.getItem("portfolioData");
 
-    return savedData ? JSON.parse(savedData) : siteConfig.portfolio;
-  });
+  // Load portfolio data from server
+  useEffect(() => {
+    const loadPortfolioData = async () => {
+      try {
+        setIsLoading(true);
+
+        // First try to migrate any localStorage data
+        await migratePortfolioData();
+
+        // Then load from server
+        const data = await getPortfolioData();
+
+        if (data) {
+          setPortfolioData(data);
+        } else {
+          // If no data on server, use default from siteConfig
+          setPortfolioData(siteConfig.portfolio);
+        }
+      } catch (error) {
+        console.error("Error loading portfolio data:", error);
+        // Fallback to default data
+        setPortfolioData(siteConfig.portfolio);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadPortfolioData();
+  }, []);
 
   // State for skills management
   const [newSkill, setNewSkill] = useState<Skill>({ name: "", level: 50 });
@@ -151,16 +186,13 @@ export default function GeneratorPage() {
   const [fileAlert, setFileAlert] = useState(false);
   const [fileAlertMessage, setFileAlertMessage] = useState("");
 
-  // Save data to localStorage whenever it changes
+  // Check if avatar is a data URL (uploaded image) when portfolio data loads
   useEffect(() => {
-    localStorage.setItem("portfolioData", JSON.stringify(portfolioData));
-  }, [portfolioData]);
-
-  // Check if avatar is a data URL (uploaded image) when component mounts or portfolioData changes
-  useEffect(() => {
-    // Check if avatar starts with "data:" which indicates it's a data URL (uploaded image)
-    setIsUploadedImage(portfolioData.avatar.startsWith("data:"));
-  }, [portfolioData.avatar]);
+    if (portfolioData?.avatar) {
+      // Check if avatar starts with "data:" which indicates it's a data URL (uploaded image)
+      setIsUploadedImage(portfolioData.avatar.startsWith("data:"));
+    }
+  }, [portfolioData?.avatar]);
 
   // Handle input changes for basic info
   const handleBasicInfoChange = (
@@ -168,10 +200,13 @@ export default function GeneratorPage() {
   ) => {
     const { name, value } = e.target;
 
-    setPortfolioData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
 
     // If avatar URL is changed manually, mark it as not an uploaded image
     if (name === "avatar") {
@@ -238,10 +273,13 @@ export default function GeneratorPage() {
         const resizedImage = canvas.toDataURL("image/jpeg", 0.7);
 
         // Update state with resized image
-        setPortfolioData((prev) => ({
-          ...prev,
-          avatar: resizedImage,
-        }));
+        setPortfolioData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            avatar: resizedImage,
+          };
+        });
 
         // Mark as uploaded image
         setIsUploadedImage(true);
@@ -257,23 +295,29 @@ export default function GeneratorPage() {
   const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setPortfolioData((prev) => ({
-      ...prev,
-      social: {
-        ...prev.social,
-        [name]: value,
-      },
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        social: {
+          ...prev.social,
+          [name]: value,
+        },
+      };
+    });
   };
 
   // Handle adding a new skill
   const handleAddSkill = () => {
     if (newSkill.name.trim() === "") return;
 
-    setPortfolioData((prev) => ({
-      ...prev,
-      skills: [...prev.skills, { ...newSkill }],
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        skills: [...prev.skills, { ...newSkill }],
+      };
+    });
 
     // Reset new skill input
     setNewSkill({ name: "", level: 50 });
@@ -281,10 +325,13 @@ export default function GeneratorPage() {
 
   // Handle removing a skill
   const handleRemoveSkill = (index: number) => {
-    setPortfolioData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((_, i) => i !== index),
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        skills: prev.skills.filter((_, i) => i !== index),
+      };
+    });
   };
 
   // Handle skill input change
@@ -299,26 +346,34 @@ export default function GeneratorPage() {
 
   // Handle skill level change for existing skills
   const handleSkillLevelChange = (index: number, level: number) => {
-    const updatedSkills = [...portfolioData.skills];
+    if (!portfolioData) return;
 
+    const updatedSkills = [...portfolioData.skills];
     updatedSkills[index] = { ...updatedSkills[index], level };
 
-    setPortfolioData((prev) => ({
-      ...prev,
-      skills: updatedSkills,
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        skills: updatedSkills,
+      };
+    });
   };
 
   // Handle skill name change for existing skills
   const handleSkillNameChange = (index: number, name: string) => {
-    const updatedSkills = [...portfolioData.skills];
+    if (!portfolioData) return;
 
+    const updatedSkills = [...portfolioData.skills];
     updatedSkills[index] = { ...updatedSkills[index], name };
 
-    setPortfolioData((prev) => ({
-      ...prev,
-      skills: updatedSkills,
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        skills: updatedSkills,
+      };
+    });
   };
 
   // Handle drag and drop for skills reordering
@@ -340,6 +395,8 @@ export default function GeneratorPage() {
     e.preventDefault();
     e.currentTarget.classList.remove("bg-default-100");
 
+    if (!portfolioData) return;
+
     const sourceIndex = Number(e.dataTransfer.getData("text/plain"));
 
     if (sourceIndex === targetIndex) return;
@@ -349,10 +406,13 @@ export default function GeneratorPage() {
 
     updatedSkills.splice(targetIndex, 0, movedSkill);
 
-    setPortfolioData((prev) => ({
-      ...prev,
-      skills: updatedSkills,
-    }));
+    setPortfolioData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        skills: updatedSkills,
+      };
+    });
   };
 
   const handleDragEnd = (e: React.DragEvent) => {
@@ -372,9 +432,37 @@ export default function GeneratorPage() {
   };
 
   // Handle save action
-  const handleSave = () => {
-    setSaveAlert(true);
+  const handleSave = async () => {
+    if (!portfolioData) return;
+
+    try {
+      const success = await savePortfolioData(portfolioData);
+      if (success) {
+        setSaveAlert(true);
+      } else {
+        // Handle save error - could show error alert
+        console.error("Failed to save portfolio data");
+      }
+    } catch (error) {
+      console.error("Error saving portfolio data:", error);
+    }
   };
+
+  // Show loading state while data is being fetched
+  if (isLoading || !portfolioData) {
+    return (
+      <DefaultLayout>
+        <div className="py-8 md:py-10">
+          <div className="text-center">
+            <h1 className={title()}>Portfolio Generator</h1>
+            <p className={subtitle({ class: "mt-4" })}>
+              Loading portfolio data...
+            </p>
+          </div>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>

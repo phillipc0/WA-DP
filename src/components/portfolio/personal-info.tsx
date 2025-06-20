@@ -6,23 +6,27 @@ import { useEffect, useState } from "react";
 
 import { GithubIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
+import { PortfolioData, getPortfolioData } from "@/lib/portfolio";
 
 export function PersonalInfo() {
-  const [portfolioData, setPortfolioData] = useState(siteConfig.portfolio);
+  const [portfolioData, setPortfolioData] = useState<PortfolioData>(
+    siteConfig.portfolio,
+  );
 
-  // Load data from localStorage on component mount
+  // Load data from API on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem("portfolioData");
-
-    if (savedData) {
+    const loadData = async () => {
       try {
-        const parsedData = JSON.parse(savedData);
-
-        setPortfolioData(parsedData);
+        const data = await getPortfolioData();
+        if (data) {
+          setPortfolioData(data);
+        }
       } catch (error) {
-        console.error("Error parsing portfolio data from localStorage:", error);
+        console.error("Error loading portfolio data:", error);
       }
-    }
+    };
+
+    loadData();
   }, []);
 
   return (
