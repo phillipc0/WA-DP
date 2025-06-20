@@ -59,7 +59,11 @@ export const Navbar = () => {
     if (isAdmin) {
       logout();
       setIsAdmin(false);
-      navigate("/");
+      if (window.location.pathname === "/generator") {
+        navigate("/");
+      } else {
+        window.location.reload();
+      }
     } else {
       setIsModalOpen(true);
     }

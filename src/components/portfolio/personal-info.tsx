@@ -2,42 +2,12 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
-import { useEffect, useState } from "react";
 
 import { GithubIcon } from "@/components/icons";
-import { siteConfig } from "@/config/site";
-import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
-import { loadDraftFromCookies } from "@/lib/cookie-persistence";
-import { isAuthenticated } from "@/lib/auth";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export function PersonalInfo() {
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(
-    siteConfig.portfolio,
-  );
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // Only check for draft data if user is authenticated
-        if (isAuthenticated()) {
-          const draftData = loadDraftFromCookies();
-          if (draftData) {
-            setPortfolioData(draftData);
-            return;
-          }
-        }
-
-        const data = await getPortfolioData();
-        if (data) {
-          setPortfolioData(data);
-        }
-      } catch (error) {
-        console.error("Error loading portfolio data:", error);
-      }
-    };
-
-    loadData();
-  }, []);
+  const { portfolioData } = usePortfolioData();
 
   return (
     <Card className="w-full">
