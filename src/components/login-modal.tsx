@@ -17,7 +17,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
-    fetch("/api/users")
+    fetch("http://localhost:3000/api/users")
       .then((res) => res.json())
       .then((data) => setExists(data.exists))
       .catch(() => setExists(false));
@@ -28,7 +28,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     setError("");
 
     try {
-      const res = await fetch("/api/users", {
+      const res = await fetch("http://localhost:3000/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

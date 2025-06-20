@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import { NextApiRequest, NextApiResponse } from "next";
+import { withCors } from "../../utils/cors";
 
 const USERS_FILE = path.join(process.cwd(), "users.json");
 
@@ -28,7 +29,7 @@ function writeUser(user: User) {
   fs.writeFileSync(USERS_FILE, JSON.stringify(user), "utf-8");
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = readUser();
 
   if (req.method === "GET") {
@@ -62,3 +63,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   res.status(405).end();
 }
+
+// Export the handler wrapped with CORS
+export default withCors(handler);
