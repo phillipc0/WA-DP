@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-type ApiHandler = (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void;
+type ApiHandler = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => Promise<void> | void;
 
 // This is a Higher-Order Function that wraps your API handlers
 export function withCors(handler: ApiHandler): ApiHandler {
