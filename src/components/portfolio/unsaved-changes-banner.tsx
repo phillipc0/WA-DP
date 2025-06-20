@@ -2,7 +2,10 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 
-import { clearDraftFromCookies, loadDraftFromCookies } from "@/lib/cookie-persistence";
+import {
+  clearDraftFromCookies,
+  loadDraftFromCookies,
+} from "@/lib/cookie-persistence";
 import { savePortfolioData } from "@/lib/portfolio";
 
 interface UnsavedChangesBannerProps {
