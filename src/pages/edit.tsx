@@ -14,7 +14,6 @@ import { subtitle, title } from "@/components/primitives.tsx";
 import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth";
 import {
   getPortfolioData,
-  migratePortfolioData,
   PortfolioData,
   savePortfolioData,
 } from "@/lib/portfolio";
@@ -144,8 +143,6 @@ export default function EditPage() {
     const loadPortfolioData = async () => {
       try {
         setIsLoading(true);
-
-        await migratePortfolioData();
 
         // Check for draft data first
         const draftData = loadDraftFromCookies();

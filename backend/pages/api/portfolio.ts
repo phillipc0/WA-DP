@@ -9,40 +9,9 @@ import {
   handleError,
 } from "../../lib/auth";
 
-const PORTFOLIO_FILE = path.join(process.cwd(), "portfolio.json");
+const PORTFOLIO_FILE = path.join(process.cwd(), "/frontend/portfolio.json");
 
-interface PortfolioData {
-  name: string;
-  title: string;
-  bio: string;
-  location: string;
-  email: string;
-  avatar: string;
-  social: {
-    github: string;
-    twitter: string;
-    linkedin: string;
-  };
-  skills: Array<{
-    name: string;
-    level: number;
-  }>;
-}
-
-const getPortfolioData = (): PortfolioData | null => {
-  try {
-    if (!fs.existsSync(PORTFOLIO_FILE)) {
-      return null;
-    }
-    const data = fs.readFileSync(PORTFOLIO_FILE, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading portfolio file:", error);
-    return null;
-  }
-};
-
-const savePortfolioData = (data: PortfolioData): void => {
+const savePortfolioData = (data: JSON): void => {
   try {
     fs.writeFileSync(PORTFOLIO_FILE, JSON.stringify(data, null, 2));
   } catch (error) {
@@ -53,25 +22,8 @@ const savePortfolioData = (data: PortfolioData): void => {
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   try {
-    if (req.method === "GET") {
-      const portfolioData = getPortfolioData();
-
-      if (!portfolioData) {
-        res.status(404).json({ error: "Portfolio data not found" });
-        return;
-      }
-
-      res.status(200).json(portfolioData);
-      return;
-    }
-
     if (req.method === "POST" || req.method === "PUT") {
-      const portfolioData = req.body as PortfolioData;
-
-      if (!portfolioData.name || !portfolioData.email) {
-        res.status(400).json({ error: "Name and email are required" });
-        return;
-      }
+      const portfolioData = req.body as JSON;
 
       savePortfolioData(portfolioData);
       res.status(200).json({

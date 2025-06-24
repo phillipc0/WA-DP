@@ -1,5 +1,6 @@
 import { authenticatedFetch } from "./auth";
 
+//TODO: remove this? (create dynamically)
 export interface PortfolioData {
   name: string;
   title: string;
@@ -22,7 +23,7 @@ export interface PortfolioData {
 
 export const getPortfolioData = async (): Promise<PortfolioData | null> => {
   try {
-    const response = await fetch("/api/portfolio", {
+    const response = await fetch("/portfolio.json", {
       method: "GET",
     });
 
@@ -59,25 +60,5 @@ export const savePortfolioData = async (
   } catch (error) {
     console.error("Error saving portfolio data:", error);
     return false;
-  }
-};
-
-export const migratePortfolioData = async (): Promise<void> => {
-  const localData = localStorage.getItem("portfolioData");
-
-  if (!localData) {
-    return;
-  }
-
-  try {
-    const portfolioData = JSON.parse(localData) as PortfolioData;
-
-    const success = await savePortfolioData(portfolioData);
-
-    if (success) {
-      localStorage.removeItem("portfolioData");
-    }
-  } catch (error) {
-    console.error("Failed to migrate portfolio data:", error);
   }
 };
