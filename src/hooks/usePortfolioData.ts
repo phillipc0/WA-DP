@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { siteConfig } from "@/config/site";
-import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
+import { getPortfolioData } from "@/lib/portfolio";
 import { loadDraftFromCookies } from "@/lib/cookie-persistence";
 import { isAuthenticated } from "@/lib/auth";
 
 export function usePortfolioData(refreshTrigger?: number) {
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(
-    siteConfig.portfolio,
-  );
+  const [portfolioData, setPortfolioData] = useState<any>(siteConfig.portfolio);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
