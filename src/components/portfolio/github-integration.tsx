@@ -149,13 +149,10 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                 isHoverable
                 isPressable
                 as={Link}
-                className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30"
+                className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30 repo-card-enter"
                 href={repo.html_url}
                 style={{
                   animationDelay: `${index * 100}ms`,
-                  animation: "fadeInUp 0.6s ease-out forwards",
-                  opacity: 0,
-                  transform: "translateY(20px)",
                 }}
               >
                 <CardBody className="p-4">
