@@ -5,7 +5,6 @@ import { getPortfolioData, PortfolioData } from "@/lib/portfolio";
 import { loadDraftFromCookies } from "@/lib/cookie-persistence";
 import { isAuthenticated } from "@/lib/auth";
 
-//TODO: refactor to only fetch once in portfolio/index and give as prop
 export function usePortfolioData(refreshTrigger?: number) {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(
     siteConfig.portfolio,

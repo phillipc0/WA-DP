@@ -1,27 +1,6 @@
 import { authenticatedFetch } from "./auth";
 
-//TODO: remove this? (create dynamically)
-export interface PortfolioData {
-  name: string;
-  title: string;
-  bio: string;
-  location: string;
-  email: string;
-  avatar: string;
-  social: {
-    github: string;
-    twitter: string;
-    linkedin: string;
-    discord?: string;
-    reddit?: string;
-  };
-  skills: Array<{
-    name: string;
-    level: number;
-  }>;
-}
-
-export const getPortfolioData = async (): Promise<PortfolioData | null> => {
+export const getPortfolioData = async (): Promise<JSON | null> => {
   try {
     const response = await fetch("/portfolio.json", {
       method: "GET",
@@ -39,9 +18,7 @@ export const getPortfolioData = async (): Promise<PortfolioData | null> => {
   }
 };
 
-export const savePortfolioData = async (
-  data: PortfolioData,
-): Promise<boolean> => {
+export const savePortfolioData = async (data: JSON): Promise<boolean> => {
   try {
     const response = await authenticatedFetch("/api/portfolio", {
       method: "POST",
