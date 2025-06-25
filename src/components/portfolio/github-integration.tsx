@@ -2,71 +2,33 @@ import { useEffect, useState } from "react";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/dropdown";
+import { Chip } from "@heroui/chip";
+import { Button } from "@heroui/button";
 
 import { GithubIcon } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
+import { getLanguageColor } from "@/lib/language-colors";
 
 type Repository = {
   id: number;
   name: string;
   description: string;
   html_url: string;
+  homepage?: string;
   stargazers_count: number;
   forks_count: number;
   language: string;
+  topics: string[];
+  updated_at: string;
 };
 
-const getLanguageColor = (language: string): string => {
-  const colors: Record<string, string> = {
-    JavaScript: "#f1e05a",
-    TypeScript: "#3178c6",
-    Python: "#3572A5",
-    Java: "#b07219",
-    "C++": "#f34b7d",
-    C: "#555555",
-    "C#": "#239120",
-    PHP: "#4F5D95",
-    Ruby: "#701516",
-    Go: "#00ADD8",
-    Rust: "#dea584",
-    Swift: "#ffac45",
-    Kotlin: "#A97BFF",
-    Dart: "#00B4AB",
-    HTML: "#e34c26",
-    CSS: "#1572B6",
-    SCSS: "#c6538c",
-    Shell: "#89e051",
-    PowerShell: "#012456",
-    Dockerfile: "#384d54",
-    YAML: "#cb171e",
-    JSON: "#292929",
-    Markdown: "#083fa1",
-    Vue: "#4FC08D",
-    React: "#61DAFB",
-    Svelte: "#ff3e00",
-    Angular: "#DD0031",
-    Jupyter: "#DA5B0B",
-    R: "#198CE7",
-    MATLAB: "#e16737",
-    Lua: "#000080",
-    Perl: "#0298c3",
-    Scala: "#c22d40",
-    Clojure: "#db5855",
-    Haskell: "#5e5086",
-    Elixir: "#6e4a7e",
-    Erlang: "#B83998",
-    F: "#b845fc",
-    Julia: "#a270ba",
-    Nim: "#ffc200",
-    Crystal: "#000100",
-    Zig: "#ec915c",
-    Assembly: "#6E4C13",
-    Objective: "#438eff",
-    Vim: "#199f4b",
-    Emacs: "#c065db",
-  };
-  return colors[language] || "#6b7280";
-};
+type SortOption = "updated" | "stars";
 
 interface GithubIntegrationProps {
   refreshTrigger?: number;
@@ -75,12 +37,49 @@ interface GithubIntegrationProps {
 export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   const { portfolioData, isLoading: portfolioLoading } =
     usePortfolioData(refreshTrigger);
-  const [repos, setRepos] = useState<Repository[]>([]);
+  const [reposCache, setReposCache] = useState<
+    Record<SortOption, Repository[]>
+  >({
+    updated: [],
+    stars: [],
+  });
+  const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchReposForSort = async (
+    githubUsername: string,
+    sort: SortOption,
+  ) => {
+    try {
+      let response;
+
+      if (sort === "stars") {
+        // The users API does not support sorting by stars
+        response = await fetch(
+          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=5`,
+        );
+      } else {
+        response = await fetch(
+          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=5`,
+        );
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch repositories");
+      }
+
+      const data = await response.json();
+
+      return sort === "stars" ? data.items : data;
+    } catch (err) {
+      console.error(`Error fetching ${sort} repos:`, err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
-    const fetchRepos = async () => {
+    const initializeRepos = async () => {
       const githubUsername = portfolioData.social.github;
 
       if (portfolioLoading || !githubUsername || githubUsername === "johndoe") {
@@ -91,17 +90,14 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(
-          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=5`,
-        );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch repositories");
-        }
+        const repos = await fetchReposForSort(githubUsername, "updated");
 
-        const data = await response.json();
+        setReposCache((prev) => ({
+          ...prev,
+          updated: repos,
+        }));
 
-        setRepos(data);
         setLoading(false);
       } catch (err) {
         setError("Failed to load GitHub repositories");
@@ -110,8 +106,46 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
       }
     };
 
-    fetchRepos();
+    initializeRepos().catch(console.error);
   }, [portfolioData.social.github, portfolioLoading]);
+
+  useEffect(() => {
+    const loadReposForSort = async () => {
+      const githubUsername = portfolioData.social.github;
+
+      if (!githubUsername || githubUsername === "johndoe") {
+        return;
+      }
+
+      if (reposCache[sortBy].length > 0) {
+        return;
+      }
+
+      if (sortBy === "updated" && reposCache.updated.length === 0) {
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const repos = await fetchReposForSort(githubUsername, sortBy);
+
+        setReposCache((prev) => ({
+          ...prev,
+          [sortBy]: repos,
+        }));
+
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load GitHub repositories");
+        setLoading(false);
+        console.error(err);
+      }
+    };
+
+    loadReposForSort().catch(console.error);
+  }, [sortBy, portfolioData.social.github]);
 
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
@@ -122,13 +156,56 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
             size={20}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1">
           <h2 className="text-xl font-bold text-foreground">
             GitHub Repositories
           </h2>
           <p className="text-sm text-default-500">
             Latest projects and contributions
           </p>
+        </div>
+        <div className="ml-auto">
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                className="min-w-[140px] justify-between"
+                size="sm"
+                variant="bordered"
+              >
+                {sortBy === "updated" ? "Recently Updated" : "Most Stars"}
+                <svg
+                  className="w-4 h-4 ml-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19 9l-7 7-7-7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label="Sort repositories"
+              selectedKeys={[sortBy]}
+              selectionMode="single"
+              onSelectionChange={(keys) => {
+                const keyArray = Array.from(keys);
+                if (keyArray.length > 0) {
+                  const key = keyArray[0] as SortOption;
+                  if (key !== sortBy) {
+                    setSortBy(key);
+                  }
+                }
+              }}
+            >
+              <DropdownItem key="updated">Recently Updated</DropdownItem>
+              <DropdownItem key="stars">Most Stars</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </CardHeader>
       <CardBody>
@@ -138,11 +215,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
           </div>
         ) : error ? (
           <div className="text-danger">{error}</div>
-        ) : repos.length === 0 ? (
+        ) : reposCache[sortBy].length === 0 ? (
           <div>No repositories found</div>
         ) : (
           <div className="grid gap-4">
-            {repos.map((repo, index) => (
+            {reposCache[sortBy].map((repo, index) => (
               <Card
                 key={repo.id}
                 isExternal
@@ -164,6 +241,16 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                       <p className="text-sm text-default-600 mt-1 line-clamp-2">
                         {repo.description || "No description available"}
                       </p>
+                      {repo.homepage && (
+                        <Link
+                          isExternal
+                          className="text-xs text-primary hover:text-primary-600 transition-colors duration-200 mt-1 inline-block"
+                          href={repo.homepage}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          🔗 {repo.homepage}
+                        </Link>
+                      )}
                     </div>
                     <div className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <svg
@@ -182,56 +269,83 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {repo.language && (
-                      <div className="flex items-center gap-1">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{
-                            backgroundColor: getLanguageColor(repo.language),
-                          }}
-                        />
-                        <span className="text-xs text-default-600 font-medium">
-                          {repo.language}
-                        </span>
+                  <div className="space-y-2">
+                    {repo.topics && repo.topics.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {repo.topics.slice(0, 4).map((topic) => (
+                          <Chip
+                            key={topic}
+                            className="h-5 text-xs"
+                            color="primary"
+                            size="sm"
+                            variant="flat"
+                          >
+                            {topic}
+                          </Chip>
+                        ))}
+                        {repo.topics.length > 4 && (
+                          <Chip
+                            className="h-5 text-xs"
+                            color="default"
+                            size="sm"
+                            variant="flat"
+                          >
+                            +{repo.topics.length - 4}
+                          </Chip>
+                        )}
                       </div>
                     )}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {repo.language && (
+                        <div className="flex items-center gap-1">
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{
+                              backgroundColor: getLanguageColor(repo.language),
+                            }}
+                          />
+                          <span className="text-xs text-default-600 font-medium">
+                            {repo.language}
+                          </span>
+                        </div>
+                      )}
 
-                    <Link
-                      isExternal
-                      className="flex items-center gap-1 text-xs text-default-500 hover:text-primary transition-colors duration-200"
-                      href={`${repo.html_url}/stargazers`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
+                      <Link
+                        isExternal
+                        className="flex items-center gap-1 text-xs text-default-500 hover:text-primary transition-colors duration-200"
+                        href={`${repo.html_url}/stargazers`}
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                      <span>{repo.stargazers_count.toLocaleString()}</span>
-                    </Link>
+                        <svg
+                          className="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span>{repo.stargazers_count.toLocaleString()}</span>
+                      </Link>
 
-                    <Link
-                      isExternal
-                      className="flex items-center gap-1 text-xs text-default-500 hover:text-primary transition-colors duration-200"
-                      href={`${repo.html_url}/network/members`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
+                      <Link
+                        isExternal
+                        className="flex items-center gap-1 text-xs text-default-500 hover:text-primary transition-colors duration-200"
+                        href={`${repo.html_url}/network/members`}
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <path
-                          clipRule="evenodd"
-                          d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414L2.586 7l3.707-3.707a1 1 0 011.414 0z"
-                          fillRule="evenodd"
-                        />
-                      </svg>
-                      <span>{repo.forks_count.toLocaleString()}</span>
-                    </Link>
+                        <svg
+                          className="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            clipRule="evenodd"
+                            d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414L2.586 7l3.707-3.707a1 1 0 011.414 0z"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                        <span>{repo.forks_count.toLocaleString()}</span>
+                      </Link>
+                    </div>
                   </div>
                 </CardBody>
               </Card>
