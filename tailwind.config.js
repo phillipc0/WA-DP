@@ -2,7 +2,7 @@ import { heroui } from "@heroui/theme";
 
 /** @type {import("tailwindcss").Config} */
 export default {
-  content: [
+  files: [
     "./index.html",
     "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
