@@ -4,7 +4,7 @@ import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
 
 import { GithubIcon } from "@/components/icons";
-import { siteConfig } from "@/config/site";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 type Repository = {
   id: number;
@@ -16,26 +16,15 @@ type Repository = {
   language: string;
 };
 
-export function GithubIntegration() {
-  const [portfolioData, setPortfolioData] = useState(siteConfig.portfolio);
+interface GithubIntegrationProps {
+  refreshTrigger?: number;
+}
+
+export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
+  const { portfolioData } = usePortfolioData(refreshTrigger);
   const [repos, setRepos] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Load portfolio data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("portfolioData");
-
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-
-        setPortfolioData(parsedData);
-      } catch (error) {
-        console.error("Error parsing portfolio data from localStorage:", error);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const fetchRepos = async () => {

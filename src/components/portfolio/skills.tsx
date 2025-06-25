@@ -1,26 +1,14 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
-import { useEffect, useState } from "react";
 
-import { siteConfig } from "@/config/site";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
-export function Skills() {
-  const [portfolioData, setPortfolioData] = useState(siteConfig.portfolio);
+interface SkillsProps {
+  refreshTrigger?: number;
+}
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("portfolioData");
-
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-
-        setPortfolioData(parsedData);
-      } catch (error) {
-        console.error("Error parsing portfolio data from localStorage:", error);
-      }
-    }
-  }, []);
+export function Skills({ refreshTrigger }: SkillsProps) {
+  const { portfolioData } = usePortfolioData(refreshTrigger);
 
   return (
     <Card className="w-full">
@@ -49,7 +37,6 @@ export function Skills() {
   );
 }
 
-// Helper function to get different colors for different skills
 export function getColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 
