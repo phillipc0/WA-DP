@@ -20,22 +20,55 @@ export interface PortfolioData {
   }>;
 }
 
-export const getPortfolioData = async (): Promise<PortfolioData | null> => {
-  try {
-    const response = await fetch("/api/portfolio", {
-      method: "GET",
-    });
+let portfolioDataCache: PortfolioData | null = null;
+let cacheTimestamp: number | null = null;
+let pendingRequest: Promise<PortfolioData | null> | null = null;
 
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.error("Failed to fetch portfolio data:", response.statusText);
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching portfolio data:", error);
-    return null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+export const getPortfolioData = async (): Promise<PortfolioData | null> => {
+  if (pendingRequest) {
+    return pendingRequest;
   }
+
+  if (
+    portfolioDataCache &&
+    cacheTimestamp &&
+    Date.now() - cacheTimestamp < CACHE_DURATION
+  ) {
+    return portfolioDataCache;
+  }
+
+  pendingRequest = (async () => {
+    try {
+      const response = await fetch("/api/portfolio", {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        portfolioDataCache = data;
+        cacheTimestamp = Date.now();
+        return data;
+      } else {
+        console.error("Failed to fetch portfolio data:", response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching portfolio data:", error);
+      return null;
+    } finally {
+      pendingRequest = null;
+    }
+  })();
+
+  return pendingRequest;
+};
+
+export const clearPortfolioDataCache = () => {
+  portfolioDataCache = null;
+  cacheTimestamp = null;
+  pendingRequest = null;
 };
 
 export const savePortfolioData = async (
@@ -48,6 +81,7 @@ export const savePortfolioData = async (
     });
 
     if (response.ok) {
+      clearPortfolioDataCache();
       return true;
     } else {
       const errorData = await response
