@@ -13,6 +13,7 @@ const PORTFOLIO_FILE = path.join(process.cwd(), "/frontend/portfolio.json");
 
 const savePortfolioData = (data: JSON): void => {
   try {
+    fs.mkdirSync(path.dirname(PORTFOLIO_FILE), { recursive: true });
     fs.writeFileSync(PORTFOLIO_FILE, JSON.stringify(data, null, 2));
   } catch (error) {
     console.error("Error writing portfolio file:", error);
