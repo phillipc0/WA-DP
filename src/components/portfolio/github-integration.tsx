@@ -15,6 +15,8 @@ import { GithubIcon } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { getLanguageColor } from "@/lib/language-colors";
 
+const REPO_PER_PAGE = 4;
+
 type Repository = {
   id: number;
   name: string;
@@ -57,11 +59,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
       if (sort === "stars") {
         // The users API does not support sorting by stars
         response = await fetch(
-          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=5`,
+          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${REPO_PER_PAGE}`,
         );
       } else {
         response = await fetch(
-          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=5`,
+          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${REPO_PER_PAGE}`,
         );
       }
 
@@ -160,9 +162,6 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
           <h2 className="text-xl font-bold text-foreground">
             GitHub Repositories
           </h2>
-          <p className="text-sm text-default-500">
-            Latest projects and contributions
-          </p>
         </div>
         <div className="ml-auto">
           <Dropdown>
@@ -272,7 +271,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                   <div className="space-y-2">
                     {repo.topics && repo.topics.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {repo.topics.slice(0, 4).map((topic) => (
+                        {repo.topics.slice(0, 6).map((topic) => (
                           <Chip
                             key={topic}
                             className="h-5 text-xs"
@@ -283,14 +282,14 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                             {topic}
                           </Chip>
                         ))}
-                        {repo.topics.length > 4 && (
+                        {repo.topics.length > 6 && (
                           <Chip
                             className="h-5 text-xs"
                             color="default"
                             size="sm"
                             variant="flat"
                           >
-                            +{repo.topics.length - 4}
+                            +{repo.topics.length - 6}
                           </Chip>
                         )}
                       </div>
