@@ -5,6 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
+  publicDir: "backend/frontend",
   server: {
     proxy: {
       "/api": "http://localhost:3000",

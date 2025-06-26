@@ -12,12 +12,7 @@ import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
 import { subtitle, title } from "@/components/primitives.tsx";
 import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth";
-import {
-  getPortfolioData,
-  migratePortfolioData,
-  PortfolioData,
-  savePortfolioData,
-} from "@/lib/portfolio";
+import { getPortfolioData, savePortfolioData } from "@/lib/portfolio";
 import {
   clearDraftFromCookies,
   loadDraftFromCookies,
@@ -117,9 +112,7 @@ type Skill = { name: string; level: number };
 export default function EditPage() {
   const navigate = useNavigate();
 
-  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
-    null,
-  );
+  const [portfolioData, setPortfolioData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -144,8 +137,6 @@ export default function EditPage() {
     const loadPortfolioData = async () => {
       try {
         setIsLoading(true);
-
-        await migratePortfolioData();
 
         // Check for draft data first
         const draftData = loadDraftFromCookies();
@@ -202,7 +193,7 @@ export default function EditPage() {
   ) => {
     const { name, value } = e.target;
 
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -273,7 +264,7 @@ export default function EditPage() {
         const resizedImage = canvas.toDataURL("image/jpeg", 0.7);
 
         // Update state with resized image
-        setPortfolioData((prev) => {
+        setPortfolioData((prev: any) => {
           if (!prev) return prev;
           return {
             ...prev,
@@ -295,7 +286,7 @@ export default function EditPage() {
   const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -311,7 +302,7 @@ export default function EditPage() {
   const handleAddSkill = () => {
     if (newSkill.name.trim() === "") return;
 
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -325,11 +316,11 @@ export default function EditPage() {
 
   // Handle removing a skill
   const handleRemoveSkill = (index: number) => {
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
-        skills: prev.skills.filter((_, i) => i !== index),
+        skills: prev.skills.filter((_: any, i: any) => i !== index),
       };
     });
   };
@@ -351,7 +342,7 @@ export default function EditPage() {
     const updatedSkills = [...portfolioData.skills];
     updatedSkills[index] = { ...updatedSkills[index], level };
 
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -367,7 +358,7 @@ export default function EditPage() {
     const updatedSkills = [...portfolioData.skills];
     updatedSkills[index] = { ...updatedSkills[index], name };
 
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -406,7 +397,7 @@ export default function EditPage() {
 
     updatedSkills.splice(targetIndex, 0, movedSkill);
 
-    setPortfolioData((prev) => {
+    setPortfolioData((prev: any) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -685,7 +676,7 @@ export default function EditPage() {
                       <p className="text-sm text-default-500 mb-2">
                         Drag and drop skills to reorder them
                       </p>
-                      {portfolioData.skills.map((skill, index) => (
+                      {portfolioData.skills.map((skill: any, index: any) => (
                         <div
                           key={index}
                           draggable
