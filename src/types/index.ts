@@ -13,6 +13,14 @@ export interface Experience {
   technologies?: string[];
 }
 
+export interface Education {
+  institution: string;
+  degree: string;
+  duration: string;
+  location: string;
+  description: string;
+  subjects?: string[];
+}
 
 export interface Skill {
   name: string;
@@ -35,5 +43,5 @@ export interface PortfolioData {
   };
   skills: Skill[];
   cv: Experience[];
-
+  education: Education[];
 }
