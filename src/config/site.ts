@@ -33,50 +33,26 @@ export const siteConfig = {
         location: "New York, NY",
         description:
           "Lead development of modern web applications using React, TypeScript, and Node.js. Mentored junior developers and collaborated with design teams to create exceptional user experiences.",
-        technologies: [
-          "React",
-          "TypeScript",
-          "Node.js",
-          "PostgreSQL",
-          "AWS",
-          "Docker",
-        ],
-      },
-      {
-        company: "Digital Solutions Ltd.",
-        position: "Frontend Developer",
-        duration: "2020 - 2022",
-        location: "San Francisco, CA",
-        description:
-          "Developed responsive web applications and implemented modern UI/UX designs. Worked closely with backend teams to integrate APIs and optimize application performance.",
-        technologies: ["Vue.js", "JavaScript", "SCSS", "REST APIs", "Git"],
+        technologies: ["React", "TypeScript", "Node.js"],
       },
       {
         company: "StartupXYZ",
         position: "Junior Web Developer",
-        duration: "2019 - 2020",
+        duration: "2019 - 2022",
         location: "Austin, TX",
         description:
           "Built and maintained company websites and web applications. Gained experience in full-stack development and agile methodologies.",
-        technologies: ["HTML", "CSS", "JavaScript", "PHP", "MySQL"],
+        technologies: ["GraphQL"],
       },
     ],
     education: [
       {
         institution: "University of Technology",
-        degree: "Master of Science in Computer Science",
+        degree: "Bachelor of Science in Computer Science",
         duration: "2017 - 2019",
-        location: "Berlin, Germany",
+        location: "Frankfurt, Germany",
         description:
           "Specialized in Software Engineering and Machine Learning. Graduated with honors and completed thesis on distributed systems.",
-      },
-      {
-        institution: "State University",
-        degree: "Bachelor of Science in Information Technology",
-        duration: "2013 - 2017",
-        location: "Austin, TX",
-        description:
-          "Foundation in computer science fundamentals with focus on web development and database management.",
       },
     ],
   },

@@ -1116,11 +1116,13 @@ export default function EditPage() {
                           key={index}
                           draggable
                           className="flex items-center gap-2 p-4 border border-default-200 rounded-md"
-                          onDragStart={(e) => handleExperienceDragStart(e, index)}
-                          onDragOver={handleExperienceDragOver}
-                          onDragLeave={handleExperienceDragLeave}
-                          onDrop={(e) => handleExperienceDrop(e, index)}
                           onDragEnd={handleExperienceDragEnd}
+                          onDragLeave={handleExperienceDragLeave}
+                          onDragOver={handleExperienceDragOver}
+                          onDragStart={(e) =>
+                            handleExperienceDragStart(e, index)
+                          }
+                          onDrop={(e) => handleExperienceDrop(e, index)}
                         >
                           <div
                             className="cursor-move p-1 text-default-400 hover:text-default-600"
@@ -1154,7 +1156,9 @@ export default function EditPage() {
                                     isIconOnly
                                     color="danger"
                                     variant="light"
-                                    onPress={() => handleRemoveExperience(index)}
+                                    onPress={() =>
+                                      handleRemoveExperience(index)
+                                    }
                                   >
                                     ✕
                                   </Button>
@@ -1264,11 +1268,13 @@ export default function EditPage() {
                           key={index}
                           draggable
                           className="flex items-center gap-2 p-4 border border-default-200 rounded-md"
-                          onDragStart={(e) => handleEducationDragStart(e, index)}
-                          onDragOver={handleEducationDragOver}
-                          onDragLeave={handleEducationDragLeave}
-                          onDrop={(e) => handleEducationDrop(e, index)}
                           onDragEnd={handleEducationDragEnd}
+                          onDragLeave={handleEducationDragLeave}
+                          onDragOver={handleEducationDragOver}
+                          onDragStart={(e) =>
+                            handleEducationDragStart(e, index)
+                          }
+                          onDrop={(e) => handleEducationDrop(e, index)}
                         >
                           <div
                             className="cursor-move p-1 text-default-400 hover:text-default-600"
@@ -1309,7 +1315,9 @@ export default function EditPage() {
                                 </Tooltip>
                               </div>
                             </div>
-                            <p className="text-default-700">{edu.description}</p>
+                            <p className="text-default-700">
+                              {edu.description}
+                            </p>
                           </div>
                         </div>
                       ))}
