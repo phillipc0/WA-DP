@@ -115,15 +115,16 @@ describe("portfolio", () => {
   describe("savePortfolioData", () => {
     it("returns true on successful save", async () => {
       const { authenticatedFetch } = await vi.importMock("@/lib/auth");
+      const mockAuthenticatedFetch = authenticatedFetch as any;
 
-      authenticatedFetch.mockResolvedValueOnce({
+      mockAuthenticatedFetch.mockResolvedValueOnce({
         ok: true,
       } as any);
 
-      const result = await savePortfolioData(mockPortfolioData);
+      const result = await savePortfolioData(mockPortfolioData as any);
 
       expect(result).toBe(true);
-      expect(authenticatedFetch).toHaveBeenCalledWith("/api/portfolio", {
+      expect(mockAuthenticatedFetch).toHaveBeenCalledWith("/api/portfolio", {
         method: "POST",
         body: JSON.stringify(mockPortfolioData),
       });
@@ -131,17 +132,18 @@ describe("portfolio", () => {
 
     it("returns false and logs error when save fails with error response", async () => {
       const { authenticatedFetch } = await vi.importMock("@/lib/auth");
+      const mockAuthenticatedFetch = authenticatedFetch as any;
       const consoleSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
 
       const errorResponse = { error: "Validation failed" };
-      authenticatedFetch.mockResolvedValueOnce({
+      mockAuthenticatedFetch.mockResolvedValueOnce({
         ok: false,
         json: vi.fn().mockResolvedValue(errorResponse),
       } as any);
 
-      const result = await savePortfolioData(mockPortfolioData);
+      const result = await savePortfolioData(mockPortfolioData as any);
 
       expect(result).toBe(false);
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -154,16 +156,17 @@ describe("portfolio", () => {
 
     it("returns false and logs error when save fails without readable error", async () => {
       const { authenticatedFetch } = await vi.importMock("@/lib/auth");
+      const mockAuthenticatedFetch = authenticatedFetch as any;
       const consoleSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
 
-      authenticatedFetch.mockResolvedValueOnce({
+      mockAuthenticatedFetch.mockResolvedValueOnce({
         ok: false,
         json: vi.fn().mockRejectedValue(new Error("JSON parse error")),
       } as any);
 
-      const result = await savePortfolioData(mockPortfolioData);
+      const result = await savePortfolioData(mockPortfolioData as any);
 
       expect(result).toBe(false);
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -176,14 +179,15 @@ describe("portfolio", () => {
 
     it("returns false and logs error when authenticatedFetch throws exception", async () => {
       const { authenticatedFetch } = await vi.importMock("@/lib/auth");
+      const mockAuthenticatedFetch = authenticatedFetch as any;
       const consoleSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
       const networkError = new Error("Network error");
 
-      authenticatedFetch.mockRejectedValueOnce(networkError);
+      mockAuthenticatedFetch.mockRejectedValueOnce(networkError);
 
-      const result = await savePortfolioData(mockPortfolioData);
+      const result = await savePortfolioData(mockPortfolioData as any);
 
       expect(result).toBe(false);
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -194,5 +198,4 @@ describe("portfolio", () => {
       consoleSpy.mockRestore();
     });
   });
-
 });

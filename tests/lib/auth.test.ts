@@ -167,12 +167,18 @@ describe("auth", () => {
     });
 
     it("calls logout and returns false on fetch error", async () => {
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       localStorageMock.getItem.mockReturnValue("test-token");
       (fetch as any).mockRejectedValueOnce(new Error("Network error"));
 
       const result = await validateToken();
       expect(result).toBe(false);
       expect(localStorageMock.removeItem).toHaveBeenCalledTimes(3);
+
+      consoleSpy.mockRestore();
     });
   });
 
