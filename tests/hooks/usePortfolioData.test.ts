@@ -50,14 +50,18 @@ describe("usePortfolioData", () => {
     );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = {
       name: "Draft Name",
       title: "Draft Title",
       bio: "Draft bio",
     };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -66,7 +70,7 @@ describe("usePortfolioData", () => {
     });
 
     expect(result.current.portfolioData).toEqual(draftData);
-    expect(getPortfolioData).not.toHaveBeenCalled();
+    expect(mockGetPortfolioData).not.toHaveBeenCalled();
   });
 
   it("loads portfolio data when user is authenticated but no draft exists", async () => {
@@ -76,15 +80,19 @@ describe("usePortfolioData", () => {
     );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const serverData = {
       name: "Server Name",
       title: "Server Title",
       bio: "Server bio",
     };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(null);
-    getPortfolioData.mockResolvedValue(serverData);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(null);
+    mockGetPortfolioData.mockResolvedValue(serverData);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -93,7 +101,7 @@ describe("usePortfolioData", () => {
     });
 
     expect(result.current.portfolioData).toEqual(serverData);
-    expect(getPortfolioData).toHaveBeenCalled();
+    expect(mockGetPortfolioData).toHaveBeenCalled();
   });
 
   it("loads portfolio data when user is not authenticated", async () => {
@@ -103,14 +111,18 @@ describe("usePortfolioData", () => {
     );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const serverData = {
       name: "Public Name",
       title: "Public Title",
       bio: "Public bio",
     };
 
-    isAuthenticated.mockReturnValue(false);
-    getPortfolioData.mockResolvedValue(serverData);
+    mockIsAuthenticated.mockReturnValue(false);
+    mockGetPortfolioData.mockResolvedValue(serverData);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -119,16 +131,19 @@ describe("usePortfolioData", () => {
     });
 
     expect(result.current.portfolioData).toEqual(serverData);
-    expect(loadDraftFromCookies).not.toHaveBeenCalled();
-    expect(getPortfolioData).toHaveBeenCalled();
+    expect(mockLoadDraftFromCookies).not.toHaveBeenCalled();
+    expect(mockGetPortfolioData).toHaveBeenCalled();
   });
 
   it("keeps default data when getPortfolioData returns null", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
-    isAuthenticated.mockReturnValue(false);
-    getPortfolioData.mockResolvedValue(null);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockGetPortfolioData.mockResolvedValue(null);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -148,9 +163,12 @@ describe("usePortfolioData", () => {
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const error = new Error("Network error");
-    isAuthenticated.mockReturnValue(false);
-    getPortfolioData.mockRejectedValue(error);
+    mockIsAuthenticated.mockReturnValue(false);
+    mockGetPortfolioData.mockRejectedValue(error);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -175,6 +193,9 @@ describe("usePortfolioData", () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const firstData = {
       name: "First Name",
       title: "First Title",
@@ -187,8 +208,8 @@ describe("usePortfolioData", () => {
       bio: "Second bio",
     };
 
-    isAuthenticated.mockReturnValue(false);
-    getPortfolioData.mockResolvedValueOnce(firstData);
+    mockIsAuthenticated.mockReturnValue(false);
+    mockGetPortfolioData.mockResolvedValueOnce(firstData);
 
     const { result, rerender } = renderHook(
       ({ trigger }) => usePortfolioData(trigger),
@@ -200,10 +221,10 @@ describe("usePortfolioData", () => {
     });
 
     expect(result.current.portfolioData).toEqual(firstData);
-    expect(getPortfolioData).toHaveBeenCalledTimes(1);
+    expect(mockGetPortfolioData).toHaveBeenCalledTimes(1);
 
     // Change the trigger
-    getPortfolioData.mockResolvedValueOnce(secondData);
+    mockGetPortfolioData.mockResolvedValueOnce(secondData);
     rerender({ trigger: 2 });
 
     await waitFor(() => {
@@ -211,7 +232,7 @@ describe("usePortfolioData", () => {
     });
 
     expect(result.current.portfolioData).toEqual(secondData);
-    expect(getPortfolioData).toHaveBeenCalledTimes(2);
+    expect(mockGetPortfolioData).toHaveBeenCalledTimes(2);
   });
 
   it("handles authentication state changes with draft data priority", async () => {
@@ -220,6 +241,10 @@ describe("usePortfolioData", () => {
       "@/lib/cookie-persistence",
     );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
 
     const draftData = {
       name: "Draft Name",
@@ -234,9 +259,9 @@ describe("usePortfolioData", () => {
     };
 
     // Initially authenticated with draft
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockResolvedValue(serverData);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(serverData);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -246,22 +271,25 @@ describe("usePortfolioData", () => {
 
     // Should load draft data, not server data
     expect(result.current.portfolioData).toEqual(draftData);
-    expect(getPortfolioData).not.toHaveBeenCalled();
+    expect(mockGetPortfolioData).not.toHaveBeenCalled();
   });
 
   it("sets loading to true during data fetch and false when complete", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
-    isAuthenticated.mockReturnValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
 
     // Create a promise that we can control
-    let resolvePromise: (value: any) => void;
+    let resolvePromise!: (value: any) => void;
     const controlledPromise = new Promise((resolve) => {
       resolvePromise = resolve;
     });
 
-    getPortfolioData.mockReturnValue(controlledPromise);
+    mockGetPortfolioData.mockReturnValue(controlledPromise);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -283,6 +311,10 @@ describe("usePortfolioData", () => {
     );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = { name: "Draft", title: "Draft Title", bio: "Draft bio" };
     const serverData = {
       name: "Server",
@@ -290,9 +322,9 @@ describe("usePortfolioData", () => {
       bio: "Server bio",
     };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockResolvedValue(serverData);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(serverData);
 
     const { result } = renderHook(() => usePortfolioData());
 
@@ -302,6 +334,6 @@ describe("usePortfolioData", () => {
 
     expect(result.current.portfolioData).toEqual(draftData);
     // getPortfolioData should not be called when draft exists
-    expect(getPortfolioData).not.toHaveBeenCalled();
+    expect(mockGetPortfolioData).not.toHaveBeenCalled();
   });
 });

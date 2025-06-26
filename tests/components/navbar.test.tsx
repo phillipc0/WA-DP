@@ -115,8 +115,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -130,8 +133,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(true);
-    validateToken.mockResolvedValue(true);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(true);
 
     renderNavbar();
 
@@ -145,8 +151,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -163,8 +172,12 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken, logout } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(true);
-    validateToken.mockResolvedValue(true);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+    const mockLogout = logout as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(true);
 
     renderNavbar();
 
@@ -174,7 +187,7 @@ describe("Navbar", () => {
 
     fireEvent.click(screen.getByTestId("logout-button"));
 
-    expect(logout).toHaveBeenCalled();
+    expect(mockLogout).toHaveBeenCalled();
     expect(mockReload).toHaveBeenCalled();
   });
 
@@ -182,8 +195,12 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken, logout } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(true);
-    validateToken.mockResolvedValue(true);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+    const mockLogout = logout as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(true);
     window.location.pathname = "/edit";
 
     renderNavbar();
@@ -194,7 +211,7 @@ describe("Navbar", () => {
 
     fireEvent.click(screen.getByTestId("logout-button"));
 
-    expect(logout).toHaveBeenCalled();
+    expect(mockLogout).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith("/");
     expect(mockReload).not.toHaveBeenCalled();
   });
@@ -203,8 +220,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -227,8 +247,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -249,9 +272,12 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
     // First test unauthenticated state
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -266,8 +292,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(true);
-    validateToken.mockResolvedValue(true);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(true);
 
     renderNavbar();
 
@@ -286,8 +315,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -306,8 +338,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -326,13 +361,17 @@ describe("Navbar", () => {
     const { migrateOldAuth, isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    const mockMigrateOldAuth = migrateOldAuth as any;
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
     await waitFor(() => {
-      expect(migrateOldAuth).toHaveBeenCalled();
+      expect(mockMigrateOldAuth).toHaveBeenCalled();
     });
   });
 
@@ -340,13 +379,16 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(true);
-    validateToken.mockResolvedValue(true);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(true);
 
     renderNavbar();
 
     await waitFor(() => {
-      expect(validateToken).toHaveBeenCalled();
+      expect(mockValidateToken).toHaveBeenCalled();
     });
   });
 
@@ -354,8 +396,11 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
-    isAuthenticated.mockReturnValue(true);
-    validateToken.mockResolvedValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 
@@ -391,9 +436,12 @@ describe("Navbar", () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockValidateToken = validateToken as any;
+
     // Start unauthenticated
-    isAuthenticated.mockReturnValue(false);
-    validateToken.mockResolvedValue(false);
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
 
     renderNavbar();
 

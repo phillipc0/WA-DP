@@ -43,12 +43,15 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: true,
@@ -69,12 +72,15 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "dark",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: false,
@@ -95,14 +101,17 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
     const mockGetBaseProps = vi.fn(() => ({ className: "base-props" }));
 
-    useTheme.mockReturnValue({
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: true,
@@ -122,14 +131,17 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
     const mockGetBaseProps = vi.fn(() => ({ className: "base-props" }));
 
-    useTheme.mockReturnValue({
+    mockUseTheme.mockReturnValue({
       theme: "dark",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: false,
@@ -149,7 +161,10 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitchFn = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
@@ -163,7 +178,7 @@ describe("ThemeSwitch", () => {
       getWrapperProps: vi.fn(() => ({ className: "wrapper-props" })),
     }));
 
-    useSwitch.mockImplementation(mockUseSwitch);
+    mockUseSwitchFn.mockImplementation(mockUseSwitch);
 
     render(<ThemeSwitch />);
 
@@ -179,13 +194,16 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
     let capturedOnChange: () => void;
-    useSwitch.mockImplementation(({ onChange }) => {
+    mockUseSwitch.mockImplementation(({ onChange }: { onChange: any }) => {
       capturedOnChange = onChange;
       return {
         Component: "button",
@@ -209,13 +227,16 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "dark",
       setTheme: mockSetTheme,
     });
 
     let capturedOnChange: () => void;
-    useSwitch.mockImplementation(({ onChange }) => {
+    mockUseSwitch.mockImplementation(({ onChange }: { onChange: any }) => {
       capturedOnChange = onChange;
       return {
         Component: "button",
@@ -239,14 +260,17 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
     const mockGetBaseProps = vi.fn(() => ({ className: "base-props" }));
 
-    useTheme.mockReturnValue({
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: true,
@@ -268,15 +292,18 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
     const mockGetBaseProps = vi.fn(() => ({ className: "base-props" }));
     const mockWrapperSlot = vi.fn(() => "wrapper-class");
 
-    useTheme.mockReturnValue({
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: mockWrapperSlot },
       isSelected: true,
@@ -306,12 +333,15 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: true,
@@ -332,12 +362,15 @@ describe("ThemeSwitch", () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
 
-    useTheme.mockReturnValue({
+    const mockUseTheme = useTheme as any;
+    const mockUseSwitch = useSwitch as any;
+
+    mockUseTheme.mockReturnValue({
       theme: "light",
       setTheme: mockSetTheme,
     });
 
-    useSwitch.mockReturnValue({
+    mockUseSwitch.mockReturnValue({
       Component: "button",
       slots: { wrapper: vi.fn(() => "wrapper-class") },
       isSelected: true,

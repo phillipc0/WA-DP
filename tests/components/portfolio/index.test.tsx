@@ -67,7 +67,9 @@ describe("Portfolio", () => {
 
   it("renders all portfolio components", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    isAuthenticated.mockReturnValue(false);
+
+    const mockIsAuthenticated = isAuthenticated as any;
+    mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
 
@@ -82,7 +84,10 @@ describe("Portfolio", () => {
       "@/lib/cookie-persistence",
     );
 
-    isAuthenticated.mockReturnValue(false);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockClearDraftFromCookies = clearDraftFromCookies as any;
+
+    mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
 
@@ -90,7 +95,7 @@ describe("Portfolio", () => {
       expect(
         screen.queryByTestId("unsaved-changes-banner"),
       ).not.toBeInTheDocument();
-      expect(clearDraftFromCookies).toHaveBeenCalled();
+      expect(mockClearDraftFromCookies).toHaveBeenCalled();
     });
   });
 
@@ -100,8 +105,11 @@ describe("Portfolio", () => {
       "@/lib/cookie-persistence",
     );
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(null);
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(null);
 
     render(<Portfolio />);
 
@@ -119,11 +127,15 @@ describe("Portfolio", () => {
     );
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = { name: "Draft User", title: "Draft Title" };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockResolvedValue(null);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(null);
 
     render(<Portfolio />);
 
@@ -138,19 +150,24 @@ describe("Portfolio", () => {
       await vi.importMock("@/lib/cookie-persistence");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockHasChangesComparedToSaved = hasChangesComparedToSaved as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = { name: "Draft User", title: "Draft Title" };
     const savedData = { name: "Saved User", title: "Saved Title" };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockResolvedValue(savedData);
-    hasChangesComparedToSaved.mockReturnValue(true);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(savedData);
+    mockHasChangesComparedToSaved.mockReturnValue(true);
 
     render(<Portfolio />);
 
     await waitFor(() => {
       expect(screen.getByTestId("unsaved-changes-banner")).toBeInTheDocument();
-      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(
+      expect(mockHasChangesComparedToSaved).toHaveBeenCalledWith(
         draftData,
         savedData,
       );
@@ -163,13 +180,18 @@ describe("Portfolio", () => {
       await vi.importMock("@/lib/cookie-persistence");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockHasChangesComparedToSaved = hasChangesComparedToSaved as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = { name: "Same User", title: "Same Title" };
     const savedData = { name: "Same User", title: "Same Title" };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockResolvedValue(savedData);
-    hasChangesComparedToSaved.mockReturnValue(false);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(savedData);
+    mockHasChangesComparedToSaved.mockReturnValue(false);
 
     render(<Portfolio />);
 
@@ -177,7 +199,7 @@ describe("Portfolio", () => {
       expect(
         screen.queryByTestId("unsaved-changes-banner"),
       ).not.toBeInTheDocument();
-      expect(hasChangesComparedToSaved).toHaveBeenCalledWith(
+      expect(mockHasChangesComparedToSaved).toHaveBeenCalledWith(
         draftData,
         savedData,
       );
@@ -192,12 +214,16 @@ describe("Portfolio", () => {
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = { name: "Draft User", title: "Draft Title" };
     const error = new Error("Network error");
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockRejectedValue(error);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockRejectedValue(error);
 
     render(<Portfolio />);
 
@@ -218,13 +244,18 @@ describe("Portfolio", () => {
       await vi.importMock("@/lib/cookie-persistence");
     const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const mockHasChangesComparedToSaved = hasChangesComparedToSaved as any;
+    const mockGetPortfolioData = getPortfolioData as any;
+
     const draftData = { name: "Draft User", title: "Draft Title" };
     const savedData = { name: "Saved User", title: "Saved Title" };
 
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue(draftData);
-    getPortfolioData.mockResolvedValue(savedData);
-    hasChangesComparedToSaved.mockReturnValue(true);
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(savedData);
+    mockHasChangesComparedToSaved.mockReturnValue(true);
 
     render(<Portfolio />);
 
@@ -257,7 +288,9 @@ describe("Portfolio", () => {
 
   it("passes refresh trigger to all child components", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    isAuthenticated.mockReturnValue(false);
+
+    const mockIsAuthenticated = isAuthenticated as any;
+    mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
 
@@ -277,7 +310,9 @@ describe("Portfolio", () => {
 
   it("renders components in correct grid layout", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    isAuthenticated.mockReturnValue(false);
+
+    const mockIsAuthenticated = isAuthenticated as any;
+    mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
 
@@ -296,22 +331,27 @@ describe("Portfolio", () => {
       "@/lib/cookie-persistence",
     );
 
+    const mockIsAuthenticated = isAuthenticated as any;
+    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+
     // Test that authentication functions are called during component lifecycle
-    isAuthenticated.mockReturnValue(true);
-    loadDraftFromCookies.mockReturnValue({ name: "User" });
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue({ name: "User" });
 
     render(<Portfolio />);
 
     // Wait for the effect to run
     await waitFor(() => {
-      expect(isAuthenticated).toHaveBeenCalled();
-      expect(loadDraftFromCookies).toHaveBeenCalled();
+      expect(mockIsAuthenticated).toHaveBeenCalled();
+      expect(mockLoadDraftFromCookies).toHaveBeenCalled();
     });
   });
 
   it("applies correct CSS classes to main container", async () => {
     const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    isAuthenticated.mockReturnValue(false);
+
+    const mockIsAuthenticated = isAuthenticated as any;
+    mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
 
