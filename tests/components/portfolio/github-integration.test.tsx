@@ -118,8 +118,8 @@ describe("GithubIntegration", () => {
       expect(screen.getByText("repo1")).toBeInTheDocument();
     });
 
-    const repoLink = screen.getByRole("button", { 
-      name: /repo1 First repository/i 
+    const repoLink = screen.getByRole("button", {
+      name: /repo1 First repository/i,
     });
     expect(repoLink).toHaveAttribute(
       "href",
