@@ -16,7 +16,7 @@ export function Skills({ refreshTrigger }: SkillsProps) {
         <h2 className="text-xl font-bold">Skills</h2>
       </CardHeader>
       <CardBody className="gap-4">
-        {portfolioData.skills.map((skill, index) => (
+        {portfolioData.skills.map((skill: any, index: any) => (
           <div key={skill.name} className="mb-4">
             <div className="flex justify-between mb-1">
               <span className="font-medium">{skill.name}</span>
