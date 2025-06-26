@@ -1,5 +1,3 @@
-import { PortfolioData } from "./portfolio";
-
 const COOKIE_NAME = "portfolio_draft";
 const COOKIE_EXPIRY_DAYS = 7;
 
@@ -38,7 +36,7 @@ function deleteCookie(name: string): void {
 /**
  * Save portfolio data draft to cookies
  */
-export function saveDraftToCookies(data: PortfolioData): void {
+export function saveDraftToCookies(data: any): void {
   try {
     const serializedData = JSON.stringify(data);
     setCookie(
@@ -54,13 +52,13 @@ export function saveDraftToCookies(data: PortfolioData): void {
 /**
  * Load portfolio data draft from cookies
  */
-export function loadDraftFromCookies(): PortfolioData | null {
+export function loadDraftFromCookies(): any | null {
   try {
     const cookieValue = getCookie(COOKIE_NAME);
     if (!cookieValue) return null;
 
     const decodedValue = decodeURIComponent(cookieValue);
-    return JSON.parse(decodedValue) as PortfolioData;
+    return JSON.parse(decodedValue) as any;
   } catch (error) {
     console.error("Failed to load draft from cookies:", error);
     return null;
@@ -77,10 +75,7 @@ export function clearDraftFromCookies(): void {
 /**
  * Compare two portfolio data objects to check if they're different
  */
-export function hasChangesComparedToSaved(
-  draft: PortfolioData,
-  saved: PortfolioData,
-): boolean {
+export function hasChangesComparedToSaved(draft: any, saved: any): boolean {
   try {
     return JSON.stringify(draft) !== JSON.stringify(saved);
   } catch (error) {
