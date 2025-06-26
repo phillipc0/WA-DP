@@ -18,7 +18,7 @@ import {
   loadDraftFromCookies,
   saveDraftToCookies,
 } from "@/lib/cookie-persistence";
-import { Experience, Education } from "@/types";
+import { Education, Experience } from "@/types";
 
 // Custom Alert Component
 interface AlertProps {
@@ -176,7 +176,7 @@ export default function EditPage() {
     description: "",
     technologies: [],
   });
-  
+
   const [newEducation, setNewEducation] = useState<Education>({
     institution: "",
     degree: "",
@@ -185,7 +185,9 @@ export default function EditPage() {
     description: "",
   });
 
-  const [selectedSkills, setSelectedSkills] = useState<Set<string>>(new Set([]));
+  const [selectedSkills, setSelectedSkills] = useState<Set<string>>(
+    new Set([]),
+  );
 
   const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
   const [isUploadedImage, setIsUploadedImage] = useState(false);
@@ -462,10 +464,14 @@ export default function EditPage() {
   };
 
   // CV Management Functions
-  
+
   // Handle adding a new work experience
   const handleAddExperience = () => {
-    if (newExperience.company.trim() === "" || newExperience.position.trim() === "") return;
+    if (
+      newExperience.company.trim() === "" ||
+      newExperience.position.trim() === ""
+    )
+      return;
 
     const experienceWithTechnologies = {
       ...newExperience,
@@ -516,7 +522,9 @@ export default function EditPage() {
   };
 
   // Handle experience input change
-  const handleExperienceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleExperienceChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setNewExperience((prev) => ({
       ...prev,
@@ -535,7 +543,11 @@ export default function EditPage() {
 
   // Handle adding a new education
   const handleAddEducation = () => {
-    if (newEducation.institution.trim() === "" || newEducation.degree.trim() === "") return;
+    if (
+      newEducation.institution.trim() === "" ||
+      newEducation.degree.trim() === ""
+    )
+      return;
 
     setPortfolioData((prev: any) => {
       if (!prev) return prev;
@@ -561,7 +573,8 @@ export default function EditPage() {
       if (!prev) return prev;
       return {
         ...prev,
-        education: prev.education?.filter((_: any, i: any) => i !== index) || [],
+        education:
+          prev.education?.filter((_: any, i: any) => i !== index) || [],
       };
     });
   };
@@ -578,7 +591,9 @@ export default function EditPage() {
   };
 
   // Handle education input change
-  const handleEducationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleEducationChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setNewEducation((prev) => ({
       ...prev,
@@ -893,7 +908,9 @@ export default function EditPage() {
               </CardHeader>
               <CardBody className="gap-4">
                 <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-4">Add New Experience</h3>
+                  <h3 className="text-lg font-medium mb-4">
+                    Add New Experience
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <Input
                       label="Position"
@@ -925,42 +942,52 @@ export default function EditPage() {
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Description</label>
-                    <textarea
-                      className="w-full min-h-[100px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
-                      name="description"
-                      placeholder="Describe your role and achievements..."
-                      value={newExperience.description}
-                      onChange={handleExperienceChange}
-                    />
+                    <label className="text-sm font-medium block">
+                      Description
+                      <textarea
+                        className="w-full min-h-[100px] px-3 py-2 mt-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                        name="description"
+                        placeholder="Describe your role and achievements..."
+                        value={newExperience.description}
+                        onChange={handleExperienceChange}
+                      />
+                    </label>
                   </div>
                   <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Technologies</label>
-                    {portfolioData.skills?.length > 0 ? (
-                      <div className="mb-2">
-                        <p className="text-sm text-default-500 mb-2">
-                          Select from your skills:
-                        </p>
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {portfolioData.skills
-                            .filter((skill: any) => !selectedSkills.has(skill.name))
-                            .map((skill: any, index: number) => (
-                            <Button
-                              key={index}
-                              size="sm"
-                              variant="bordered"
-                              onPress={() => setSelectedSkills(prev => new Set([...prev, skill.name]))}
-                            >
-                              + {skill.name}
-                            </Button>
-                          ))}
+                    <label className="text-sm font-medium mb-2 block">
+                      Technologies
+                      {portfolioData.skills?.length > 0 ? (
+                        <div className="mb-2">
+                          <p className="text-sm text-default-500 mb-2">
+                            Select from your skills:
+                          </p>
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {portfolioData.skills
+                              .filter(
+                                (skill: any) => !selectedSkills.has(skill.name),
+                              )
+                              .map((skill: any, index: number) => (
+                                <Button
+                                  key={index}
+                                  size="sm"
+                                  variant="bordered"
+                                  onPress={() =>
+                                    setSelectedSkills(
+                                      (prev) => new Set([...prev, skill.name]),
+                                    )
+                                  }
+                                >
+                                  + {skill.name}
+                                </Button>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-default-500 mb-2">
-                        Add skills first to select technologies.
-                      </p>
-                    )}
+                      ) : (
+                        <p className="text-sm text-default-500 mb-2">
+                          Add skills first to select technologies.
+                        </p>
+                      )}
+                    </label>
                     <div className="flex flex-wrap gap-2">
                       {Array.from(selectedSkills).map((skill) => (
                         <span
@@ -986,9 +1013,13 @@ export default function EditPage() {
                 <Divider className="my-4" />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Current Experience</h3>
+                  <h3 className="text-lg font-medium mb-4">
+                    Current Experience
+                  </h3>
                   {!portfolioData.cv || portfolioData.cv?.length === 0 ? (
-                    <p className="text-default-500">No work experience added yet.</p>
+                    <p className="text-default-500">
+                      No work experience added yet.
+                    </p>
                   ) : (
                     <div className="space-y-4">
                       {portfolioData.cv?.map((experience: any, index: any) => (
@@ -1028,16 +1059,20 @@ export default function EditPage() {
                               </Tooltip>
                             </div>
                           </div>
-                          <p className="text-default-700">{experience.description}</p>
+                          <p className="text-default-700">
+                            {experience.description}
+                          </p>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            {experience.technologies?.map((tech: any, i: number) => (
-                              <span
-                                key={i}
-                                className="text-xs rounded-full bg-default-100 px-3 py-1"
-                              >
-                                {tech}
-                              </span>
-                            ))}
+                            {experience.technologies?.map(
+                              (tech: any, i: number) => (
+                                <span
+                                  key={i}
+                                  className="text-xs rounded-full bg-default-100 px-3 py-1"
+                                >
+                                  {tech}
+                                </span>
+                              ),
+                            )}
                           </div>
                         </div>
                       ))}
@@ -1055,7 +1090,9 @@ export default function EditPage() {
               </CardHeader>
               <CardBody className="gap-4">
                 <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-4">Add New Education</h3>
+                  <h3 className="text-lg font-medium mb-4">
+                    Add New Education
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <Input
                       label="Institution Name"
@@ -1087,14 +1124,16 @@ export default function EditPage() {
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Description</label>
-                    <textarea
-                      className="w-full min-h-[100px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
-                      name="description"
-                      placeholder="Describe your studies and achievements..."
-                      value={newEducation.description}
-                      onChange={handleEducationChange}
-                    />
+                    <label className="text-sm font-medium block">
+                      Description
+                      <textarea
+                        className="w-full min-h-[100px] px-3 py-2 mt-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                        name="description"
+                        placeholder="Describe your studies and achievements..."
+                        value={newEducation.description}
+                        onChange={handleEducationChange}
+                      />
+                    </label>
                   </div>
                   <Button color="primary" onPress={handleAddEducation}>
                     Add Education
@@ -1104,9 +1143,14 @@ export default function EditPage() {
                 <Divider className="my-4" />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Current Education</h3>
-                  {!portfolioData.education || portfolioData.education?.length === 0 ? (
-                    <p className="text-default-500">No education records added yet.</p>
+                  <h3 className="text-lg font-medium mb-4">
+                    Current Education
+                  </h3>
+                  {!portfolioData.education ||
+                  portfolioData.education?.length === 0 ? (
+                    <p className="text-default-500">
+                      No education records added yet.
+                    </p>
                   ) : (
                     <div className="space-y-4">
                       {portfolioData.education?.map((edu: any, index: any) => (
