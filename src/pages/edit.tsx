@@ -186,8 +186,8 @@ export default function EditPage() {
     subjects: [],
   });
 
-  const [newTechnology, setNewTechnology] = useState("");
   const [newSubject, setNewSubject] = useState("");
+  const [cvEditMode, setCvEditMode] = useState<"experience" | "education">("experience");
 
   const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
   const [isUploadedImage, setIsUploadedImage] = useState(false);
@@ -509,13 +509,12 @@ export default function EditPage() {
   };
 
   // Handle adding technology to experience
-  const handleAddTechnology = () => {
-    if (newTechnology.trim() === "") return;
+  const handleAddTechnologyToExperience = (skillName: string) => {
+    if (!skillName || newExperience.technologies?.includes(skillName)) return;
     setNewExperience((prev) => ({
       ...prev,
-      technologies: [...(prev.technologies || []), newTechnology.trim()],
+      technologies: [...(prev.technologies || []), skillName],
     }));
-    setNewTechnology("");
   };
 
   // Handle removing technology from experience
@@ -888,275 +887,316 @@ export default function EditPage() {
           </Tab>
 
           <Tab key="cv" title="CV / Education">
-            <Card className="mt-4">
-              <CardHeader>
-                <h2 className="text-xl font-bold">Work Experience</h2>
-              </CardHeader>
-              <CardBody className="gap-4">
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-4">Add New Experience</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <Input
-                      label="Company Name"
-                      name="company"
-                      placeholder="e.g. ABC Corp"
-                      value={newExperience.company}
-                      onChange={handleExperienceChange}
-                    />
-                    <Input
-                      label="Position"
-                      name="position"
-                      placeholder="e.g. Software Engineer"
-                      value={newExperience.position}
-                      onChange={handleExperienceChange}
-                    />
-                    <Input
-                      label="Duration"
-                      name="duration"
-                      placeholder="e.g. 2021 - 2023"
-                      value={newExperience.duration}
-                      onChange={handleExperienceChange}
-                    />
-                    <Input
-                      label="Location"
-                      name="location"
-                      placeholder="e.g. New York, NY"
-                      value={newExperience.location}
-                      onChange={handleExperienceChange}
-                    />
+            <div className="mt-4">
+              {/* Toggle between Experience and Education */}
+              <Card className="mb-6">
+                <CardBody>
+                  <div className="flex items-center justify-center gap-4">
+                    <Button
+                      color={cvEditMode === "experience" ? "primary" : "default"}
+                      variant={cvEditMode === "experience" ? "solid" : "flat"}
+                      onPress={() => setCvEditMode("experience")}
+                    >
+                      Work Experience
+                    </Button>
+                    <Button
+                      color={cvEditMode === "education" ? "primary" : "default"}
+                      variant={cvEditMode === "education" ? "solid" : "flat"}
+                      onPress={() => setCvEditMode("education")}
+                    >
+                      Education
+                    </Button>
                   </div>
-                  <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Description</label>
-                    <textarea
-                      className="w-full min-h-[100px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
-                      name="description"
-                      placeholder="Describe your role and achievements..."
-                      value={newExperience.description}
-                      onChange={handleExperienceChange}
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Technologies</label>
-                    <div className="flex gap-2 mb-2">
-                      <Input
-                        className="flex-1"
-                        placeholder="Add a technology"
-                        value={newTechnology}
-                        onChange={(e) => setNewTechnology(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddTechnology()}
-                      />
-                      <Button size="sm" onPress={handleAddTechnology}>
-                        Add
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {newExperience.technologies?.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="text-xs rounded-full bg-primary-100 text-primary-800 px-3 py-1 flex items-center gap-1"
-                        >
-                          {tech}
-                          <button
-                            className="ml-1 text-danger hover:text-danger-600"
-                            onClick={() => handleRemoveTechnology(index)}
-                          >
-                            ✕
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <Button color="primary" onPress={handleAddExperience}>
-                    Add Experience
-                  </Button>
-                </div>
+                </CardBody>
+              </Card>
 
-                <Divider className="my-4" />
-
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Current Experiences</h3>
-                  {portfolioData.cv?.length === 0 ? (
-                    <p className="text-default-500">No work experiences added yet.</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {portfolioData.cv?.map((experience: any, index: any) => (
-                        <div
-                          key={index}
-                          className="p-4 border border-default-200 rounded-md"
-                        >
-                          <div className="flex justify-between mb-2">
-                            <div>
-                              <h4 className="text-md font-semibold">
-                                {experience.position} at {experience.company}
-                              </h4>
-                              <p className="text-sm text-default-500">
-                                {experience.location} • {experience.duration}
-                              </p>
+              {cvEditMode === "experience" ? (
+                /* Work Experience Section */
+                <Card>
+                  <CardHeader>
+                    <h2 className="text-xl font-bold">Work Experience</h2>
+                  </CardHeader>
+                  <CardBody className="gap-4">
+                    <div className="mb-6">
+                      <h3 className="text-lg font-medium mb-4">Add New Experience</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <Input
+                          label="Company Name"
+                          name="company"
+                          placeholder="e.g. ABC Corp"
+                          value={newExperience.company}
+                          onChange={handleExperienceChange}
+                        />
+                        <Input
+                          label="Position"
+                          name="position"
+                          placeholder="e.g. Software Engineer"
+                          value={newExperience.position}
+                          onChange={handleExperienceChange}
+                        />
+                        <Input
+                          label="Duration"
+                          name="duration"
+                          placeholder="e.g. 2021 - 2023"
+                          value={newExperience.duration}
+                          onChange={handleExperienceChange}
+                        />
+                        <Input
+                          label="Location"
+                          name="location"
+                          placeholder="e.g. New York, NY"
+                          value={newExperience.location}
+                          onChange={handleExperienceChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="text-sm font-medium mb-2 block">Description</label>
+                        <textarea
+                          className="w-full min-h-[100px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                          name="description"
+                          placeholder="Describe your role and achievements..."
+                          value={newExperience.description}
+                          onChange={handleExperienceChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="text-sm font-medium mb-2 block">Technologies Used</label>
+                        {portfolioData.skills.length === 0 ? (
+                          <p className="text-sm text-default-500 mb-2">
+                            Add skills in the Skills tab first to select technologies used.
+                          </p>
+                        ) : (
+                          <div className="mb-2">
+                            <p className="text-sm text-default-500 mb-2">
+                              Select from your skills:
+                            </p>
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {portfolioData.skills
+                                .filter((skill: any) => !newExperience.technologies?.includes(skill.name))
+                                .map((skill: any, index: number) => (
+                                <Button
+                                  key={index}
+                                  size="sm"
+                                  variant="bordered"
+                                  onPress={() => handleAddTechnologyToExperience(skill.name)}
+                                >
+                                  + {skill.name}
+                                </Button>
+                              ))}
                             </div>
-                            <Tooltip content="Remove experience">
-                              <Button
-                                isIconOnly
-                                color="danger"
-                                variant="light"
-                                onPress={() => handleRemoveExperience(index)}
+                          </div>
+                        )}
+                        <div className="flex flex-wrap gap-2">
+                          {newExperience.technologies?.map((tech, index) => (
+                            <span
+                              key={index}
+                              className="text-xs rounded-full bg-primary-100 text-primary-800 px-3 py-1 flex items-center gap-1"
+                            >
+                              {tech}
+                              <button
+                                className="ml-1 text-danger hover:text-danger-600"
+                                onClick={() => handleRemoveTechnology(index)}
                               >
                                 ✕
-                              </Button>
-                            </Tooltip>
-                          </div>
-                          <p className="text-default-700">{experience.description}</p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {experience.technologies?.map((tech: any, i: number) => (
-                              <span
-                                key={i}
-                                className="text-xs rounded-full bg-default-100 px-3 py-1"
-                              >
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
+                              </button>
+                            </span>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card className="mt-6">
-              <CardHeader>
-                <h2 className="text-xl font-bold">Education</h2>
-              </CardHeader>
-              <CardBody className="gap-4">
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-4">Add New Education</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <Input
-                      label="Institution Name"
-                      name="institution"
-                      placeholder="e.g. XYZ University"
-                      value={newEducation.institution}
-                      onChange={handleEducationChange}
-                    />
-                    <Input
-                      label="Degree"
-                      name="degree"
-                      placeholder="e.g. Bachelor of Science"
-                      value={newEducation.degree}
-                      onChange={handleEducationChange}
-                    />
-                    <Input
-                      label="Duration"
-                      name="duration"
-                      placeholder="e.g. 2017 - 2021"
-                      value={newEducation.duration}
-                      onChange={handleEducationChange}
-                    />
-                    <Input
-                      label="Location"
-                      name="location"
-                      placeholder="e.g. Boston, MA"
-                      value={newEducation.location}
-                      onChange={handleEducationChange}
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Description</label>
-                    <textarea
-                      className="w-full min-h-[100px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
-                      name="description"
-                      placeholder="Describe your studies and achievements..."
-                      value={newEducation.description}
-                      onChange={handleEducationChange}
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Key Subjects</label>
-                    <div className="flex gap-2 mb-2">
-                      <Input
-                        className="flex-1"
-                        placeholder="Add a subject"
-                        value={newSubject}
-                        onChange={(e) => setNewSubject(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddSubject()}
-                      />
-                      <Button size="sm" onPress={handleAddSubject}>
-                        Add
+                      </div>
+                      <Button color="primary" onPress={handleAddExperience}>
+                        Add Experience
                       </Button>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {newEducation.subjects?.map((subject, index) => (
-                        <span
-                          key={index}
-                          className="text-xs rounded-full bg-secondary-100 text-secondary-800 px-3 py-1 flex items-center gap-1"
-                        >
-                          {subject}
-                          <button
-                            className="ml-1 text-danger hover:text-danger-600"
-                            onClick={() => handleRemoveSubject(index)}
-                          >
-                            ✕
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <Button color="primary" onPress={handleAddEducation}>
-                    Add Education
-                  </Button>
-                </div>
 
-                <Divider className="my-4" />
+                    <Divider className="my-4" />
 
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Current Education</h3>
-                  {portfolioData.education?.length === 0 ? (
-                    <p className="text-default-500">No education records added yet.</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {portfolioData.education?.map((edu: any, index: any) => (
-                        <div
-                          key={index}
-                          className="p-4 border border-default-200 rounded-md"
-                        >
-                          <div className="flex justify-between mb-2">
-                            <div>
-                              <h4 className="text-md font-semibold">
-                                {edu.degree} from {edu.institution}
-                              </h4>
-                              <p className="text-sm text-default-500">
-                                {edu.location} • {edu.duration}
-                              </p>
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Current Experiences</h3>
+                      {portfolioData.cv?.length === 0 ? (
+                        <p className="text-default-500">No work experiences added yet.</p>
+                      ) : (
+                        <div className="space-y-4">
+                          {portfolioData.cv?.map((experience: any, index: any) => (
+                            <div
+                              key={index}
+                              className="p-4 border border-default-200 rounded-md"
+                            >
+                              <div className="flex justify-between mb-2">
+                                <div>
+                                  <h4 className="text-md font-semibold">
+                                    {experience.position} at {experience.company}
+                                  </h4>
+                                  <p className="text-sm text-default-500">
+                                    {experience.location} • {experience.duration}
+                                  </p>
+                                </div>
+                                <Tooltip content="Remove experience">
+                                  <Button
+                                    isIconOnly
+                                    color="danger"
+                                    variant="light"
+                                    onPress={() => handleRemoveExperience(index)}
+                                  >
+                                    ✕
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                              <p className="text-default-700">{experience.description}</p>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {experience.technologies?.map((tech: any, i: number) => (
+                                  <span
+                                    key={i}
+                                    className="text-xs rounded-full bg-default-100 px-3 py-1"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                            <Tooltip content="Remove education">
-                              <Button
-                                isIconOnly
-                                color="danger"
-                                variant="light"
-                                onPress={() => handleRemoveEducation(index)}
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              ) : (
+                /* Education Section */
+                <Card>
+                  <CardHeader>
+                    <h2 className="text-xl font-bold">Education</h2>
+                  </CardHeader>
+                  <CardBody className="gap-4">
+                    <div className="mb-6">
+                      <h3 className="text-lg font-medium mb-4">Add New Education</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <Input
+                          label="Institution Name"
+                          name="institution"
+                          placeholder="e.g. XYZ University"
+                          value={newEducation.institution}
+                          onChange={handleEducationChange}
+                        />
+                        <Input
+                          label="Degree"
+                          name="degree"
+                          placeholder="e.g. Bachelor of Science"
+                          value={newEducation.degree}
+                          onChange={handleEducationChange}
+                        />
+                        <Input
+                          label="Duration"
+                          name="duration"
+                          placeholder="e.g. 2017 - 2021"
+                          value={newEducation.duration}
+                          onChange={handleEducationChange}
+                        />
+                        <Input
+                          label="Location"
+                          name="location"
+                          placeholder="e.g. Boston, MA"
+                          value={newEducation.location}
+                          onChange={handleEducationChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="text-sm font-medium mb-2 block">Description</label>
+                        <textarea
+                          className="w-full min-h-[100px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                          name="description"
+                          placeholder="Describe your studies and achievements..."
+                          value={newEducation.description}
+                          onChange={handleEducationChange}
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="text-sm font-medium mb-2 block">Key Subjects</label>
+                        <div className="flex gap-2 mb-2">
+                          <Input
+                            className="flex-1"
+                            placeholder="Add a subject"
+                            value={newSubject}
+                            onChange={(e) => setNewSubject(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleAddSubject()}
+                          />
+                          <Button size="sm" onPress={handleAddSubject}>
+                            Add
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {newEducation.subjects?.map((subject, index) => (
+                            <span
+                              key={index}
+                              className="text-xs rounded-full bg-secondary-100 text-secondary-800 px-3 py-1 flex items-center gap-1"
+                            >
+                              {subject}
+                              <button
+                                className="ml-1 text-danger hover:text-danger-600"
+                                onClick={() => handleRemoveSubject(index)}
                               >
                                 ✕
-                              </Button>
-                            </Tooltip>
-                          </div>
-                          <p className="text-default-700">{edu.description}</p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {edu.subjects?.map((subj: any, i: number) => (
-                              <span
-                                key={i}
-                                className="text-xs rounded-full bg-default-100 px-3 py-1"
-                              >
-                                {subj}
-                              </span>
-                            ))}
-                          </div>
+                              </button>
+                            </span>
+                          ))}
                         </div>
-                      ))}
+                      </div>
+                      <Button color="primary" onPress={handleAddEducation}>
+                        Add Education
+                      </Button>
                     </div>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
+
+                    <Divider className="my-4" />
+
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Current Education</h3>
+                      {portfolioData.education?.length === 0 ? (
+                        <p className="text-default-500">No education records added yet.</p>
+                      ) : (
+                        <div className="space-y-4">
+                          {portfolioData.education?.map((edu: any, index: any) => (
+                            <div
+                              key={index}
+                              className="p-4 border border-default-200 rounded-md"
+                            >
+                              <div className="flex justify-between mb-2">
+                                <div>
+                                  <h4 className="text-md font-semibold">
+                                    {edu.degree} from {edu.institution}
+                                  </h4>
+                                  <p className="text-sm text-default-500">
+                                    {edu.location} • {edu.duration}
+                                  </p>
+                                </div>
+                                <Tooltip content="Remove education">
+                                  <Button
+                                    isIconOnly
+                                    color="danger"
+                                    variant="light"
+                                    onPress={() => handleRemoveEducation(index)}
+                                  >
+                                    ✕
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                              <p className="text-default-700">{edu.description}</p>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {edu.subjects?.map((subj: any, i: number) => (
+                                  <span
+                                    key={i}
+                                    className="text-xs rounded-full bg-default-100 px-3 py-1"
+                                  >
+                                    {subj}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              )}
+            </div>
           </Tab>
         </Tabs>
 
