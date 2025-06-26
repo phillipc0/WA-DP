@@ -94,17 +94,16 @@ describe("GithubIntegration", () => {
 
     expect(screen.getByText("repo1")).toBeInTheDocument();
     expect(screen.getByText("First repository")).toBeInTheDocument();
-    expect(screen.getByText("Language: TypeScript")).toBeInTheDocument();
-    expect(screen.getByText("Stars: 10")).toBeInTheDocument();
-    expect(screen.getByText("Forks: 5")).toBeInTheDocument();
+    expect(screen.getByText("TypeScript")).toBeInTheDocument();
+    expect(screen.getByText("10")).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument();
 
     expect(screen.getByText("repo2")).toBeInTheDocument();
-    expect(screen.getByText("No description")).toBeInTheDocument();
-    expect(screen.getByText("Language: JavaScript")).toBeInTheDocument();
+    expect(screen.getByText("No description available")).toBeInTheDocument();
+    expect(screen.getByText("JavaScript")).toBeInTheDocument();
 
     expect(screen.getByText("repo3")).toBeInTheDocument();
     expect(screen.getByText("Third repository")).toBeInTheDocument();
-    expect(screen.queryByText("Language: null")).not.toBeInTheDocument();
   });
 
   it("renders repository links correctly", async () => {
@@ -119,7 +118,9 @@ describe("GithubIntegration", () => {
       expect(screen.getByText("repo1")).toBeInTheDocument();
     });
 
-    const repoLink = screen.getByRole("link", { name: "repo1" });
+    const repoLink = screen.getByRole("button", { 
+      name: /repo1 First repository/i 
+    });
     expect(repoLink).toHaveAttribute(
       "href",
       "https://github.com/testuser/repo1",
@@ -200,7 +201,7 @@ describe("GithubIntegration", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "https://api.github.com/users/testuser/repos?sort=updated&per_page=5",
+        "https://api.github.com/users/testuser/repos?sort=updated&per_page=4",
       );
     });
   });

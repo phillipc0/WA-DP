@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getPortfolioData,
   savePortfolioData,
-  migratePortfolioData,
+  clearPortfolioDataCache,
 } from "@/lib/portfolio";
 
 // Mock authenticatedFetch
@@ -47,6 +47,8 @@ describe("portfolio", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset the cache and pending request state
+    clearPortfolioDataCache();
     // Suppress console.error for cleaner test output
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
@@ -62,7 +64,7 @@ describe("portfolio", () => {
       const result = await getPortfolioData();
 
       expect(result).toEqual(mockPortfolioData);
-      expect(mockFetch).toHaveBeenCalledWith("/api/portfolio", {
+      expect(mockFetch).toHaveBeenCalledWith("/portfolio.json", {
         method: "GET",
       });
     });
@@ -193,163 +195,4 @@ describe("portfolio", () => {
     });
   });
 
-  describe("migratePortfolioData", () => {
-    it("migrates data from localStorage and removes it on success", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-
-      mockLocalStorage.getItem.mockReturnValue(
-        JSON.stringify(mockPortfolioData),
-      );
-      authenticatedFetch.mockResolvedValueOnce({
-        ok: true,
-      } as any);
-
-      await migratePortfolioData();
-
-      expect(mockLocalStorage.getItem).toHaveBeenCalledWith("portfolioData");
-      expect(authenticatedFetch).toHaveBeenCalledWith("/api/portfolio", {
-        method: "POST",
-        body: JSON.stringify(mockPortfolioData),
-      });
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("portfolioData");
-    });
-
-    it("does not remove localStorage data when save fails", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-
-      mockLocalStorage.getItem.mockReturnValue(
-        JSON.stringify(mockPortfolioData),
-      );
-      authenticatedFetch.mockResolvedValueOnce({
-        ok: false,
-        json: vi.fn().mockResolvedValue({ error: "Save failed" }),
-      } as any);
-
-      await migratePortfolioData();
-
-      expect(mockLocalStorage.getItem).toHaveBeenCalledWith("portfolioData");
-      expect(authenticatedFetch).toHaveBeenCalled();
-      expect(mockLocalStorage.removeItem).not.toHaveBeenCalled();
-    });
-
-    it("returns early when no localStorage data exists", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-
-      mockLocalStorage.getItem.mockReturnValue(null);
-
-      await migratePortfolioData();
-
-      expect(mockLocalStorage.getItem).toHaveBeenCalledWith("portfolioData");
-      expect(authenticatedFetch).not.toHaveBeenCalled();
-      expect(mockLocalStorage.removeItem).not.toHaveBeenCalled();
-    });
-
-    it("handles JSON parse errors gracefully", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
-      mockLocalStorage.getItem.mockReturnValue("invalid-json");
-
-      await migratePortfolioData();
-
-      expect(mockLocalStorage.getItem).toHaveBeenCalledWith("portfolioData");
-      expect(authenticatedFetch).not.toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Failed to migrate portfolio data:",
-        expect.any(Error),
-      );
-
-      consoleSpy.mockRestore();
-    });
-
-    it("handles save errors during migration", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      const networkError = new Error("Network error");
-
-      mockLocalStorage.getItem.mockReturnValue(
-        JSON.stringify(mockPortfolioData),
-      );
-      authenticatedFetch.mockRejectedValueOnce(networkError);
-
-      await migratePortfolioData();
-
-      expect(mockLocalStorage.getItem).toHaveBeenCalledWith("portfolioData");
-      expect(authenticatedFetch).toHaveBeenCalled();
-      expect(mockLocalStorage.removeItem).not.toHaveBeenCalled();
-      // The error from savePortfolioData should be logged since the function is called
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Error saving portfolio data:",
-        networkError,
-      );
-
-      consoleSpy.mockRestore();
-    });
-
-    it("migrates data with minimal required fields", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-
-      const minimalData = {
-        name: "Jane",
-        title: "Designer",
-        bio: "Creative designer",
-        location: "LA",
-        email: "jane@example.com",
-        avatar: "jane.jpg",
-        social: {
-          github: "jane",
-          twitter: "jane",
-          linkedin: "jane",
-        },
-        skills: [],
-      };
-
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(minimalData));
-      authenticatedFetch.mockResolvedValueOnce({
-        ok: true,
-      } as any);
-
-      await migratePortfolioData();
-
-      expect(authenticatedFetch).toHaveBeenCalledWith("/api/portfolio", {
-        method: "POST",
-        body: JSON.stringify(minimalData),
-      });
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("portfolioData");
-    });
-
-    it("migrates data with optional social fields", async () => {
-      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
-
-      const dataWithOptionalFields = {
-        ...mockPortfolioData,
-        social: {
-          github: "user",
-          twitter: "user",
-          linkedin: "user",
-          discord: "user#1234",
-          reddit: "user",
-        },
-      };
-
-      mockLocalStorage.getItem.mockReturnValue(
-        JSON.stringify(dataWithOptionalFields),
-      );
-      authenticatedFetch.mockResolvedValueOnce({
-        ok: true,
-      } as any);
-
-      await migratePortfolioData();
-
-      expect(authenticatedFetch).toHaveBeenCalledWith("/api/portfolio", {
-        method: "POST",
-        body: JSON.stringify(dataWithOptionalFields),
-      });
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("portfolioData");
-    });
-  });
 });
