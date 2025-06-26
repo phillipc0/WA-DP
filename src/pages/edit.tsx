@@ -187,7 +187,8 @@ export default function EditPage() {
   });
 
   const [newSubject, setNewSubject] = useState("");
-  const [cvEditMode, setCvEditMode] = useState<"experience" | "education">("experience");
+  const [editingExperienceIndex, setEditingExperienceIndex] = useState<number | null>(null);
+  const [editingEducationIndex, setEditingEducationIndex] = useState<number | null>(null);
 
   const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
   const [isUploadedImage, setIsUploadedImage] = useState(false);
@@ -499,30 +500,95 @@ export default function EditPage() {
     });
   };
 
-  // Handle experience input change
-  const handleExperienceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Handle editing an existing experience
+  const handleEditExperience = (index: number) => {
+    const experience = portfolioData.cv[index];
+    setNewExperience({
+      company: experience.company,
+      position: experience.position,
+      duration: experience.duration,
+      location: experience.location,
+      description: experience.description,
+      technologies: experience.technologies || [],
+    });
+    setEditingExperienceIndex(index);
+    // Remove the experience from the list while editing
+    handleRemoveExperience(index);
+  };
+
+  // Handle education input change
+  const handleEducationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setNewExperience((prev) => ({
+    setNewEducation((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  // Handle adding technology to experience
-  const handleAddTechnologyToExperience = (skillName: string) => {
-    if (!skillName || newExperience.technologies?.includes(skillName)) return;
-    setNewExperience((prev) => ({
+  // Handle adding subject to education
+  const handleAddSubject = () => {
+    if (newSubject.trim() === "") return;
+    setNewEducation((prev) => ({
       ...prev,
-      technologies: [...(prev.technologies || []), skillName],
+      subjects: [...(prev.subjects || []), newSubject.trim()],
+    }));
+    setNewSubject("");
+  };
+
+  // Handle removing subject from education
+  const handleRemoveSubject = (index: number) => {
+    setNewEducation((prev) => ({
+      ...prev,
+      subjects: prev.subjects?.filter((_, i) => i !== index) || [],
     }));
   };
 
-  // Handle removing technology from experience
-  const handleRemoveTechnology = (index: number) => {
-    setNewExperience((prev) => ({
-      ...prev,
-      technologies: prev.technologies?.filter((_, i) => i !== index) || [],
-    }));
+  // Reset editing states when adding new items
+  const handleAddExperience = () => {
+    if (newExperience.company.trim() === "" || newExperience.position.trim() === "") return;
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        cv: [...(prev.cv || []), { ...newExperience }],
+      };
+    });
+
+    // Reset new experience input and editing state
+    setNewExperience({
+      company: "",
+      position: "",
+      duration: "",
+      location: "",
+      description: "",
+      technologies: [],
+    });
+    setEditingExperienceIndex(null);
+  };
+
+  const handleAddEducation = () => {
+    if (newEducation.institution.trim() === "" || newEducation.degree.trim() === "") return;
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        education: [...(prev.education || []), { ...newEducation }],
+      };
+    });
+
+    // Reset new education input and editing state
+    setNewEducation({
+      institution: "",
+      degree: "",
+      duration: "",
+      location: "",
+      description: "",
+      subjects: [],
+    });
+    setEditingEducationIndex(null);
+  };
   };
 
   // Handle adding a new education
@@ -559,31 +625,20 @@ export default function EditPage() {
     });
   };
 
-  // Handle education input change
-  const handleEducationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setNewEducation((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Handle adding subject to education
-  const handleAddSubject = () => {
-    if (newSubject.trim() === "") return;
-    setNewEducation((prev) => ({
-      ...prev,
-      subjects: [...(prev.subjects || []), newSubject.trim()],
-    }));
-    setNewSubject("");
-  };
-
-  // Handle removing subject from education
-  const handleRemoveSubject = (index: number) => {
-    setNewEducation((prev) => ({
-      ...prev,
-      subjects: prev.subjects?.filter((_, i) => i !== index) || [],
-    }));
+  // Handle editing an existing education
+  const handleEditEducation = (index: number) => {
+    const education = portfolioData.education[index];
+    setNewEducation({
+      institution: education.institution,
+      degree: education.degree,
+      duration: education.duration,
+      location: education.location,
+      description: education.description,
+      subjects: education.subjects || [],
+    });
+    setEditingEducationIndex(index);
+    // Remove the education from the list while editing
+    handleRemoveEducation(index);
   };
 
   // Show loading state while data is being fetched
@@ -1030,16 +1085,28 @@ export default function EditPage() {
                                     {experience.location} • {experience.duration}
                                   </p>
                                 </div>
-                                <Tooltip content="Remove experience">
-                                  <Button
-                                    isIconOnly
-                                    color="danger"
-                                    variant="light"
-                                    onPress={() => handleRemoveExperience(index)}
-                                  >
-                                    ✕
-                                  </Button>
-                                </Tooltip>
+                                <div className="flex items-center gap-2">
+                                  <Tooltip content="Edit experience">
+                                    <Button
+                                      isIconOnly
+                                      color="primary"
+                                      variant="light"
+                                      onPress={() => handleEditExperience(index)}
+                                    >
+                                      ✎
+                                    </Button>
+                                  </Tooltip>
+                                  <Tooltip content="Remove experience">
+                                    <Button
+                                      isIconOnly
+                                      color="danger"
+                                      variant="light"
+                                      onPress={() => handleRemoveExperience(index)}
+                                    >
+                                      ✕
+                                    </Button>
+                                  </Tooltip>
+                                </div>
                               </div>
                               <p className="text-default-700">{experience.description}</p>
                               <div className="flex flex-wrap gap-2 mt-2">
@@ -1166,16 +1233,28 @@ export default function EditPage() {
                                     {edu.location} • {edu.duration}
                                   </p>
                                 </div>
-                                <Tooltip content="Remove education">
-                                  <Button
-                                    isIconOnly
-                                    color="danger"
-                                    variant="light"
-                                    onPress={() => handleRemoveEducation(index)}
-                                  >
-                                    ✕
-                                  </Button>
-                                </Tooltip>
+                                <div className="flex items-center gap-2">
+                                  <Tooltip content="Edit education">
+                                    <Button
+                                      isIconOnly
+                                      color="primary"
+                                      variant="light"
+                                      onPress={() => handleEditEducation(index)}
+                                    >
+                                      ✎
+                                    </Button>
+                                  </Tooltip>
+                                  <Tooltip content="Remove education">
+                                    <Button
+                                      isIconOnly
+                                      color="danger"
+                                      variant="light"
+                                      onPress={() => handleRemoveEducation(index)}
+                                    >
+                                      ✕
+                                    </Button>
+                                  </Tooltip>
+                                </div>
                               </div>
                               <p className="text-default-700">{edu.description}</p>
                               <div className="flex flex-wrap gap-2 mt-2">
