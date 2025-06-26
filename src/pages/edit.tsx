@@ -433,6 +433,92 @@ export default function EditPage() {
     e.currentTarget.classList.remove("opacity-50");
   };
 
+  // Handle drag and drop for experience reordering
+  const handleExperienceDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData("text/plain", index.toString());
+    e.currentTarget.classList.add("opacity-50");
+  };
+
+  const handleExperienceDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.currentTarget.classList.add("bg-default-100");
+  };
+
+  const handleExperienceDragLeave = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("bg-default-100");
+  };
+
+  const handleExperienceDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("bg-default-100");
+
+    if (!portfolioData) return;
+
+    const sourceIndex = Number(e.dataTransfer.getData("text/plain"));
+
+    if (sourceIndex === targetIndex) return;
+
+    const updatedExperiences = [...(portfolioData.cv || [])];
+    const [movedExperience] = updatedExperiences.splice(sourceIndex, 1);
+
+    updatedExperiences.splice(targetIndex, 0, movedExperience);
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        cv: updatedExperiences,
+      };
+    });
+  };
+
+  const handleExperienceDragEnd = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("opacity-50");
+  };
+
+  // Handle drag and drop for education reordering
+  const handleEducationDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData("text/plain", index.toString());
+    e.currentTarget.classList.add("opacity-50");
+  };
+
+  const handleEducationDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.currentTarget.classList.add("bg-default-100");
+  };
+
+  const handleEducationDragLeave = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("bg-default-100");
+  };
+
+  const handleEducationDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("bg-default-100");
+
+    if (!portfolioData) return;
+
+    const sourceIndex = Number(e.dataTransfer.getData("text/plain"));
+
+    if (sourceIndex === targetIndex) return;
+
+    const updatedEducation = [...(portfolioData.education || [])];
+    const [movedEducation] = updatedEducation.splice(sourceIndex, 1);
+
+    updatedEducation.splice(targetIndex, 0, movedEducation);
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        education: updatedEducation,
+      };
+    });
+  };
+
+  const handleEducationDragEnd = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("opacity-50");
+  };
+
   // Reset all data to defaults
   const handleReset = () => {
     setResetAlert(true);
@@ -1022,57 +1108,74 @@ export default function EditPage() {
                     </p>
                   ) : (
                     <div className="space-y-4">
+                      <p className="text-sm text-default-500 mb-2">
+                        Drag and drop experiences to reorder them
+                      </p>
                       {portfolioData.cv?.map((experience: any, index: any) => (
                         <div
                           key={index}
-                          className="p-4 border border-default-200 rounded-md"
+                          draggable
+                          className="flex items-center gap-2 p-4 border border-default-200 rounded-md"
+                          onDragStart={(e) => handleExperienceDragStart(e, index)}
+                          onDragOver={handleExperienceDragOver}
+                          onDragLeave={handleExperienceDragLeave}
+                          onDrop={(e) => handleExperienceDrop(e, index)}
+                          onDragEnd={handleExperienceDragEnd}
                         >
-                          <div className="flex justify-between mb-2">
-                            <div>
-                              <h4 className="text-md font-semibold">
-                                {experience.position} at {experience.company}
-                              </h4>
-                              <p className="text-sm text-default-500">
-                                {experience.location} • {experience.duration}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Tooltip content="Edit experience">
-                                <Button
-                                  isIconOnly
-                                  color="primary"
-                                  variant="light"
-                                  onPress={() => handleEditExperience(index)}
-                                >
-                                  ✎
-                                </Button>
-                              </Tooltip>
-                              <Tooltip content="Remove experience">
-                                <Button
-                                  isIconOnly
-                                  color="danger"
-                                  variant="light"
-                                  onPress={() => handleRemoveExperience(index)}
-                                >
-                                  ✕
-                                </Button>
-                              </Tooltip>
-                            </div>
+                          <div
+                            className="cursor-move p-1 text-default-400 hover:text-default-600"
+                            title="Drag to reorder"
+                          >
+                            ⋮⋮
                           </div>
-                          <p className="text-default-700">
-                            {experience.description}
-                          </p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {experience.technologies?.map(
-                              (tech: any, i: number) => (
-                                <span
-                                  key={i}
-                                  className="text-xs rounded-full bg-default-100 px-3 py-1"
-                                >
-                                  {tech}
-                                </span>
-                              ),
-                            )}
+                          <div className="flex-1">
+                            <div className="flex justify-between mb-2">
+                              <div>
+                                <h4 className="text-md font-semibold">
+                                  {experience.position} at {experience.company}
+                                </h4>
+                                <p className="text-sm text-default-500">
+                                  {experience.location} • {experience.duration}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Tooltip content="Edit experience">
+                                  <Button
+                                    isIconOnly
+                                    color="primary"
+                                    variant="light"
+                                    onPress={() => handleEditExperience(index)}
+                                  >
+                                    ✎
+                                  </Button>
+                                </Tooltip>
+                                <Tooltip content="Remove experience">
+                                  <Button
+                                    isIconOnly
+                                    color="danger"
+                                    variant="light"
+                                    onPress={() => handleRemoveExperience(index)}
+                                  >
+                                    ✕
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                            </div>
+                            <p className="text-default-700">
+                              {experience.description}
+                            </p>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {experience.technologies?.map(
+                                (tech: any, i: number) => (
+                                  <span
+                                    key={i}
+                                    className="text-xs rounded-full bg-default-100 px-3 py-1"
+                                  >
+                                    {tech}
+                                  </span>
+                                ),
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -1153,44 +1256,61 @@ export default function EditPage() {
                     </p>
                   ) : (
                     <div className="space-y-4">
+                      <p className="text-sm text-default-500 mb-2">
+                        Drag and drop education records to reorder them
+                      </p>
                       {portfolioData.education?.map((edu: any, index: any) => (
                         <div
                           key={index}
-                          className="p-4 border border-default-200 rounded-md"
+                          draggable
+                          className="flex items-center gap-2 p-4 border border-default-200 rounded-md"
+                          onDragStart={(e) => handleEducationDragStart(e, index)}
+                          onDragOver={handleEducationDragOver}
+                          onDragLeave={handleEducationDragLeave}
+                          onDrop={(e) => handleEducationDrop(e, index)}
+                          onDragEnd={handleEducationDragEnd}
                         >
-                          <div className="flex justify-between mb-2">
-                            <div>
-                              <h4 className="text-md font-semibold">
-                                {edu.degree} from {edu.institution}
-                              </h4>
-                              <p className="text-sm text-default-500">
-                                {edu.location} • {edu.duration}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Tooltip content="Edit education">
-                                <Button
-                                  isIconOnly
-                                  color="primary"
-                                  variant="light"
-                                  onPress={() => handleEditEducation(index)}
-                                >
-                                  ✎
-                                </Button>
-                              </Tooltip>
-                              <Tooltip content="Remove education">
-                                <Button
-                                  isIconOnly
-                                  color="danger"
-                                  variant="light"
-                                  onPress={() => handleRemoveEducation(index)}
-                                >
-                                  ✕
-                                </Button>
-                              </Tooltip>
-                            </div>
+                          <div
+                            className="cursor-move p-1 text-default-400 hover:text-default-600"
+                            title="Drag to reorder"
+                          >
+                            ⋮⋮
                           </div>
-                          <p className="text-default-700">{edu.description}</p>
+                          <div className="flex-1">
+                            <div className="flex justify-between mb-2">
+                              <div>
+                                <h4 className="text-md font-semibold">
+                                  {edu.degree} from {edu.institution}
+                                </h4>
+                                <p className="text-sm text-default-500">
+                                  {edu.location} • {edu.duration}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Tooltip content="Edit education">
+                                  <Button
+                                    isIconOnly
+                                    color="primary"
+                                    variant="light"
+                                    onPress={() => handleEditEducation(index)}
+                                  >
+                                    ✎
+                                  </Button>
+                                </Tooltip>
+                                <Tooltip content="Remove education">
+                                  <Button
+                                    isIconOnly
+                                    color="danger"
+                                    variant="light"
+                                    onPress={() => handleRemoveEducation(index)}
+                                  >
+                                    ✕
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                            </div>
+                            <p className="text-default-700">{edu.description}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
