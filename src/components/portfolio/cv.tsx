@@ -143,22 +143,6 @@ export function CV({ refreshTrigger }: CVProps) {
                   {edu.description}
                 </p>
                 
-                {edu.subjects && edu.subjects.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {edu.subjects.map((subject, subjectIndex) => (
-                      <Chip
-                        key={subjectIndex}
-                        className="text-xs"
-                        color="secondary"
-                        size="sm"
-                        variant="bordered"
-                      >
-                        {subject}
-                      </Chip>
-                    ))}
-                  </div>
-                )}
-                
                 {index < education.length - 1 && (
                   <Divider className="mt-6" />
                 )}

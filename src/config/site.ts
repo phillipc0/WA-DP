@@ -59,16 +59,14 @@ export const siteConfig = {
         degree: "Master of Science in Computer Science",
         duration: "2017 - 2019",
         location: "Berlin, Germany",
-        description: "Specialized in Software Engineering and Machine Learning. Graduated with honors and completed thesis on distributed systems.",
-        subjects: ["Algorithms", "Data Structures", "Machine Learning", "Distributed Systems", "Software Architecture"]
+        description: "Specialized in Software Engineering and Machine Learning. Graduated with honors and completed thesis on distributed systems."
       },
       {
         institution: "State University",
         degree: "Bachelor of Science in Information Technology",
         duration: "2013 - 2017",
         location: "Austin, TX",
-        description: "Foundation in computer science fundamentals with focus on web development and database management.",
-        subjects: ["Programming", "Database Design", "Web Development", "Network Security", "Project Management"]
+        description: "Foundation in computer science fundamentals with focus on web development and database management."
       }
     ],
   },

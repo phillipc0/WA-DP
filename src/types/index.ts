@@ -19,7 +19,6 @@ export interface Education {
   duration: string;
   location: string;
   description: string;
-  subjects?: string[];
 }
 
 export interface Skill {
