@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Navbar as HeroUINavbar,
   NavbarBrand,
@@ -27,6 +27,7 @@ import {
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -91,8 +92,12 @@ export const Navbar = () => {
                 <NavbarItem key={item.href}>
                   <Link
                     className={clsx(
-                      linkStyles({ color: "foreground" }),
-                      "data-[active=true]:text-primary data-[active=true]:font-medium",
+                      linkStyles({
+                        color: "foreground",
+                      }),
+                      "font-bold",
+                      location.pathname === item.href &&
+                        "border-b-2 border-primary",
                     )}
                     color="foreground"
                     href={item.href}
@@ -132,44 +137,37 @@ export const Navbar = () => {
           <div className="mx-4 mt-2 flex flex-col gap-2">
             {siteConfig.navMenuItems.map((item, index) => {
               if (item.href === "/edit" && !isAdmin) {
+                // don't show "Edit" unless admin
                 return null;
               }
-
               if (item.href === "/logout") {
-                if (!isAdmin) {
-                  return (
-                    <NavbarMenuItem key={`${item.label}-${index}`}>
-                      <Button
-                        className="w-full justify-start"
-                        color="primary"
-                        size="lg"
-                        variant="light"
-                        onPress={handleLoginClick}
-                      >
-                        Login
-                      </Button>
-                    </NavbarMenuItem>
-                  );
-                } else {
-                  return (
-                    <NavbarMenuItem key={`${item.label}-${index}`}>
-                      <Button
-                        className="w-full justify-start"
-                        color="danger"
-                        size="lg"
-                        variant="light"
-                        onPress={handleLoginClick}
-                      >
-                        Logout
-                      </Button>
-                    </NavbarMenuItem>
-                  );
-                }
+                // render Login/Logout button in menu
+                return (
+                  <NavbarMenuItem key={`${item.label}-${index}`}>
+                    <Button
+                      className="w-full justify-start"
+                      color={isAdmin ? "danger" : "primary"}
+                      size="lg"
+                      variant="light"
+                      onPress={handleLoginClick}
+                    >
+                      {isAdmin ? "Logout" : "Login"}
+                    </Button>
+                  </NavbarMenuItem>
+                );
               }
-
+              const isActive = location.pathname === item.href;
               return (
                 <NavbarMenuItem key={`${item.label}-${index}`}>
-                  <Link color="foreground" href={item.href} size="lg">
+                  <Link
+                    className={clsx(
+                      "font-bold",
+                      isActive && "border-b-2 border-primary"
+                    )}
+                    color="foreground"
+                    href={item.href || "#"}
+                    size="lg"
+                  >
                     {item.label}
                   </Link>
                 </NavbarMenuItem>
