@@ -50,18 +50,18 @@ for (const [file, stats] of Object.entries(raw)) {
   layers[layer] = (layers[layer] ?? 0) + code;
 }
 
-//eslint-disable-next-line no-console
+ 
 console.log("LOC per Module");
-//eslint-disable-next-line no-console
+ 
 console.table(
   Object.entries(modules)
     .sort(([, a], [, b]) => b - a)
     .map(([module, loc]) => ({ module, loc })),
 );
 
-//eslint-disable-next-line no-console
+ 
 console.log("LOC per Layer");
-//eslint-disable-next-line no-console
+ 
 console.table(
   Object.entries(layers)
     .sort(([, a], [, b]) => b - a)
