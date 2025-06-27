@@ -39,11 +39,11 @@ vi.mock("@/config/site", () => ({
   siteConfig: {
     navItems: [
       { label: "Home", href: "/" },
-      { label: "Edit", href: "/portfolioEditor" },
+      { label: "Edit", href: "/edit" },
     ],
     navMenuItems: [
       { label: "Home", href: "/" },
-      { label: "Edit", href: "/portfolioEditor" },
+      { label: "Edit", href: "/edit" },
       { label: "Logout", href: "/logout" },
     ],
   },
@@ -240,7 +240,7 @@ describe("Navbar", () => {
     fireEvent.click(screen.getByTestId("modal-success"));
 
     expect(screen.queryByTestId("login-modal")).not.toBeInTheDocument();
-    expect(mockNavigate).toHaveBeenCalledWith("/portfolioEditor");
+    expect(mockNavigate).toHaveBeenCalledWith("/edit");
   });
 
   it("closes login modal when close button is clicked", async () => {
