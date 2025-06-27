@@ -1,4 +1,4 @@
-import { PortfolioEditor } from "../components/portfolioEditor";
+import { PortfolioEditor } from "@/components/portfolioEditor";
 
 import DefaultLayout from "@/layouts/default";
 

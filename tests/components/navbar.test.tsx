@@ -201,7 +201,7 @@ describe("Navbar", () => {
 
     mockIsAuthenticated.mockReturnValue(true);
     mockValidateToken.mockResolvedValue(true);
-    window.location.pathname = "/portfolioEditor";
+    window.location.pathname = "/edit";
 
     renderNavbar();
 
