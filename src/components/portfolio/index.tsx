@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { PersonalInfo } from "./personal-info";
 import { Skills } from "./skills";
 import { GithubIntegration } from "./github-integration";
+import { CV } from "./cv";
 import { UnsavedChangesBanner } from "./unsaved-changes-banner";
 
 import { isAuthenticated } from "@/lib/auth";
@@ -74,6 +75,9 @@ export function Portfolio() {
         <div>
           <GithubIntegration refreshTrigger={refreshTrigger} />
         </div>
+        <div className="md:col-span-2">
+          <CV refreshTrigger={refreshTrigger} />
+        </div>
       </div>
     </div>
   );
@@ -82,3 +86,4 @@ export function Portfolio() {
 export { PersonalInfo } from "./personal-info";
 export { Skills } from "./skills";
 export { GithubIntegration } from "./github-integration";
+export { CV } from "./cv";

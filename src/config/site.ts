@@ -1,5 +1,3 @@
-export type SiteConfig = typeof siteConfig;
-
 export const siteConfig = {
   name: "Developer Portfolio",
   description: "Generate your own developer portfolio in seconds.",
@@ -26,6 +24,36 @@ export const siteConfig = {
       { name: "CSS/Tailwind", level: 85 },
       { name: "UI/UX Design", level: 75 },
       { name: "GraphQL", level: 70 },
+    ],
+    cv: [
+      {
+        company: "Tech Innovators Inc.",
+        position: "Senior Full Stack Developer",
+        duration: "2022 - Present",
+        location: "New York, NY",
+        description:
+          "Lead development of modern web applications using React, TypeScript, and Node.js. Mentored junior developers and collaborated with design teams to create exceptional user experiences.",
+        technologies: ["React", "TypeScript", "Node.js"],
+      },
+      {
+        company: "StartupXYZ",
+        position: "Junior Web Developer",
+        duration: "2019 - 2022",
+        location: "Austin, TX",
+        description:
+          "Built and maintained company websites and web applications. Gained experience in full-stack development and agile methodologies.",
+        technologies: ["GraphQL"],
+      },
+    ],
+    education: [
+      {
+        institution: "University of Technology",
+        degree: "Bachelor of Science in Computer Science",
+        duration: "2017 - 2019",
+        location: "Frankfurt, Germany",
+        description:
+          "Specialized in Software Engineering and Machine Learning. Graduated with honors and completed thesis on distributed systems.",
+      },
     ],
   },
   navItems: [

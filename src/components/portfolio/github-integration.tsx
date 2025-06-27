@@ -4,9 +4,9 @@ import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
 import {
   Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
   DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
 } from "@heroui/dropdown";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
@@ -84,7 +84,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     const initializeRepos = async () => {
       const githubUsername = portfolioData.social.github;
 
-      if (portfolioLoading || !githubUsername || githubUsername === "johndoe") {
+      if (portfolioLoading || !githubUsername) {
         setLoading(false);
         return;
       }
@@ -115,7 +115,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     const loadReposForSort = async () => {
       const githubUsername = portfolioData.social.github;
 
-      if (!githubUsername || githubUsername === "johndoe") {
+      if (!githubUsername) {
         return;
       }
 
