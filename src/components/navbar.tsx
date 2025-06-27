@@ -81,7 +81,7 @@ export const Navbar = () => {
               <p className="font-bold text-inherit">WA-DP</p>
             </Link>
           </NavbarBrand>
-          <div className="hidden lg:flex gap-4 justify-start ml-2">
+          <div className="hidden sm:flex gap-4 justify-start ml-2">
             {siteConfig.navItems.map((item) => {
               if (item.href === "/edit" && !isAdmin) {
                 return null;
@@ -130,23 +130,51 @@ export const Navbar = () => {
 
         <NavbarMenu>
           <div className="mx-4 mt-2 flex flex-col gap-2">
-            {siteConfig.navMenuItems.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  color={
-                    index === 2
-                      ? "primary"
-                      : index === siteConfig.navMenuItems.length - 1
-                        ? "danger"
-                        : "foreground"
-                  }
-                  href="#"
-                  size="lg"
-                >
-                  {item.label}
-                </Link>
-              </NavbarMenuItem>
-            ))}
+            {siteConfig.navMenuItems.map((item, index) => {
+              if (item.href === "/edit" && !isAdmin) {
+                return null;
+              }
+
+              if (item.href === "/logout") {
+                if (!isAdmin) {
+                  return (
+                    <NavbarMenuItem key={`${item.label}-${index}`}>
+                      <Button
+                        className="w-full justify-start"
+                        color="primary"
+                        size="lg"
+                        variant="light"
+                        onPress={handleLoginClick}
+                      >
+                        Login
+                      </Button>
+                    </NavbarMenuItem>
+                  );
+                } else {
+                  return (
+                    <NavbarMenuItem key={`${item.label}-${index}`}>
+                      <Button
+                        className="w-full justify-start"
+                        color="danger"
+                        size="lg"
+                        variant="light"
+                        onPress={handleLoginClick}
+                      >
+                        Logout
+                      </Button>
+                    </NavbarMenuItem>
+                  );
+                }
+              }
+
+              return (
+                <NavbarMenuItem key={`${item.label}-${index}`}>
+                  <Link color="foreground" href={item.href} size="lg">
+                    {item.label}
+                  </Link>
+                </NavbarMenuItem>
+              );
+            })}
           </div>
         </NavbarMenu>
       </HeroUINavbar>
