@@ -19,6 +19,7 @@
     "e2e:run": "cypress run"
   },
   "dependencies": {
+    "@heroui/alert": "^2.2.15",
     "@heroui/avatar": "^2.2.18",
     "@heroui/button": "2.2.22",
     "@heroui/card": "^2.2.21",

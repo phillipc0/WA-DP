@@ -1,6 +1,5 @@
-import { Card, CardBody } from "@heroui/card";
+import { Alert } from "@heroui/alert";
 import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
 
 import {
   clearDraftFromCookies,
@@ -46,32 +45,35 @@ export function UnsavedChangesBanner({
   };
 
   return (
-    <Card className="border-warning-200 bg-warning-50 dark:bg-warning-50/10">
-      <CardBody className="py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Chip color="warning" size="sm" variant="dot">
-              Unsaved changes
-            </Chip>
-            <span className="text-sm text-default-600">
-              You are viewing a preview of your changes.
-            </span>
-          </div>
-          <div className="flex gap-2">
+    <div className="flex items-center justify-center w-full">
+      <Alert
+        color="warning"
+        description="You are viewing a preview of your changes"
+        endContent={
+          <div className="flex gap-3">
             <Button
-              color="warning"
+              color="success"
               size="sm"
+              style={{ top: 4 }}
+              variant="flat"
+              onPress={handleSaveChanges}
+            >
+              Save Changes
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              style={{ top: 4 }}
               variant="flat"
               onPress={handleDiscardChanges}
             >
               Discard Changes
             </Button>
-            <Button color="success" size="sm" onPress={handleSaveChanges}>
-              Save Changes
-            </Button>
           </div>
-        </div>
-      </CardBody>
-    </Card>
+        }
+        title="Unsaved changes"
+        variant="faded"
+      />
+    </div>
   );
 }
