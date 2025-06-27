@@ -50,18 +50,16 @@ for (const [file, stats] of Object.entries(raw)) {
   layers[layer] = (layers[layer] ?? 0) + code;
 }
 
- 
 console.log("LOC per Module");
- 
+
 console.table(
   Object.entries(modules)
     .sort(([, a], [, b]) => b - a)
     .map(([module, loc]) => ({ module, loc })),
 );
 
- 
 console.log("LOC per Layer");
- 
+
 console.table(
   Object.entries(layers)
     .sort(([, a], [, b]) => b - a)
