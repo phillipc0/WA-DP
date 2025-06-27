@@ -44,9 +44,8 @@ export function usePortfolioEditor() {
   });
 
   const [selectedSkills, setSelectedSkills] = useState<Set<string>>(
-      new Set([]),
+    new Set([]),
   );
-
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -476,7 +475,7 @@ export function usePortfolioEditor() {
   };
 
   const handleExperienceChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setNewExperience((prev) => ({
@@ -495,8 +494,8 @@ export function usePortfolioEditor() {
 
   const handleAddEducation = () => {
     if (
-        newEducation.institution.trim() === "" ||
-        newEducation.degree.trim() === ""
+      newEducation.institution.trim() === "" ||
+      newEducation.degree.trim() === ""
     )
       return;
 
@@ -577,5 +576,33 @@ export function usePortfolioEditor() {
     setResetAlert,
     setFileAlert,
     setUseUrlForAvatar,
+    // CV state
+    newExperience,
+    setNewExperience,
+    newEducation,
+    setNewEducation,
+    selectedSkills,
+    setSelectedSkills,
+    // CV Experience functions
+    handleAddExperience,
+    handleRemoveExperience,
+    handleEditExperience,
+    handleExperienceChange,
+    handleExperienceDragStart,
+    handleExperienceDragOver,
+    handleExperienceDragLeave,
+    handleExperienceDrop,
+    handleExperienceDragEnd,
+    handleRemoveSelectedSkill,
+    // CV Education functions
+    handleAddEducation,
+    handleRemoveEducation,
+    handleEditEducation,
+    handleEducationChange,
+    handleEducationDragStart,
+    handleEducationDragOver,
+    handleEducationDragLeave,
+    handleEducationDrop,
+    handleEducationDragEnd,
   };
 }
