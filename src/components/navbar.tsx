@@ -112,7 +112,7 @@ export const Navbar = () => {
           <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
-          <NavbarItem className="hidden md:flex">
+          <NavbarItem className="hidden sm:flex">
             <Button
               color={isAdmin ? "danger" : "primary"}
               data-testid={isAdmin ? "logout-button" : "login-button"}
