@@ -158,7 +158,7 @@ export const Navbar = () => {
               }
               const isActive = location.pathname === item.href;
               return (
-                <NavbarMenuItem key={`${item.label}-${index}`}>
+                <NavbarMenuItem key={item.href}>
                   <Link
                     className={clsx(
                       "font-bold",
