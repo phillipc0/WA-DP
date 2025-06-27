@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Navbar as HeroUINavbar,
   NavbarBrand,
@@ -27,6 +27,7 @@ import {
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -91,8 +92,12 @@ export const Navbar = () => {
                 <NavbarItem key={item.href}>
                   <Link
                     className={clsx(
-                      linkStyles({ color: "foreground" }),
-                      "data-[active=true]:text-primary data-[active=true]:font-medium",
+                      linkStyles({
+                        color: "foreground",
+                      }),
+                      "font-bold",
+                      location.pathname === item.href &&
+                        "border-b-2 border-primary",
                     )}
                     color="foreground"
                     href={item.href}
@@ -133,14 +138,17 @@ export const Navbar = () => {
             {siteConfig.navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
+                  className={clsx(
+                    "font-bold",
+                    location.pathname === item.href &&
+                      "border-b-2 border-primary",
+                  )}
                   color={
-                    index === 2
-                      ? "primary"
-                      : index === siteConfig.navMenuItems.length - 1
-                        ? "danger"
-                        : "foreground"
+                    index === siteConfig.navMenuItems.length - 1
+                      ? "danger"
+                      : "foreground"
                   }
-                  href="#"
+                  href={item.href || "#"}
                   size="lg"
                 >
                   {item.label}
