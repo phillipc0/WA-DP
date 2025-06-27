@@ -71,7 +71,7 @@ When(
 );
 
 Then("I should be logged in and see the portfolio editor", () => {
-  cy.url().should("include", "/edit");
+  cy.url().should("include", "/portfolioEditor");
   cy.contains("Portfolio Edit Page").should("be.visible");
   cy.get('[data-testid="login-modal"]').should("not.exist");
 });
@@ -81,7 +81,7 @@ When("I log out", () => {
 });
 
 Then("I should be redirected to the home page", () => {
-  cy.url().should("not.include", "/edit");
+  cy.url().should("not.include", "/portfolioEditor");
   cy.url().should("match", /\/$|\/index\.html$/);
 });
 

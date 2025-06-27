@@ -1,5 +1,5 @@
 import DefaultLayout from "@/layouts/default";
-import { PortfolioEditor } from "@/components/edit";
+import { PortfolioEditor } from "../components/portfolioEditor";
 
 export default function EditPage() {
   return (

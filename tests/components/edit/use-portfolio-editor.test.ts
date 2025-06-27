@@ -1,6 +1,6 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { usePortfolioEditor } from "@/components/edit/use-portfolio-editor";
+import { usePortfolioEditor } from "@/components/portfolioEditor/use-portfolio-editor";
 
 // Mock all the dependencies
 vi.mock("react-router-dom", () => ({

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { SkillsForm } from "@/components/edit/skills-form";
+import { SkillsForm } from "@/components/portfolioEditor/skills-form";
 
 describe("SkillsForm", () => {
   const mockPortfolioData = {

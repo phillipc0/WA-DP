@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { PortfolioEditor } from "@/components/edit/portfolio-editor";
+import { PortfolioEditor } from "@/components/portfolioEditor";
 
 // Mock the usePortfolioEditor hook
 const mockUsePortfolioEditor = {
@@ -53,7 +53,7 @@ const mockUsePortfolioEditor = {
   setUseUrlForAvatar: vi.fn(),
 };
 
-vi.mock("@/components/edit/use-portfolio-editor", () => ({
+vi.mock("@/components/portfolioEditor/use-portfolio-editor", () => ({
   usePortfolioEditor: vi.fn(() => mockUsePortfolioEditor),
 }));
 

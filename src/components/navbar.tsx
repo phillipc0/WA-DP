@@ -50,7 +50,7 @@ export const Navbar = () => {
     if (isAdmin) {
       logout();
       setIsAdmin(false);
-      if (window.location.pathname === "/edit") {
+      if (window.location.pathname === "/portfolioEditor") {
         navigate("/");
       } else {
         window.location.reload();
@@ -83,7 +83,7 @@ export const Navbar = () => {
           </NavbarBrand>
           <div className="hidden lg:flex gap-4 justify-start ml-2">
             {siteConfig.navItems.map((item) => {
-              if (item.href === "/edit" && !isAdmin) {
+              if (item.href === "/portfolioEditor" && !isAdmin) {
                 return null;
               }
 

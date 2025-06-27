@@ -35,7 +35,7 @@ export const siteConfig = {
     },
     {
       label: "Edit",
-      href: "/edit",
+      href: "/portfolioEditor",
     },
   ],
   navMenuItems: [
@@ -45,7 +45,7 @@ export const siteConfig = {
     },
     {
       label: "Edit",
-      href: "/edit",
+      href: "/portfolioEditor",
     },
     {
       label: "Logout",

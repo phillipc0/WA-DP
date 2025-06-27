@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Alert } from "@/components/edit/alert";
+import { Alert } from "@/components/portfolioEditor/alert";
 
 describe("Alert", () => {
   const defaultProps = {

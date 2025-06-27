@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { SocialLinksForm } from "@/components/edit/social-links-form";
+import { SocialLinksForm } from "@/components/portfolioEditor/social-links-form";
 
 describe("SocialLinksForm", () => {
   const mockPortfolioData = {

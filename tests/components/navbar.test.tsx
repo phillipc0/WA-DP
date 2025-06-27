@@ -39,11 +39,11 @@ vi.mock("@/config/site", () => ({
   siteConfig: {
     navItems: [
       { label: "Home", href: "/" },
-      { label: "Edit", href: "/edit" },
+      { label: "Edit", href: "/portfolioEditor" },
     ],
     navMenuItems: [
       { label: "Home", href: "/" },
-      { label: "Edit", href: "/edit" },
+      { label: "Edit", href: "/portfolioEditor" },
       { label: "Logout", href: "/logout" },
     ],
   },
@@ -191,7 +191,7 @@ describe("Navbar", () => {
     expect(mockReload).toHaveBeenCalled();
   });
 
-  it("navigates to home when logout is clicked from edit page", async () => {
+  it("navigates to home when logout is clicked from portfolioEditor page", async () => {
     const { isAuthenticated, validateToken, logout } =
       await vi.importMock("@/lib/auth");
 
@@ -201,7 +201,7 @@ describe("Navbar", () => {
 
     mockIsAuthenticated.mockReturnValue(true);
     mockValidateToken.mockResolvedValue(true);
-    window.location.pathname = "/edit";
+    window.location.pathname = "/portfolioEditor";
 
     renderNavbar();
 
@@ -216,7 +216,7 @@ describe("Navbar", () => {
     expect(mockReload).not.toHaveBeenCalled();
   });
 
-  it("handles successful login by closing modal and navigating to edit", async () => {
+  it("handles successful login by closing modal and navigating to portfolioEditor", async () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 
@@ -240,7 +240,7 @@ describe("Navbar", () => {
     fireEvent.click(screen.getByTestId("modal-success"));
 
     expect(screen.queryByTestId("login-modal")).not.toBeInTheDocument();
-    expect(mockNavigate).toHaveBeenCalledWith("/edit");
+    expect(mockNavigate).toHaveBeenCalledWith("/portfolioEditor");
   });
 
   it("closes login modal when close button is clicked", async () => {
@@ -268,7 +268,7 @@ describe("Navbar", () => {
     expect(screen.queryByTestId("login-modal")).not.toBeInTheDocument();
   });
 
-  it("shows edit nav item only when user is authenticated", async () => {
+  it("shows portfolioEditor nav item only when user is authenticated", async () => {
     const { isAuthenticated, validateToken } =
       await vi.importMock("@/lib/auth");
 

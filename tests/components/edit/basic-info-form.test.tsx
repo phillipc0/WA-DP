@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { BasicInfoForm } from "@/components/edit/basic-info-form";
+import { BasicInfoForm } from "@/components/portfolioEditor/basic-info-form";
 
 describe("BasicInfoForm", () => {
   const mockPortfolioData = {
