@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { siteConfig } from "@/config/site";
@@ -9,6 +9,7 @@ import {
   loadDraftFromCookies,
   saveDraftToCookies,
 } from "@/lib/cookie-persistence";
+import { Education, Experience } from "@/types";
 
 type Skill = { name: string; level: number };
 
@@ -23,6 +24,29 @@ export function usePortfolioEditor() {
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
   const [fileAlertMessage, setFileAlertMessage] = useState("");
+
+  // CV state
+  const [newExperience, setNewExperience] = useState<Experience>({
+    company: "",
+    position: "",
+    duration: "",
+    location: "",
+    description: "",
+    technologies: [],
+  });
+
+  const [newEducation, setNewEducation] = useState<Education>({
+    institution: "",
+    degree: "",
+    duration: "",
+    location: "",
+    description: "",
+  });
+
+  const [selectedSkills, setSelectedSkills] = useState<Set<string>>(
+      new Set([]),
+  );
+
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -312,6 +336,215 @@ export function usePortfolioEditor() {
     } catch (error) {
       console.error("Error saving portfolio data:", error);
     }
+  };
+
+  //CV drag and drop
+  const handleExperienceDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData("text/plain", index.toString());
+    e.currentTarget.classList.add("opacity-50");
+  };
+
+  const handleExperienceDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.currentTarget.classList.add("bg-default-100");
+  };
+
+  const handleExperienceDragLeave = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("bg-default-100");
+  };
+
+  const handleExperienceDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("bg-default-100");
+
+    if (!portfolioData) return;
+
+    const sourceIndex = Number(e.dataTransfer.getData("text/plain"));
+
+    if (sourceIndex === targetIndex) return;
+
+    const updatedExperiences = [...(portfolioData.cv || [])];
+    const [movedExperience] = updatedExperiences.splice(sourceIndex, 1);
+
+    updatedExperiences.splice(targetIndex, 0, movedExperience);
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        cv: updatedExperiences,
+      };
+    });
+  };
+
+  const handleExperienceDragEnd = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("opacity-50");
+  };
+
+  const handleEducationDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData("text/plain", index.toString());
+    e.currentTarget.classList.add("opacity-50");
+  };
+
+  const handleEducationDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.currentTarget.classList.add("bg-default-100");
+  };
+
+  const handleEducationDragLeave = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("bg-default-100");
+  };
+
+  const handleEducationDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("bg-default-100");
+
+    if (!portfolioData) return;
+
+    const sourceIndex = Number(e.dataTransfer.getData("text/plain"));
+
+    if (sourceIndex === targetIndex) return;
+
+    const updatedEducation = [...(portfolioData.education || [])];
+    const [movedEducation] = updatedEducation.splice(sourceIndex, 1);
+
+    updatedEducation.splice(targetIndex, 0, movedEducation);
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        education: updatedEducation,
+      };
+    });
+  };
+
+  const handleEducationDragEnd = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("opacity-50");
+  };
+
+  // CV Management Functions
+  const handleAddExperience = () => {
+    if (
+      newExperience.company.trim() === "" ||
+      newExperience.position.trim() === ""
+    )
+      return;
+
+    const experienceWithTechnologies = {
+      ...newExperience,
+      technologies: Array.from(selectedSkills),
+    };
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        cv: [...(prev.cv || []), experienceWithTechnologies],
+      };
+    });
+
+    setNewExperience({
+      company: "",
+      position: "",
+      duration: "",
+      location: "",
+      description: "",
+      technologies: [],
+    });
+    setSelectedSkills(new Set([]));
+  };
+
+  const handleRemoveExperience = (index: number) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        cv: prev.cv?.filter((_: any, i: any) => i !== index) || [],
+      };
+    });
+  };
+
+  const handleEditExperience = (index: number) => {
+    if (!portfolioData?.cv) return;
+
+    const experience = portfolioData.cv[index];
+    setNewExperience(experience);
+    setSelectedSkills(new Set(experience.technologies || []));
+
+    handleRemoveExperience(index);
+  };
+
+  const handleExperienceChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setNewExperience((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRemoveSelectedSkill = (skillName: string) => {
+    setSelectedSkills((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(skillName);
+      return newSet;
+    });
+  };
+
+  const handleAddEducation = () => {
+    if (
+        newEducation.institution.trim() === "" ||
+        newEducation.degree.trim() === ""
+    )
+      return;
+
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        education: [...(prev.education || []), { ...newEducation }],
+      };
+    });
+
+    setNewEducation({
+      institution: "",
+      degree: "",
+      duration: "",
+      location: "",
+      description: "",
+    });
+  };
+
+  const handleRemoveEducation = (index: number) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        education:
+          prev.education?.filter((_: any, i: any) => i !== index) || [],
+      };
+    });
+  };
+
+  const handleEditEducation = (index: number) => {
+    if (!portfolioData?.education) return;
+
+    const education = portfolioData.education[index];
+    setNewEducation(education);
+
+    handleRemoveEducation(index);
+  };
+
+  const handleEducationChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setNewEducation((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return {
