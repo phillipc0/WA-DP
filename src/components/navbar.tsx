@@ -162,7 +162,7 @@ export const Navbar = () => {
                   <Link
                     className={clsx(
                       "font-bold",
-                      isActive && "border-b-2 border-primary"
+                      isActive && "border-b-2 border-primary",
                     )}
                     color="foreground"
                     href={item.href || "#"}
