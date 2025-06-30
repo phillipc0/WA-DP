@@ -48,7 +48,7 @@ export function UnsavedChangesBanner({
     <div className="flex items-center justify-center w-full">
       <Alert
         color="warning"
-        description="You are viewing a preview of your changes"
+        description="You are viewing a preview of your changes."
         endContent={
           <div className="flex gap-3">
             <Button

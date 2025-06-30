@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { PortfolioEditor } from "@/components/portfolioEditor";
 
 // Mock the usePortfolioEditor hook
@@ -57,6 +57,18 @@ vi.mock("@/components/portfolioEditor/use-portfolio-editor", () => ({
   usePortfolioEditor: vi.fn(() => mockUsePortfolioEditor),
 }));
 
+// Mock framer-motion to prevent window access issues during test teardown
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: "div",
+    span: "span",
+    button: "button",
+  },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+  LazyMotion: ({ children }: { children: React.ReactNode }) => children,
+  domAnimation: {},
+}));
+
 describe("PortfolioEditor", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -84,6 +96,12 @@ describe("PortfolioEditor", () => {
     mockUsePortfolioEditor.saveAlert = false;
     mockUsePortfolioEditor.resetAlert = false;
     mockUsePortfolioEditor.fileAlert = false;
+  });
+
+  afterEach(() => {
+    cleanup();
+    // Give time for any pending state updates to complete
+    return new Promise(resolve => setTimeout(resolve, 0));
   });
 
   it("shows loading state when isLoading is true", () => {

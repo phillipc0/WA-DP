@@ -51,15 +51,17 @@ describe("UnsavedChangesBanner", () => {
   it("has correct styling classes", () => {
     render(<UnsavedChangesBanner />);
 
-    const card = screen.getByText("Unsaved changes").closest(".bg-warning-50");
-    expect(card).toBeInTheDocument();
+    const alert = screen.getByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveAttribute("title", "Unsaved changes");
   });
 
-  it("chip has warning color and dot variant", () => {
+  it("alert has warning color", () => {
     render(<UnsavedChangesBanner />);
 
-    const chip = screen.getByText("Unsaved changes");
-    expect(chip).toBeInTheDocument();
+    const alert = screen.getByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveClass("text-warning-700");
   });
 
   it("calls clearDraftFromCookies and reloads page when discard is clicked", async () => {
