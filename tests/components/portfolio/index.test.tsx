@@ -60,15 +60,30 @@ vi.mock("@/lib/portfolio", () => ({
 }));
 
 describe("Portfolio", () => {
+  // Helper function to get mocked auth dependencies
+  const getMockAuthDependencies = async () => {
+    const { isAuthenticated } = await vi.importMock("@/lib/auth");
+    const { loadDraftFromCookies, hasChangesComparedToSaved, clearDraftFromCookies } = await vi.importMock(
+      "@/lib/cookie-persistence",
+    );
+    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+
+    return {
+      mockIsAuthenticated: isAuthenticated as any,
+      mockLoadDraftFromCookies: loadDraftFromCookies as any,
+      mockHasChangesComparedToSaved: hasChangesComparedToSaved as any,
+      mockClearDraftFromCookies: clearDraftFromCookies as any,
+      mockGetPortfolioData: getPortfolioData as any,
+    };
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   it("renders all portfolio components", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
+    const { mockIsAuthenticated } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
@@ -79,14 +94,7 @@ describe("Portfolio", () => {
   });
 
   it("does not show unsaved changes banner when user is not authenticated", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { clearDraftFromCookies } = await vi.importMock(
-      "@/lib/cookie-persistence",
-    );
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockClearDraftFromCookies = clearDraftFromCookies as any;
-
+    const { mockIsAuthenticated, mockClearDraftFromCookies } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
@@ -100,14 +108,7 @@ describe("Portfolio", () => {
   });
 
   it("does not show unsaved changes banner when authenticated but no draft exists", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock(
-      "@/lib/cookie-persistence",
-    );
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
-
+    const { mockIsAuthenticated, mockLoadDraftFromCookies } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(true);
     mockLoadDraftFromCookies.mockReturnValue(null);
 
@@ -121,16 +122,7 @@ describe("Portfolio", () => {
   });
 
   it("shows unsaved changes banner when authenticated with draft and no saved data", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock(
-      "@/lib/cookie-persistence",
-    );
-    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
-    const mockGetPortfolioData = getPortfolioData as any;
-
+    const { mockIsAuthenticated, mockLoadDraftFromCookies, mockGetPortfolioData } = await getMockAuthDependencies();
     const draftData = { name: "Draft User", title: "Draft Title" };
 
     mockIsAuthenticated.mockReturnValue(true);
@@ -145,15 +137,12 @@ describe("Portfolio", () => {
   });
 
   it("shows unsaved changes banner when draft differs from saved data", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies, hasChangesComparedToSaved } =
-      await vi.importMock("@/lib/cookie-persistence");
-    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
-    const mockHasChangesComparedToSaved = hasChangesComparedToSaved as any;
-    const mockGetPortfolioData = getPortfolioData as any;
+    const {
+      mockIsAuthenticated,
+      mockLoadDraftFromCookies,
+      mockHasChangesComparedToSaved,
+      mockGetPortfolioData,
+    } = await getMockAuthDependencies();
 
     const draftData = { name: "Draft User", title: "Draft Title" };
     const savedData = { name: "Saved User", title: "Saved Title" };
@@ -175,15 +164,12 @@ describe("Portfolio", () => {
   });
 
   it("does not show unsaved changes banner when draft matches saved data", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies, hasChangesComparedToSaved } =
-      await vi.importMock("@/lib/cookie-persistence");
-    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
-    const mockHasChangesComparedToSaved = hasChangesComparedToSaved as any;
-    const mockGetPortfolioData = getPortfolioData as any;
+    const {
+      mockIsAuthenticated,
+      mockLoadDraftFromCookies,
+      mockHasChangesComparedToSaved,
+      mockGetPortfolioData,
+    } = await getMockAuthDependencies();
 
     const draftData = { name: "Same User", title: "Same Title" };
     const savedData = { name: "Same User", title: "Same Title" };
@@ -207,16 +193,8 @@ describe("Portfolio", () => {
   });
 
   it("shows unsaved changes banner when getPortfolioData throws an error", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock(
-      "@/lib/cookie-persistence",
-    );
-    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+    const { mockIsAuthenticated, mockLoadDraftFromCookies, mockGetPortfolioData } = await getMockAuthDependencies();
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
-    const mockGetPortfolioData = getPortfolioData as any;
 
     const draftData = { name: "Draft User", title: "Draft Title" };
     const error = new Error("Network error");
@@ -239,15 +217,12 @@ describe("Portfolio", () => {
   });
 
   it("hides unsaved changes banner and increments refresh trigger when discard is clicked", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies, hasChangesComparedToSaved } =
-      await vi.importMock("@/lib/cookie-persistence");
-    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
-    const mockHasChangesComparedToSaved = hasChangesComparedToSaved as any;
-    const mockGetPortfolioData = getPortfolioData as any;
+    const {
+      mockIsAuthenticated,
+      mockLoadDraftFromCookies,
+      mockHasChangesComparedToSaved,
+      mockGetPortfolioData,
+    } = await getMockAuthDependencies();
 
     const draftData = { name: "Draft User", title: "Draft Title" };
     const savedData = { name: "Saved User", title: "Saved Title" };
@@ -287,9 +262,7 @@ describe("Portfolio", () => {
   });
 
   it("passes refresh trigger to all child components", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
+    const { mockIsAuthenticated } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
@@ -309,9 +282,7 @@ describe("Portfolio", () => {
   });
 
   it("renders components in correct grid layout", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
+    const { mockIsAuthenticated } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);
@@ -326,13 +297,7 @@ describe("Portfolio", () => {
   });
 
   it("handles authentication state correctly in useEffect", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock(
-      "@/lib/cookie-persistence",
-    );
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockLoadDraftFromCookies = loadDraftFromCookies as any;
+    const { mockIsAuthenticated, mockLoadDraftFromCookies } = await getMockAuthDependencies();
 
     // Test that authentication functions are called during component lifecycle
     mockIsAuthenticated.mockReturnValue(true);
@@ -348,9 +313,7 @@ describe("Portfolio", () => {
   });
 
   it("applies correct CSS classes to main container", async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
+    const { mockIsAuthenticated } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(false);
 
     render(<Portfolio />);

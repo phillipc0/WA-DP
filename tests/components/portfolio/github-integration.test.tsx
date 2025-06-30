@@ -74,13 +74,54 @@ describe("GithubIntegration", () => {
     },
   ];
 
+  // Helper to mock successful fetch response
+  const mockSuccessfulFetch = (data: any = mockRepos) => {
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(data),
+    });
+  };
+
+  // Helper to mock fetch failure
+  const mockFailedFetch = (status = 404) => {
+    (fetch as any).mockResolvedValueOnce({
+      ok: false,
+      status,
+    });
+  };
+
+  // Helper to mock network error
+  const mockNetworkError = (message = "Network error") => {
+    (fetch as any).mockRejectedValueOnce(new Error(message));
+  };
+
+  // Helper to mock pending fetch (never resolves)
+  const mockPendingFetch = () => {
+    (fetch as any).mockImplementation(() => new Promise(() => {}));
+  };
+
+  // Helper to wait for sort dropdown to be ready
+  const waitForSortDropdown = async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Recently Updated")).toBeInTheDocument();
+    });
+  };
+
+  // Helper to click dropdown and select option
+  const selectSortOption = (currentOption: string, newOption: string) => {
+    const sortButton = screen.getByRole("button", { name: new RegExp(currentOption) });
+    fireEvent.click(sortButton);
+    const option = screen.getByText(newOption);
+    fireEvent.click(option);
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockConsoleError.mockClear();
   });
 
   it("renders component header", () => {
-    (fetch as any).mockImplementation(() => new Promise(() => {})); // Never resolves
+    mockPendingFetch();
 
     render(<GithubIntegration />);
 
@@ -89,7 +130,7 @@ describe("GithubIntegration", () => {
   });
 
   it("shows loading spinner initially", () => {
-    (fetch as any).mockImplementation(() => new Promise(() => {})); // Never resolves
+    mockPendingFetch();
 
     render(<GithubIntegration />);
 
@@ -97,10 +138,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders repositories successfully", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -123,10 +161,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders repository links correctly", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -145,10 +180,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders view all repositories link", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -164,10 +196,7 @@ describe("GithubIntegration", () => {
   });
 
   it("shows error message on failed fetch", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: false,
-      status: 404,
-    });
+    mockFailedFetch(404);
 
     render(<GithubIntegration />);
 
@@ -181,7 +210,7 @@ describe("GithubIntegration", () => {
   });
 
   it("shows error message on network error", async () => {
-    (fetch as any).mockRejectedValueOnce(new Error("Network error"));
+    mockNetworkError();
 
     render(<GithubIntegration />);
 
@@ -195,10 +224,7 @@ describe("GithubIntegration", () => {
   });
 
   it("shows no repositories message when empty array returned", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve([]),
-    });
+    mockSuccessfulFetch([]);
 
     render(<GithubIntegration />);
 
@@ -208,10 +234,7 @@ describe("GithubIntegration", () => {
   });
 
   it("fetches repositories with correct API parameters", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -223,10 +246,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders homepage link when available", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -242,10 +262,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders repository topics correctly", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -259,10 +276,7 @@ describe("GithubIntegration", () => {
   });
 
   it("limits topics display to 6 and shows +N for additional topics", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -283,10 +297,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders stargazers and forks links correctly", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -308,10 +319,7 @@ describe("GithubIntegration", () => {
   });
 
   it("renders sort dropdown with correct options", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -324,29 +332,16 @@ describe("GithubIntegration", () => {
   });
 
   it("changes sort option when dropdown item is clicked", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockRepos),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ items: mockRepos }),
-      });
+    mockSuccessfulFetch();
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ items: mockRepos }),
+    });
 
     render(<GithubIntegration />);
 
-    await waitFor(() => {
-      expect(screen.getByText("Recently Updated")).toBeInTheDocument();
-    });
-
-    // Click the dropdown button
-    const sortButton = screen.getByRole("button", { name: /Recently Updated/ });
-    fireEvent.click(sortButton);
-
-    // Click on "Most Stars" option
-    const mostStarsOption = screen.getByText("Most Stars");
-    fireEvent.click(mostStarsOption);
+    await waitForSortDropdown();
+    selectSortOption("Recently Updated", "Most Stars");
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
@@ -356,45 +351,30 @@ describe("GithubIntegration", () => {
   });
 
   it("uses cached data when switching back to previously loaded sort", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockRepos),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ items: mockRepos }),
-      });
+    mockSuccessfulFetch();
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ items: mockRepos }),
+    });
 
     render(<GithubIntegration />);
 
-    await waitFor(() => {
-      expect(screen.getByText("Recently Updated")).toBeInTheDocument();
-    });
-
-    // Switch to stars sorting
-    const sortButton = screen.getByRole("button", { name: /Recently Updated/ });
-    fireEvent.click(sortButton);
-    const mostStarsOption = screen.getByText("Most Stars");
-    fireEvent.click(mostStarsOption);
+    await waitForSortDropdown();
+    selectSortOption("Recently Updated", "Most Stars");
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(2);
     });
 
     // Switch back to updated sorting - should use cached data
-    fireEvent.click(screen.getByRole("button", { name: /Most Stars/ }));
-    fireEvent.click(screen.getByText("Recently Updated"));
+    selectSortOption("Most Stars", "Recently Updated");
 
     // Should not make additional fetch call
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it("prevents event propagation on homepage link click", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -417,10 +397,7 @@ describe("GithubIntegration", () => {
   });
 
   it("prevents event propagation on stargazers and forks link clicks", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockRepos),
-    });
+    mockSuccessfulFetch();
 
     render(<GithubIntegration />);
 
@@ -441,24 +418,13 @@ describe("GithubIntegration", () => {
   });
 
   it("handles fetch error in sort switching", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockRepos),
-      })
-      .mockRejectedValueOnce(new Error("Network error"));
+    mockSuccessfulFetch();
+    mockNetworkError();
 
     render(<GithubIntegration />);
 
-    await waitFor(() => {
-      expect(screen.getByText("Recently Updated")).toBeInTheDocument();
-    });
-
-    // Switch to stars sorting which will fail
-    const sortButton = screen.getByRole("button", { name: /Recently Updated/ });
-    fireEvent.click(sortButton);
-    const mostStarsOption = screen.getByText("Most Stars");
-    fireEvent.click(mostStarsOption);
+    await waitForSortDropdown();
+    selectSortOption("Recently Updated", "Most Stars");
 
     await waitFor(() => {
       expect(
@@ -478,10 +444,7 @@ describe("GithubIntegration", () => {
       },
     ];
 
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(reposWithLargeNumbers),
-    });
+    mockSuccessfulFetch(reposWithLargeNumbers);
 
     render(<GithubIntegration />);
 
@@ -498,13 +461,11 @@ describe("GithubIntegration", () => {
       {
         ...mockRepos[0],
         language: null,
+        homepage: undefined,
       },
     ];
 
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(reposWithoutLanguage),
-    });
+    mockSuccessfulFetch(reposWithoutLanguage);
 
     render(<GithubIntegration />);
 
@@ -524,10 +485,7 @@ describe("GithubIntegration", () => {
       },
     ];
 
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(reposWithEmptyTopics),
-    });
+    mockSuccessfulFetch(reposWithEmptyTopics);
 
     render(<GithubIntegration />);
 

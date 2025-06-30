@@ -20,48 +20,84 @@ describe("LoginModal", () => {
   const mockOnClose = vi.fn();
   const mockOnSuccess = vi.fn();
 
+  // Helper to render LoginModal with default props
+  const renderModal = (isOpen = true) => {
+    return render(
+      <LoginModal
+        isOpen={isOpen}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />,
+    );
+  };
+
+  // Helper to mock successful fetch response
+  const mockSuccessfulResponse = (responseData: any) => {
+    return (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(responseData),
+    });
+  };
+
+  // Helper to mock failed fetch response  
+  const mockFailedResponse = (error: string) => {
+    return (fetch as any).mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ error }),
+    });
+  };
+
+  // Helper to mock network error
+  const mockNetworkError = (message = "Network error") => {
+    return (fetch as any).mockRejectedValueOnce(new Error(message));
+  };
+
+  // Helper to mock pending fetch (never resolves)
+  const mockPendingFetch = () => {
+    return (fetch as any).mockImplementation(() => new Promise(() => {}));
+  };
+
+  // Helper to wait for login form to appear
+  const waitForLoginForm = async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: "Login" }),
+      ).toBeInTheDocument();
+    });
+  };
+
+  // Helper to fill in login form
+  const fillLoginForm = (username = "testuser", password = "password") => {
+    fireEvent.change(screen.getByTestId("username-input"), {
+      target: { value: username },
+    });
+    fireEvent.change(screen.getByTestId("password-input"), {
+      target: { value: password },
+    });
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
   });
 
   it("renders nothing when not open", () => {
-    render(
-      <LoginModal
-        isOpen={false}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal(false);
     expect(screen.queryByTestId("login-modal")).not.toBeInTheDocument();
   });
 
   it("shows loading state initially when open", async () => {
-    (fetch as any).mockImplementation(() => new Promise(() => {})); // Never resolves
+    mockPendingFetch();
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   it("shows create account form when no users exist", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      json: () => Promise.resolve({ exists: false }),
-    });
+    mockSuccessfulResponse({ exists: false });
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(screen.getByText("Create Admin Account")).toBeInTheDocument();
@@ -73,17 +109,9 @@ describe("LoginModal", () => {
   });
 
   it("shows login form when users exist", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      json: () => Promise.resolve({ exists: true }),
-    });
+    mockSuccessfulResponse({ exists: true });
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(
@@ -97,41 +125,17 @@ describe("LoginModal", () => {
   });
 
   it("handles successful login", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve({ exists: true }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            authenticated: true,
-            token: "test-token",
-            user: { username: "testuser" },
-          }),
-      });
-
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "Login" }),
-      ).toBeInTheDocument();
+    mockSuccessfulResponse({ exists: true });
+    mockSuccessfulResponse({
+      authenticated: true,
+      token: "test-token",
+      user: { username: "testuser" },
     });
 
-    fireEvent.change(screen.getByTestId("username-input"), {
-      target: { value: "testuser" },
-    });
-    fireEvent.change(screen.getByTestId("password-input"), {
-      target: { value: "password" },
-    });
+    renderModal();
 
+    await waitForLoginForm();
+    fillLoginForm();
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 
     await waitFor(() => {
@@ -149,27 +153,14 @@ describe("LoginModal", () => {
   });
 
   it("handles successful account creation", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve({ exists: false }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            created: true,
-            token: "test-token",
-            user: { username: "newuser" },
-          }),
-      });
+    mockSuccessfulResponse({ exists: false });
+    mockSuccessfulResponse({
+      created: true,
+      token: "test-token",
+      user: { username: "newuser" },
+    });
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(screen.getByText("Create Admin Account")).toBeInTheDocument();
@@ -190,36 +181,13 @@ describe("LoginModal", () => {
   });
 
   it("displays error on failed login", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve({ exists: true }),
-      })
-      .mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve({ error: "Invalid credentials" }),
-      });
+    mockSuccessfulResponse({ exists: true });
+    mockFailedResponse("Invalid credentials");
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "Login" }),
-      ).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByTestId("username-input"), {
-      target: { value: "wronguser" },
-    });
-    fireEvent.change(screen.getByTestId("password-input"), {
-      target: { value: "wrongpass" },
-    });
-
+    await waitForLoginForm();
+    fillLoginForm("wronguser", "wrongpass");
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 
     await waitFor(() => {
@@ -228,33 +196,13 @@ describe("LoginModal", () => {
   });
 
   it("displays server error on fetch failure", async () => {
-    (fetch as any)
-      .mockResolvedValueOnce({
-        json: () => Promise.resolve({ exists: true }),
-      })
-      .mockRejectedValueOnce(new Error("Network error"));
+    mockSuccessfulResponse({ exists: true });
+    mockNetworkError();
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "Login" }),
-      ).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByTestId("username-input"), {
-      target: { value: "testuser" },
-    });
-    fireEvent.change(screen.getByTestId("password-input"), {
-      target: { value: "password" },
-    });
-
+    await waitForLoginForm();
+    fillLoginForm();
     fireEvent.click(screen.getByRole("button", { name: "Login" }));
 
     await waitFor(() => {
@@ -263,38 +211,20 @@ describe("LoginModal", () => {
   });
 
   it("calls onClose when cancel button is clicked", async () => {
-    (fetch as any).mockResolvedValueOnce({
-      json: () => Promise.resolve({ exists: true }),
-    });
+    mockSuccessfulResponse({ exists: true });
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "Login" }),
-      ).toBeInTheDocument();
-    });
+    await waitForLoginForm();
 
     fireEvent.click(screen.getByText("Cancel"));
     expect(mockOnClose).toHaveBeenCalled();
   });
 
   it("sets exists to false on API error", async () => {
-    (fetch as any).mockRejectedValueOnce(new Error("API error"));
+    mockNetworkError("API error");
 
-    render(
-      <LoginModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />,
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(screen.getByText("Create Admin Account")).toBeInTheDocument();

@@ -85,6 +85,34 @@ const renderNavbar = () => {
 };
 
 describe("Navbar", () => {
+  // Helper function to get mocked auth dependencies
+  const getMockAuthDependencies = async () => {
+    const { isAuthenticated, validateToken, logout, migrateOldAuth } = await vi.importMock("@/lib/auth");
+    
+    return {
+      mockIsAuthenticated: isAuthenticated as any,
+      mockValidateToken: validateToken as any,
+      mockLogout: logout as any,
+      mockMigrateOldAuth: migrateOldAuth as any,
+    };
+  };
+
+  // Helper to setup unauthenticated state
+  const setupUnauthenticatedState = async () => {
+    const { mockIsAuthenticated, mockValidateToken } = await getMockAuthDependencies();
+    mockIsAuthenticated.mockReturnValue(false);
+    mockValidateToken.mockResolvedValue(false);
+    return { mockIsAuthenticated, mockValidateToken };
+  };
+
+  // Helper to setup authenticated state
+  const setupAuthenticatedState = async () => {
+    const { mockIsAuthenticated, mockValidateToken } = await getMockAuthDependencies();
+    mockIsAuthenticated.mockReturnValue(true);
+    mockValidateToken.mockResolvedValue(true);
+    return { mockIsAuthenticated, mockValidateToken };
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     window.location.pathname = "/";
@@ -112,14 +140,7 @@ describe("Navbar", () => {
   });
 
   it("shows login button when user is not authenticated", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -130,14 +151,7 @@ describe("Navbar", () => {
   });
 
   it("shows logout button when user is authenticated", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(true);
-    mockValidateToken.mockResolvedValue(true);
+    await setupAuthenticatedState();
 
     renderNavbar();
 
@@ -148,14 +162,7 @@ describe("Navbar", () => {
   });
 
   it("opens login modal when login button is clicked", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -169,15 +176,8 @@ describe("Navbar", () => {
   });
 
   it("calls logout and reloads page when logout button is clicked", async () => {
-    const { isAuthenticated, validateToken, logout } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-    const mockLogout = logout as any;
-
-    mockIsAuthenticated.mockReturnValue(true);
-    mockValidateToken.mockResolvedValue(true);
+    const { mockLogout } = await getMockAuthDependencies();
+    await setupAuthenticatedState();
 
     renderNavbar();
 
@@ -192,15 +192,8 @@ describe("Navbar", () => {
   });
 
   it("navigates to home when logout is clicked from portfolioEditor page", async () => {
-    const { isAuthenticated, validateToken, logout } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-    const mockLogout = logout as any;
-
-    mockIsAuthenticated.mockReturnValue(true);
-    mockValidateToken.mockResolvedValue(true);
+    const { mockLogout } = await getMockAuthDependencies();
+    await setupAuthenticatedState();
     window.location.pathname = "/edit";
 
     renderNavbar();
@@ -217,14 +210,7 @@ describe("Navbar", () => {
   });
 
   it("handles successful login by closing modal and navigating to portfolioEditor", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -244,14 +230,7 @@ describe("Navbar", () => {
   });
 
   it("closes login modal when close button is clicked", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -269,15 +248,8 @@ describe("Navbar", () => {
   });
 
   it("shows portfolioEditor nav item only when user is authenticated", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
     // First test unauthenticated state
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -289,14 +261,7 @@ describe("Navbar", () => {
   });
 
   it("renders navigation items with correct links", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(true);
-    mockValidateToken.mockResolvedValue(true);
+    await setupAuthenticatedState();
 
     renderNavbar();
 
@@ -312,14 +277,7 @@ describe("Navbar", () => {
   });
 
   it("renders mobile menu structure", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -335,14 +293,7 @@ describe("Navbar", () => {
   });
 
   it("renders basic navigation structure", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -358,15 +309,8 @@ describe("Navbar", () => {
   });
 
   it("calls migrateOldAuth on component mount", async () => {
-    const { migrateOldAuth, isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockMigrateOldAuth = migrateOldAuth as any;
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    const { mockMigrateOldAuth } = await getMockAuthDependencies();
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
@@ -376,14 +320,7 @@ describe("Navbar", () => {
   });
 
   it("validates token when user is authenticated", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
-    mockIsAuthenticated.mockReturnValue(true);
-    mockValidateToken.mockResolvedValue(true);
+    const { mockValidateToken } = await setupAuthenticatedState();
 
     renderNavbar();
 
@@ -393,12 +330,7 @@ describe("Navbar", () => {
   });
 
   it("sets admin state to false when token validation fails", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
+    const { mockIsAuthenticated, mockValidateToken } = await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(true);
     mockValidateToken.mockResolvedValue(false);
 
@@ -433,15 +365,8 @@ describe("Navbar", () => {
   });
 
   it("handles authentication state changes correctly", async () => {
-    const { isAuthenticated, validateToken } =
-      await vi.importMock("@/lib/auth");
-
-    const mockIsAuthenticated = isAuthenticated as any;
-    const mockValidateToken = validateToken as any;
-
     // Start unauthenticated
-    mockIsAuthenticated.mockReturnValue(false);
-    mockValidateToken.mockResolvedValue(false);
+    await setupUnauthenticatedState();
 
     renderNavbar();
 
