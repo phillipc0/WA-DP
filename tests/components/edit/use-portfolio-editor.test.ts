@@ -1,6 +1,7 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { usePortfolioEditor } from "@/components/portfolioEditor/use-portfolio-editor";
+import React from "react";
 
 // Mock all the dependencies
 vi.mock("react-router-dom", () => ({
@@ -88,6 +89,74 @@ global.Image = class {
 } as any;
 
 describe("usePortfolioEditor", () => {
+  // Helper function to add a skill to the portfolio
+  const addSkillToPortfolio = async (result: any, skillName: string = "React") => {
+    act(() => {
+      result.current.handleSkillChange({
+        target: { name: "name", value: skillName },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleAddSkill();
+    });
+  };
+
+  // Helper function to setup experience data
+  const setupExperienceData = (result: any, company: string = "Test Company", position: string = "Developer") => {
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "company", value: company },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "position", value: position },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+  };
+
+  // Helper function to add experience to portfolio
+  const addExperienceToPortfolio = async (result: any, company: string = "Test Company", position: string = "Developer") => {
+    setupExperienceData(result, company, position);
+    
+    act(() => {
+      result.current.handleAddExperience();
+    });
+  };
+
+  // Helper function to setup education data
+  const setupEducationData = (result: any, institution: string = "Test University", degree: string = "Bachelor of Science") => {
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "institution", value: institution },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "degree", value: degree },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+  };
+
+  // Helper function to add education to portfolio
+  const addEducationToPortfolio = async (result: any, institution: string = "Test University", degree: string = "Bachelor of Science") => {
+    setupEducationData(result, institution, degree);
+    
+    act(() => {
+      result.current.handleAddEducation();
+    });
+  };
+
+  // Helper function to create mock drag event
+  const createMockDragEvent = () => ({
+    dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
+    currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
+    preventDefault: vi.fn(),
+  } as unknown as React.DragEvent);
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -196,15 +265,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add a skill first
-    act(() => {
-      result.current.handleSkillChange({
-        target: { name: "name", value: "React" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddSkill();
-    });
+    await addSkillToPortfolio(result);
 
     expect(result.current.portfolioData.skills).toHaveLength(1);
 
@@ -224,15 +285,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add a skill first
-    act(() => {
-      result.current.handleSkillChange({
-        target: { name: "name", value: "React" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddSkill();
-    });
+    await addSkillToPortfolio(result);
 
     // Change skill level
     act(() => {
@@ -250,15 +303,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add a skill first
-    act(() => {
-      result.current.handleSkillChange({
-        target: { name: "name", value: "React" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddSkill();
-    });
+    await addSkillToPortfolio(result);
 
     // Change skill name
     act(() => {
@@ -429,23 +474,8 @@ describe("usePortfolioEditor", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Set experience data
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "company", value: "Test Company" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "position", value: "Developer" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
     // Add experience
-    act(() => {
-      result.current.handleAddExperience();
-    });
+    await addExperienceToPortfolio(result);
 
     expect(result.current.portfolioData.cv).toHaveLength(1);
     expect(result.current.portfolioData.cv[0]).toEqual(
@@ -479,21 +509,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add experience first
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "company", value: "Test Company" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "position", value: "Developer" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddExperience();
-    });
+    await addExperienceToPortfolio(result);
 
     expect(result.current.portfolioData.cv).toHaveLength(1);
 
@@ -513,21 +529,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add experience first
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "company", value: "Test Company" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "position", value: "Developer" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddExperience();
-    });
+    await addExperienceToPortfolio(result);
 
     expect(result.current.portfolioData.cv).toHaveLength(1);
 
@@ -597,23 +599,8 @@ describe("usePortfolioEditor", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Set education data
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "institution", value: "Test University" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "degree", value: "Bachelor of Science" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
     // Add education
-    act(() => {
-      result.current.handleAddEducation();
-    });
+    await addEducationToPortfolio(result);
 
     expect(result.current.portfolioData.education).toHaveLength(1);
     expect(result.current.portfolioData.education[0]).toEqual(
@@ -647,21 +634,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add education first
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "institution", value: "Test University" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "degree", value: "Bachelor of Science" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddEducation();
-    });
+    await addEducationToPortfolio(result);
 
     expect(result.current.portfolioData.education).toHaveLength(1);
 
@@ -681,21 +654,7 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add education first
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "institution", value: "Test University" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "degree", value: "Bachelor of Science" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleAddEducation();
-    });
+    await addEducationToPortfolio(result);
 
     expect(result.current.portfolioData.education).toHaveLength(1);
 
@@ -830,23 +789,8 @@ describe("usePortfolioEditor", () => {
     });
 
     // Add two skills first
-    act(() => {
-      result.current.handleSkillChange({
-        target: { name: "name", value: "React" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-    act(() => {
-      result.current.handleAddSkill();
-    });
-
-    act(() => {
-      result.current.handleSkillChange({
-        target: { name: "name", value: "Vue" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-    act(() => {
-      result.current.handleAddSkill();
-    });
+    await addSkillToPortfolio(result, "React");
+    await addSkillToPortfolio(result, "Vue");
 
     expect(result.current.portfolioData.skills[0].name).toBe("React");
     expect(result.current.portfolioData.skills[1].name).toBe("Vue");
@@ -876,11 +820,7 @@ describe("usePortfolioEditor", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    const mockDragEvent = {
-      dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
-      currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
-      preventDefault: vi.fn(),
-    } as unknown as React.DragEvent;
+    const mockDragEvent = createMockDragEvent();
 
     // Test drag start
     act(() => {
@@ -918,11 +858,7 @@ describe("usePortfolioEditor", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    const mockDragEvent = {
-      dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
-      currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
-      preventDefault: vi.fn(),
-    } as unknown as React.DragEvent;
+    const mockDragEvent = createMockDragEvent();
 
     // Test drag start
     act(() => {
@@ -980,23 +916,8 @@ describe("usePortfolioEditor", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Set experience data
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "company", value: "Test Company" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleExperienceChange({
-        target: { name: "position", value: "Developer" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
     // Add experience
-    act(() => {
-      result.current.handleAddExperience();
-    });
+    await addExperienceToPortfolio(result);
 
     // Check that newExperience is reset
     expect(result.current.newExperience).toEqual({
@@ -1017,23 +938,8 @@ describe("usePortfolioEditor", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Set education data
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "institution", value: "Test University" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    act(() => {
-      result.current.handleEducationChange({
-        target: { name: "degree", value: "Bachelor of Science" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
     // Add education
-    act(() => {
-      result.current.handleAddEducation();
-    });
+    await addEducationToPortfolio(result);
 
     // Check that newEducation is reset
     expect(result.current.newEducation).toEqual({
