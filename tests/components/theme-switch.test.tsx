@@ -40,7 +40,7 @@ describe("ThemeSwitch", () => {
   const getMockHookDependencies = async () => {
     const { useTheme } = await vi.importMock("@heroui/use-theme");
     const { useSwitch } = await vi.importMock("@heroui/switch");
-    
+
     return {
       mockUseTheme: useTheme as any,
       mockUseSwitch: useSwitch as any,
@@ -48,10 +48,13 @@ describe("ThemeSwitch", () => {
   };
 
   // Helper to setup theme and switch mocks with common patterns
-  const setupThemeAndSwitch = (theme: "light" | "dark", isSelected: boolean) => {
+  const setupThemeAndSwitch = (
+    theme: "light" | "dark",
+    isSelected: boolean,
+  ) => {
     const mockGetBaseProps = vi.fn(() => ({ className: "base-props" }));
     const mockWrapperSlot = vi.fn(() => "wrapper-class");
-    
+
     return {
       themeReturn: {
         theme,
@@ -77,7 +80,7 @@ describe("ThemeSwitch", () => {
   it("renders moon icon when theme is light (switch is selected)", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("light", true);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -92,7 +95,7 @@ describe("ThemeSwitch", () => {
   it("renders sun icon when theme is dark (switch is not selected)", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("dark", false);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -107,7 +110,7 @@ describe("ThemeSwitch", () => {
   it("displays correct aria-label for light theme", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("light", true);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -121,7 +124,7 @@ describe("ThemeSwitch", () => {
   it("displays correct aria-label for dark theme", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("dark", false);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -133,11 +136,12 @@ describe("ThemeSwitch", () => {
   });
 
   it("calls useSwitch with correct props", async () => {
-    const { mockUseTheme, mockUseSwitch: mockUseSwitchFn } = await getMockHookDependencies();
+    const { mockUseTheme, mockUseSwitch: mockUseSwitchFn } =
+      await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("light", true);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
-    
+
     const mockUseSwitch = vi.fn(() => switchReturn);
     mockUseSwitchFn.mockImplementation(mockUseSwitch);
 
@@ -154,7 +158,7 @@ describe("ThemeSwitch", () => {
   it("toggles theme from light to dark when onChange is called", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn } = setupThemeAndSwitch("light", true);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
 
     let capturedOnChange: () => void;
@@ -175,7 +179,7 @@ describe("ThemeSwitch", () => {
   it("toggles theme from dark to light when onChange is called", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn } = setupThemeAndSwitch("dark", false);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
 
     let capturedOnChange: () => void;
@@ -195,8 +199,11 @@ describe("ThemeSwitch", () => {
 
   it("applies custom className prop", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
-    const { themeReturn, switchReturn, mockGetBaseProps } = setupThemeAndSwitch("light", true);
-    
+    const { themeReturn, switchReturn, mockGetBaseProps } = setupThemeAndSwitch(
+      "light",
+      true,
+    );
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -211,8 +218,9 @@ describe("ThemeSwitch", () => {
 
   it("applies custom classNames prop", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
-    const { themeReturn, switchReturn, mockGetBaseProps, mockWrapperSlot } = setupThemeAndSwitch("light", true);
-    
+    const { themeReturn, switchReturn, mockGetBaseProps, mockWrapperSlot } =
+      setupThemeAndSwitch("light", true);
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -236,7 +244,7 @@ describe("ThemeSwitch", () => {
   it("renders icons with correct size", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("light", true);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 
@@ -251,7 +259,7 @@ describe("ThemeSwitch", () => {
   it("includes visually hidden input for accessibility", async () => {
     const { mockUseTheme, mockUseSwitch } = await getMockHookDependencies();
     const { themeReturn, switchReturn } = setupThemeAndSwitch("light", true);
-    
+
     mockUseTheme.mockReturnValue(themeReturn);
     mockUseSwitch.mockReturnValue(switchReturn);
 

@@ -87,8 +87,9 @@ const renderNavbar = () => {
 describe("Navbar", () => {
   // Helper function to get mocked auth dependencies
   const getMockAuthDependencies = async () => {
-    const { isAuthenticated, validateToken, logout, migrateOldAuth } = await vi.importMock("@/lib/auth");
-    
+    const { isAuthenticated, validateToken, logout, migrateOldAuth } =
+      await vi.importMock("@/lib/auth");
+
     return {
       mockIsAuthenticated: isAuthenticated as any,
       mockValidateToken: validateToken as any,
@@ -99,7 +100,8 @@ describe("Navbar", () => {
 
   // Helper to setup unauthenticated state
   const setupUnauthenticatedState = async () => {
-    const { mockIsAuthenticated, mockValidateToken } = await getMockAuthDependencies();
+    const { mockIsAuthenticated, mockValidateToken } =
+      await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(false);
     mockValidateToken.mockResolvedValue(false);
     return { mockIsAuthenticated, mockValidateToken };
@@ -107,7 +109,8 @@ describe("Navbar", () => {
 
   // Helper to setup authenticated state
   const setupAuthenticatedState = async () => {
-    const { mockIsAuthenticated, mockValidateToken } = await getMockAuthDependencies();
+    const { mockIsAuthenticated, mockValidateToken } =
+      await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(true);
     mockValidateToken.mockResolvedValue(true);
     return { mockIsAuthenticated, mockValidateToken };
@@ -330,7 +333,8 @@ describe("Navbar", () => {
   });
 
   it("sets admin state to false when token validation fails", async () => {
-    const { mockIsAuthenticated, mockValidateToken } = await getMockAuthDependencies();
+    const { mockIsAuthenticated, mockValidateToken } =
+      await getMockAuthDependencies();
     mockIsAuthenticated.mockReturnValue(true);
     mockValidateToken.mockResolvedValue(false);
 

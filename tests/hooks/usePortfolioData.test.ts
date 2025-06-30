@@ -42,7 +42,10 @@ describe("usePortfolioData", () => {
   };
 
   // Helper to setup authenticated state with draft data and wait for loading to complete
-  const setupAuthenticatedWithDraft = async (draftData: any, serverData: any = null) => {
+  const setupAuthenticatedWithDraft = async (
+    draftData: any,
+    serverData: any = null,
+  ) => {
     const {
       mockIsAuthenticated,
       mockLoadDraftFromCookies,
@@ -265,7 +268,10 @@ describe("usePortfolioData", () => {
       bio: "Server bio",
     };
 
-    const { result, mockGetPortfolioData } = await setupAuthenticatedWithDraft(draftData, serverData);
+    const { result, mockGetPortfolioData } = await setupAuthenticatedWithDraft(
+      draftData,
+      serverData,
+    );
 
     // Should load draft data, not server data
     expect(result.current.portfolioData).toEqual(draftData);
@@ -307,7 +313,10 @@ describe("usePortfolioData", () => {
       bio: "Server bio",
     };
 
-    const { result, mockGetPortfolioData } = await setupAuthenticatedWithDraft(draftData, serverData);
+    const { result, mockGetPortfolioData } = await setupAuthenticatedWithDraft(
+      draftData,
+      serverData,
+    );
 
     expect(result.current.portfolioData).toEqual(draftData);
     // getPortfolioData should not be called when draft exists

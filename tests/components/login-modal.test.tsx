@@ -39,7 +39,7 @@ describe("LoginModal", () => {
     });
   };
 
-  // Helper to mock failed fetch response  
+  // Helper to mock failed fetch response
   const mockFailedResponse = (error: string) => {
     return (fetch as any).mockResolvedValueOnce({
       ok: false,

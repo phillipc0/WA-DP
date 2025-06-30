@@ -109,7 +109,9 @@ describe("GithubIntegration", () => {
 
   // Helper to click dropdown and select option
   const selectSortOption = (currentOption: string, newOption: string) => {
-    const sortButton = screen.getByRole("button", { name: new RegExp(currentOption) });
+    const sortButton = screen.getByRole("button", {
+      name: new RegExp(currentOption),
+    });
     fireEvent.click(sortButton);
     const option = screen.getByText(newOption);
     fireEvent.click(option);

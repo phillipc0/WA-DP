@@ -90,7 +90,10 @@ global.Image = class {
 
 describe("usePortfolioEditor", () => {
   // Helper function to add a skill to the portfolio
-  const addSkillToPortfolio = async (result: any, skillName: string = "React") => {
+  const addSkillToPortfolio = async (
+    result: any,
+    skillName: string = "React",
+  ) => {
     act(() => {
       result.current.handleSkillChange({
         target: { name: "name", value: skillName },
@@ -103,7 +106,11 @@ describe("usePortfolioEditor", () => {
   };
 
   // Helper function to setup experience data
-  const setupExperienceData = (result: any, company: string = "Test Company", position: string = "Developer") => {
+  const setupExperienceData = (
+    result: any,
+    company: string = "Test Company",
+    position: string = "Developer",
+  ) => {
     act(() => {
       result.current.handleExperienceChange({
         target: { name: "company", value: company },
@@ -118,16 +125,24 @@ describe("usePortfolioEditor", () => {
   };
 
   // Helper function to add experience to portfolio
-  const addExperienceToPortfolio = async (result: any, company: string = "Test Company", position: string = "Developer") => {
+  const addExperienceToPortfolio = async (
+    result: any,
+    company: string = "Test Company",
+    position: string = "Developer",
+  ) => {
     setupExperienceData(result, company, position);
-    
+
     act(() => {
       result.current.handleAddExperience();
     });
   };
 
   // Helper function to setup education data
-  const setupEducationData = (result: any, institution: string = "Test University", degree: string = "Bachelor of Science") => {
+  const setupEducationData = (
+    result: any,
+    institution: string = "Test University",
+    degree: string = "Bachelor of Science",
+  ) => {
     act(() => {
       result.current.handleEducationChange({
         target: { name: "institution", value: institution },
@@ -142,20 +157,25 @@ describe("usePortfolioEditor", () => {
   };
 
   // Helper function to add education to portfolio
-  const addEducationToPortfolio = async (result: any, institution: string = "Test University", degree: string = "Bachelor of Science") => {
+  const addEducationToPortfolio = async (
+    result: any,
+    institution: string = "Test University",
+    degree: string = "Bachelor of Science",
+  ) => {
     setupEducationData(result, institution, degree);
-    
+
     act(() => {
       result.current.handleAddEducation();
     });
   };
 
   // Helper function to create mock drag event
-  const createMockDragEvent = () => ({
-    dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
-    currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
-    preventDefault: vi.fn(),
-  } as unknown as React.DragEvent);
+  const createMockDragEvent = () =>
+    ({
+      dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
+      currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
+      preventDefault: vi.fn(),
+    }) as unknown as React.DragEvent;
 
   beforeEach(() => {
     vi.clearAllMocks();
