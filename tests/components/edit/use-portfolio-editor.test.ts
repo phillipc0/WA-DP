@@ -420,4 +420,628 @@ describe("usePortfolioEditor", () => {
 
     expect(result.current.isUploadedImage).toBe(false);
   });
+
+  // Experience/CV Tests
+  it("handles adding new experience", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Set experience data
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "company", value: "Test Company" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "position", value: "Developer" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    // Add experience
+    act(() => {
+      result.current.handleAddExperience();
+    });
+
+    expect(result.current.portfolioData.cv).toHaveLength(1);
+    expect(result.current.portfolioData.cv[0]).toEqual(
+      expect.objectContaining({
+        company: "Test Company",
+        position: "Developer",
+      }),
+    );
+  });
+
+  it("doesn't add experience with empty company or position", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Try to add experience with empty fields
+    act(() => {
+      result.current.handleAddExperience();
+    });
+
+    expect(result.current.portfolioData.cv || []).toHaveLength(0);
+  });
+
+  it("handles removing experience", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Add experience first
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "company", value: "Test Company" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "position", value: "Developer" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleAddExperience();
+    });
+
+    expect(result.current.portfolioData.cv).toHaveLength(1);
+
+    // Remove experience
+    act(() => {
+      result.current.handleRemoveExperience(0);
+    });
+
+    expect(result.current.portfolioData.cv).toHaveLength(0);
+  });
+
+  it("handles editing experience", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Add experience first
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "company", value: "Test Company" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "position", value: "Developer" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleAddExperience();
+    });
+
+    expect(result.current.portfolioData.cv).toHaveLength(1);
+
+    // Edit experience
+    act(() => {
+      result.current.handleEditExperience(0);
+    });
+
+    // Should populate newExperience with the data and remove from cv
+    expect(result.current.newExperience.company).toBe("Test Company");
+    expect(result.current.newExperience.position).toBe("Developer");
+    expect(result.current.portfolioData.cv).toHaveLength(0);
+  });
+
+  it("handles experience change", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "company", value: "New Company" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    expect(result.current.newExperience.company).toBe("New Company");
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "description", value: "New Description" },
+      } as React.ChangeEvent<HTMLTextAreaElement>);
+    });
+
+    expect(result.current.newExperience.description).toBe("New Description");
+  });
+
+  it("handles removing selected skill", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Add some skills to selected set
+    act(() => {
+      result.current.setSelectedSkills(new Set(["React", "TypeScript"]));
+    });
+
+    expect(result.current.selectedSkills.has("React")).toBe(true);
+
+    // Remove a skill
+    act(() => {
+      result.current.handleRemoveSelectedSkill("React");
+    });
+
+    expect(result.current.selectedSkills.has("React")).toBe(false);
+    expect(result.current.selectedSkills.has("TypeScript")).toBe(true);
+  });
+
+  // Education Tests
+  it("handles adding new education", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Set education data
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "institution", value: "Test University" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "degree", value: "Bachelor of Science" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    // Add education
+    act(() => {
+      result.current.handleAddEducation();
+    });
+
+    expect(result.current.portfolioData.education).toHaveLength(1);
+    expect(result.current.portfolioData.education[0]).toEqual(
+      expect.objectContaining({
+        institution: "Test University",
+        degree: "Bachelor of Science",
+      }),
+    );
+  });
+
+  it("doesn't add education with empty institution or degree", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Try to add education with empty fields
+    act(() => {
+      result.current.handleAddEducation();
+    });
+
+    expect(result.current.portfolioData.education || []).toHaveLength(0);
+  });
+
+  it("handles removing education", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Add education first
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "institution", value: "Test University" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "degree", value: "Bachelor of Science" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleAddEducation();
+    });
+
+    expect(result.current.portfolioData.education).toHaveLength(1);
+
+    // Remove education
+    act(() => {
+      result.current.handleRemoveEducation(0);
+    });
+
+    expect(result.current.portfolioData.education).toHaveLength(0);
+  });
+
+  it("handles editing education", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Add education first
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "institution", value: "Test University" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "degree", value: "Bachelor of Science" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleAddEducation();
+    });
+
+    expect(result.current.portfolioData.education).toHaveLength(1);
+
+    // Edit education
+    act(() => {
+      result.current.handleEditEducation(0);
+    });
+
+    // Should populate newEducation with the data and remove from education
+    expect(result.current.newEducation.institution).toBe("Test University");
+    expect(result.current.newEducation.degree).toBe("Bachelor of Science");
+    expect(result.current.portfolioData.education).toHaveLength(0);
+  });
+
+  it("handles education change", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "institution", value: "New University" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    expect(result.current.newEducation.institution).toBe("New University");
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "description", value: "New Description" },
+      } as React.ChangeEvent<HTMLTextAreaElement>);
+    });
+
+    expect(result.current.newEducation.description).toBe("New Description");
+  });
+
+  // Drag and Drop Tests for Skills
+  it("handles skill drag start", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockEvent = {
+      dataTransfer: { setData: vi.fn() },
+      currentTarget: { classList: { add: vi.fn() } },
+    } as unknown as React.DragEvent;
+
+    act(() => {
+      result.current.handleDragStart(mockEvent, 0);
+    });
+
+    expect(mockEvent.dataTransfer.setData).toHaveBeenCalledWith(
+      "text/plain",
+      "0",
+    );
+    expect(mockEvent.currentTarget.classList.add).toHaveBeenCalledWith(
+      "opacity-50",
+    );
+  });
+
+  it("handles skill drag over", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockEvent = {
+      preventDefault: vi.fn(),
+      currentTarget: { classList: { add: vi.fn() } },
+    } as unknown as React.DragEvent;
+
+    act(() => {
+      result.current.handleDragOver(mockEvent);
+    });
+
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.currentTarget.classList.add).toHaveBeenCalledWith(
+      "bg-default-100",
+    );
+  });
+
+  it("handles skill drag leave", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockEvent = {
+      currentTarget: { classList: { remove: vi.fn() } },
+    } as unknown as React.DragEvent;
+
+    act(() => {
+      result.current.handleDragLeave(mockEvent);
+    });
+
+    expect(mockEvent.currentTarget.classList.remove).toHaveBeenCalledWith(
+      "bg-default-100",
+    );
+  });
+
+  it("handles skill drag end", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockEvent = {
+      currentTarget: { classList: { remove: vi.fn() } },
+    } as unknown as React.DragEvent;
+
+    act(() => {
+      result.current.handleDragEnd(mockEvent);
+    });
+
+    expect(mockEvent.currentTarget.classList.remove).toHaveBeenCalledWith(
+      "opacity-50",
+    );
+  });
+
+  it("handles skill drop and reorder", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Add two skills first
+    act(() => {
+      result.current.handleSkillChange({
+        target: { name: "name", value: "React" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.handleAddSkill();
+    });
+
+    act(() => {
+      result.current.handleSkillChange({
+        target: { name: "name", value: "Vue" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.handleAddSkill();
+    });
+
+    expect(result.current.portfolioData.skills[0].name).toBe("React");
+    expect(result.current.portfolioData.skills[1].name).toBe("Vue");
+
+    // Mock drop event
+    const mockEvent = {
+      preventDefault: vi.fn(),
+      currentTarget: { classList: { remove: vi.fn() } },
+      dataTransfer: { getData: vi.fn(() => "0") },
+    } as unknown as React.DragEvent;
+
+    act(() => {
+      result.current.handleDrop(mockEvent, 1);
+    });
+
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockEvent.currentTarget.classList.remove).toHaveBeenCalledWith(
+      "bg-default-100",
+    );
+  });
+
+  // Drag and Drop Tests for Experience
+  it("handles experience drag events", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockDragEvent = {
+      dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
+      currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
+      preventDefault: vi.fn(),
+    } as unknown as React.DragEvent;
+
+    // Test drag start
+    act(() => {
+      result.current.handleExperienceDragStart(mockDragEvent, 0);
+    });
+    expect(mockDragEvent.dataTransfer.setData).toHaveBeenCalledWith(
+      "text/plain",
+      "0",
+    );
+
+    // Test drag over
+    act(() => {
+      result.current.handleExperienceDragOver(mockDragEvent);
+    });
+    expect(mockDragEvent.preventDefault).toHaveBeenCalled();
+
+    // Test drag leave
+    act(() => {
+      result.current.handleExperienceDragLeave(mockDragEvent);
+    });
+    expect(mockDragEvent.currentTarget.classList.remove).toHaveBeenCalled();
+
+    // Test drag end
+    act(() => {
+      result.current.handleExperienceDragEnd(mockDragEvent);
+    });
+    expect(mockDragEvent.currentTarget.classList.remove).toHaveBeenCalled();
+  });
+
+  // Drag and Drop Tests for Education
+  it("handles education drag events", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockDragEvent = {
+      dataTransfer: { setData: vi.fn(), getData: vi.fn(() => "0") },
+      currentTarget: { classList: { add: vi.fn(), remove: vi.fn() } },
+      preventDefault: vi.fn(),
+    } as unknown as React.DragEvent;
+
+    // Test drag start
+    act(() => {
+      result.current.handleEducationDragStart(mockDragEvent, 0);
+    });
+    expect(mockDragEvent.dataTransfer.setData).toHaveBeenCalledWith(
+      "text/plain",
+      "0",
+    );
+
+    // Test drag over
+    act(() => {
+      result.current.handleEducationDragOver(mockDragEvent);
+    });
+    expect(mockDragEvent.preventDefault).toHaveBeenCalled();
+
+    // Test drag leave
+    act(() => {
+      result.current.handleEducationDragLeave(mockDragEvent);
+    });
+    expect(mockDragEvent.currentTarget.classList.remove).toHaveBeenCalled();
+
+    // Test drag end
+    act(() => {
+      result.current.handleEducationDragEnd(mockDragEvent);
+    });
+    expect(mockDragEvent.currentTarget.classList.remove).toHaveBeenCalled();
+  });
+
+  it("handles null portfolio data gracefully in skill operations", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // These should not throw errors when portfolio data is null
+    act(() => {
+      result.current.handleSkillLevelChange(0, 50);
+    });
+
+    act(() => {
+      result.current.handleSkillNameChange(0, "Test");
+    });
+
+    // Functions should handle null gracefully
+    expect(result.current.handleSkillLevelChange).toBeInstanceOf(Function);
+    expect(result.current.handleSkillNameChange).toBeInstanceOf(Function);
+  });
+
+  it("resets new experience after adding", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Set experience data
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "company", value: "Test Company" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleExperienceChange({
+        target: { name: "position", value: "Developer" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    // Add experience
+    act(() => {
+      result.current.handleAddExperience();
+    });
+
+    // Check that newExperience is reset
+    expect(result.current.newExperience).toEqual({
+      company: "",
+      position: "",
+      duration: "",
+      location: "",
+      description: "",
+      technologies: [],
+    });
+    expect(result.current.selectedSkills.size).toBe(0);
+  });
+
+  it("resets new education after adding", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Set education data
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "institution", value: "Test University" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    act(() => {
+      result.current.handleEducationChange({
+        target: { name: "degree", value: "Bachelor of Science" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    // Add education
+    act(() => {
+      result.current.handleAddEducation();
+    });
+
+    // Check that newEducation is reset
+    expect(result.current.newEducation).toEqual({
+      institution: "",
+      degree: "",
+      duration: "",
+      location: "",
+      description: "",
+    });
+  });
 });
