@@ -101,7 +101,7 @@ describe("PortfolioEditor", () => {
   afterEach(() => {
     cleanup();
     // Give time for any pending state updates to complete
-    return new Promise(resolve => setTimeout(resolve, 0));
+    return new Promise((resolve) => setTimeout(resolve, 0));
   });
 
   it("shows loading state when isLoading is true", () => {
