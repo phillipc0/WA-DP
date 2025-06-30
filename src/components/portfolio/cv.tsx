@@ -61,7 +61,14 @@ export function CV({ refreshTrigger }: CVProps) {
             {/* Timeline node - centered */}
             <div className="absolute left-1/2 transform -translate-x-1/2 z-10 top-4">
               <div className="w-12 h-12 bg-background border-4 border-primary rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-lg">{getIconText(item)}</span>
+                <span
+                  aria-label={
+                    item.type === "education" ? "Education" : "Work Experience"
+                  }
+                  className="text-lg"
+                >
+                  {getIconText(item)}
+                </span>
               </div>
             </div>
 
@@ -275,7 +282,7 @@ export function CV({ refreshTrigger }: CVProps) {
             <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-divider mb-8">
               <div className="py-4">
                 <h2 className="text-2xl font-bold text-center">
-                  💼 Work Experience
+                  <span aria-hidden="true">💼</span> Work Experience
                 </h2>
               </div>
             </div>
@@ -293,7 +300,9 @@ export function CV({ refreshTrigger }: CVProps) {
             {/* Sticky Header */}
             <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-divider mb-8">
               <div className="py-4">
-                <h2 className="text-2xl font-bold text-center">🎓 Education</h2>
+                <h2 className="text-2xl font-bold text-center">
+                  <span aria-hidden="true">🎓</span> Education
+                </h2>
               </div>
             </div>
 

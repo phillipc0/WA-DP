@@ -131,6 +131,7 @@ export default function WorkExperienceForm({
                 >
                   {skill}
                   <button
+                    aria-label={`Remove ${skill} from selected skills`}
                     className="text-primary-600 hover:text-primary-800"
                     onClick={() => handleRemoveSelectedSkill(skill)}
                   >

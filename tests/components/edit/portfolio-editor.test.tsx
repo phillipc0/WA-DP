@@ -269,7 +269,7 @@ describe("PortfolioEditor", () => {
 
     // Check that BasicInfoForm receives the correct props by verifying rendered content
     expect(screen.getByDisplayValue("John Doe")).toBeInTheDocument();
-    expect(screen.getByAltText("Profile Preview")).toBeInTheDocument();
+    expect(screen.getByAltText("John Doe profile preview")).toBeInTheDocument();
   });
 
   it("passes correct props to SocialLinksForm", () => {

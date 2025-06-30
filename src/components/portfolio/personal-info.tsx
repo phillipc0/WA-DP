@@ -24,7 +24,7 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
       <CardHeader className="flex gap-3">
         <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
           <img
-            alt={portfolioData.name}
+            alt={`${portfolioData.name || "User"} avatar`}
             className="w-full h-full object-cover rounded-full"
             src={portfolioData.avatar}
           />

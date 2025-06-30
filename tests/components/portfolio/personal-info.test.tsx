@@ -41,7 +41,7 @@ describe("PersonalInfo", () => {
   it("renders avatar with correct alt text", () => {
     render(<PersonalInfo />);
 
-    const avatar = screen.getByAltText("John Doe");
+    const avatar = screen.getByAltText("John Doe avatar");
     expect(avatar).toBeInTheDocument();
     expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
   });

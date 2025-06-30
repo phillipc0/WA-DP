@@ -45,17 +45,31 @@ export function Alert({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+    <div
+      aria-describedby="alert-message"
+      aria-labelledby="alert-title"
+      aria-modal="true"
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black/50"
+      role="dialog"
+    >
       <div
         className={`w-full max-w-md p-6 rounded-lg shadow-lg ${bgColors[type]} border border-default-200`}
+        role="alertdialog"
       >
         <div className="flex items-start mb-4">
-          <div className={`text-2xl mr-3 ${iconColors[type]}`}>
+          <div
+            aria-hidden="true"
+            className={`text-2xl mr-3 ${iconColors[type]}`}
+          >
             {icons[type]}
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold">{title}</h3>
-            <p className="mt-2 text-default-700">{message}</p>
+            <h3 className="text-lg font-semibold" id="alert-title">
+              {title}
+            </h3>
+            <p className="mt-2 text-default-700" id="alert-message">
+              {message}
+            </p>
           </div>
         </div>
         <div className="flex justify-end gap-2 mt-6">

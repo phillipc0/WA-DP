@@ -88,7 +88,7 @@ export function BasicInfoForm({
 
           <div className="flex gap-4 items-start">
             <img
-              alt="Profile Preview"
+              alt={`${portfolioData.name || "User"} profile preview`}
               className="w-20 h-20 rounded-full bg-zinc-800"
               src={portfolioData.avatar}
             />
@@ -108,6 +108,7 @@ export function BasicInfoForm({
                 <input
                   ref={fileInputRef}
                   accept="image/*"
+                  aria-label="Select profile picture image file"
                   className="hidden"
                   type="file"
                   onChange={onFileSelect}

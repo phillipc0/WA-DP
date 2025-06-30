@@ -45,7 +45,11 @@ export function UnsavedChangesBanner({
   };
 
   return (
-    <div className="flex items-center justify-center w-full">
+    <div
+      aria-atomic="true"
+      aria-live="polite"
+      className="flex items-center justify-center w-full"
+    >
       <Alert
         color="warning"
         description="You are viewing a preview of your changes."

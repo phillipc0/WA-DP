@@ -83,7 +83,7 @@ describe("BasicInfoForm", () => {
   it("renders avatar preview image", () => {
     render(<BasicInfoForm {...defaultProps} />);
 
-    const avatarImage = screen.getByAltText("Profile Preview");
+    const avatarImage = screen.getByAltText("John Doe profile preview");
     expect(avatarImage).toBeInTheDocument();
     expect(avatarImage).toHaveAttribute(
       "src",

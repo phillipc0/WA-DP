@@ -9,7 +9,7 @@ export const Logo: React.FC<IconSvgProps> = ({
 }) => (
   // @ts-ignore
   <img
-    alt="Logo"
+    alt="WA-DP Developer Portfolio Logo"
     height={size || height}
     src="https://raw.githubusercontent.com/phillipc0/WA-DP/refs/heads/main/assets/favicon.png"
     style={{ objectFit: "contain" }}
