@@ -20,6 +20,7 @@ const REPO_PER_PAGE = 4;
 type Repository = {
   id: number;
   name: string;
+  full_name: string;
   description: string;
   html_url: string;
   homepage?: string;
@@ -48,6 +49,10 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Helper function to check if a repository is a contributor repository
+  const isContributor = (repo: Repository) =>
+    repo.full_name === "phillipc0/WA-DP";
 
   const fetchReposForSort = async (
     githubUsername: string,
@@ -225,10 +230,15 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                 isHoverable
                 isPressable
                 as={Link}
-                className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30 repo-card-enter"
+                className={`group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border ${isContributor(repo) ? "border-yellow-400" : "border-default-200/50"} hover:border-primary/30 repo-card-enter`}
                 href={repo.html_url}
                 style={{
                   animationDelay: `${index * 100}ms`,
+                  ...(isContributor(repo)
+                    ? {
+                        boxShadow: "0 0 15px 5px rgba(245, 158, 11, 0.5)",
+                      }
+                    : {}),
                 }}
               >
                 <CardBody className="p-4">
@@ -251,20 +261,32 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                         </Link>
                       )}
                     </div>
-                    <div className="ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <svg
-                        className="w-5 h-5 text-primary"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                        />
-                      </svg>
+                    <div className="ml-4 flex flex-col items-end">
+                      {repo.full_name === "phillipc0/WA-DP" && (
+                        <Button
+                          className="text-xs font-bold text-yellow-500 mb-2"
+                          size="sm"
+                          style={{ borderColor: "#F59E0B" }}
+                          variant="bordered"
+                        >
+                          Contributor
+                        </Button>
+                      )}
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <svg
+                          className="w-5 h-5 text-primary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                          />
+                        </svg>
+                      </div>
                     </div>
                   </div>
 
