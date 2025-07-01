@@ -151,6 +151,6 @@ describe("Alert", () => {
     render(<Alert {...defaultProps} />);
 
     // Check that the modal is rendered (HeroUI Modal creates specific structure)
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 });
