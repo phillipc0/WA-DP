@@ -33,23 +33,21 @@ When("I navigate back to the editor", () => {
 
 // Authentication steps
 Then("I should see the login modal", () => {
-  cy.get('[data-testid="login-modal"]', { timeout: 10000 }).should(
-    "be.visible",
-  );
+  cy.get('[role="dialog"]', { timeout: 10000 }).should("be.visible");
 });
 
 When(
   "I create a new account with username {string} and password {string}",
   (username: string, password: string) => {
     // Wait for modal to be fully loaded and visible
-    cy.get('[data-testid="login-modal"]').should("be.visible");
+    cy.get('[role="dialog"]').should("be.visible");
 
     // Use more generic selectors since HeroUI inputs might be complex
-    cy.get('[data-testid="login-modal"] input').first().type(username);
-    cy.get('[data-testid="login-modal"] input[type="password"]').type(password);
+    cy.get('[data-testid="username-input"] input').type(username);
+    cy.get('[data-testid="password-input"] input').type(password);
 
     // Find and click the submit button
-    cy.get('[data-testid="login-modal"] button[type="submit"]').click();
+    cy.get('[role="dialog"] button[type="submit"]').click();
   },
 );
 
@@ -57,23 +55,21 @@ When(
   "I log in with username {string} and password {string}",
   (username: string, password: string) => {
     // Wait for modal to be fully loaded and visible
-    cy.get('[data-testid="login-modal"]').should("be.visible");
+    cy.get('[role="dialog"]').should("be.visible");
 
     // Use more generic selectors since HeroUI inputs might be complex
-    cy.get('[data-testid="login-modal"] input').first().clear().type(username);
-    cy.get('[data-testid="login-modal"] input[type="password"]')
-      .clear()
-      .type(password);
+    cy.get('[data-testid="username-input"] input').clear().type(username);
+    cy.get('[data-testid="password-input"] input').clear().type(password);
 
     // Find and click the submit button
-    cy.get('[data-testid="login-modal"] button[type="submit"]').click();
+    cy.get('[role="dialog"] button[type="submit"]').click();
   },
 );
 
 Then("I should be logged in and see the portfolio editor", () => {
   cy.url().should("include", "/edit");
   cy.contains("Portfolio Edit Page").should("be.visible");
-  cy.get('[data-testid="login-modal"]').should("not.exist");
+  cy.get('[role="dialog"]').should("not.exist");
 });
 
 When("I log out", () => {
