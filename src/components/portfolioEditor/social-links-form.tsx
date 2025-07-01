@@ -21,7 +21,11 @@ export function SocialLinksForm({
           label="GitHub Username"
           name="github"
           placeholder="Your GitHub username"
-          startContent={<span className="text-default-400">github.com/</span>}
+          startContent={
+            <span className="text-default-400 whitespace-nowrap">
+              github.com/
+            </span>
+          }
           value={portfolioData.social.github}
           onChange={onSocialChange}
         />
@@ -29,7 +33,11 @@ export function SocialLinksForm({
           label="Twitter Username"
           name="twitter"
           placeholder="Your Twitter username"
-          startContent={<span className="text-default-400">twitter.com/</span>}
+          startContent={
+            <span className="text-default-400 whitespace-nowrap">
+              twitter.com/
+            </span>
+          }
           value={portfolioData.social.twitter}
           onChange={onSocialChange}
         />
@@ -38,7 +46,9 @@ export function SocialLinksForm({
           name="linkedin"
           placeholder="Your LinkedIn username"
           startContent={
-            <span className="text-default-400">linkedin.com/in/</span>
+            <span className="text-default-400 whitespace-nowrap">
+              linkedin.com/in/
+            </span>
           }
           value={portfolioData.social.linkedin}
           onChange={onSocialChange}
@@ -48,7 +58,9 @@ export function SocialLinksForm({
           name="discord"
           placeholder="Your Discord username"
           startContent={
-            <span className="text-default-400">discord.com/users/</span>
+            <span className="text-default-400 whitespace-nowrap">
+              discord.com/users/
+            </span>
           }
           value={portfolioData.social.discord}
           onChange={onSocialChange}
@@ -58,7 +70,9 @@ export function SocialLinksForm({
           name="reddit"
           placeholder="Your Reddit username"
           startContent={
-            <span className="text-default-400">reddit.com/user/</span>
+            <span className="text-default-400 whitespace-nowrap">
+              reddit.com/user/
+            </span>
           }
           value={portfolioData.social.reddit}
           onChange={onSocialChange}
