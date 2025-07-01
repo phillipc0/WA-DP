@@ -145,6 +145,30 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain("Missing or invalid field: name");
     });
 
+    it("validates skills is an array", () => {
+      const invalidData = {
+        ...validPortfolioData,
+        skills: "not-an-array", // should be array
+      };
+      const result = validatePortfolioData(invalidData);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Skills must be an array");
+    });
+
+    it("validates skill name is required and must be a string", () => {
+      const invalidData = {
+        ...validPortfolioData,
+        skills: [{ level: 90 }], // missing name
+      };
+      const result = validatePortfolioData(invalidData);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "Skill 1: name is required and must be a string",
+      );
+    });
+
     it("validates skills array structure", () => {
       const invalidData = {
         ...validPortfolioData,
@@ -195,6 +219,31 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain("Missing or invalid social links object");
     });
 
+    it("validates social field values are strings", () => {
+      const invalidData = {
+        ...validPortfolioData,
+        social: {
+          github: 123, // should be string
+          linkedin: "valid-string",
+        },
+      };
+      const result = validatePortfolioData(invalidData);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Invalid social field: github must be a string");
+    });
+
+    it("validates CV is an array", () => {
+      const invalidData = {
+        ...validPortfolioData,
+        cv: "not-an-array", // should be array
+      };
+      const result = validatePortfolioData(invalidData);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("CV/Work experience must be an array");
+    });
+
     it("validates CV array structure", () => {
       const invalidData = {
         ...validPortfolioData,
@@ -206,6 +255,17 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain(
         "Experience 1: missing or invalid field: position",
       );
+    });
+
+    it("validates education is an array", () => {
+      const invalidData = {
+        ...validPortfolioData,
+        education: "not-an-array", // should be array
+      };
+      const result = validatePortfolioData(invalidData);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Education must be an array");
     });
 
     it("validates education array structure", () => {

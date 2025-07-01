@@ -28,6 +28,13 @@ export function Alert({
   cancelLabel = "Cancel",
   onConfirm,
 }: AlertProps) {
+  const bgColors = {
+    success: "bg-success-100",
+    warning: "bg-warning-100",
+    error: "bg-danger-100",
+    info: "bg-primary-100",
+  };
+
   const iconColors = {
     success: "text-success",
     warning: "text-warning",
@@ -44,7 +51,7 @@ export function Alert({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalContent>
+      <ModalContent className={bgColors[type]}>
         <ModalHeader className="flex gap-1">
           <div aria-hidden="true" className={`text-xl ${iconColors[type]}`}>
             {icons[type]}
