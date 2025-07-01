@@ -1,4 +1,11 @@
 import { Button } from "@heroui/button";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
 
 interface AlertProps {
   isOpen: boolean;
@@ -21,15 +28,6 @@ export function Alert({
   cancelLabel = "Cancel",
   onConfirm,
 }: AlertProps) {
-  if (!isOpen) return null;
-
-  const bgColors = {
-    success: "bg-success-100",
-    warning: "bg-warning-100",
-    error: "bg-danger-100",
-    info: "bg-primary-100",
-  };
-
   const iconColors = {
     success: "text-success",
     warning: "text-warning",
@@ -45,34 +43,18 @@ export function Alert({
   };
 
   return (
-    <div
-      aria-describedby="alert-message"
-      aria-labelledby="alert-title"
-      aria-modal="true"
-      className="fixed inset-0 flex items-center justify-center z-50 bg-black/50"
-      role="dialog"
-    >
-      <div
-        className={`w-full max-w-md p-6 rounded-lg shadow-lg ${bgColors[type]} border border-default-200`}
-        role="alertdialog"
-      >
-        <div className="flex items-start mb-4">
-          <div
-            aria-hidden="true"
-            className={`text-2xl mr-3 ${iconColors[type]}`}
-          >
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalContent>
+        <ModalHeader className="flex gap-1">
+          <div aria-hidden="true" className={`text-xl ${iconColors[type]}`}>
             {icons[type]}
           </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold" id="alert-title">
-              {title}
-            </h3>
-            <p className="mt-2 text-default-700" id="alert-message">
-              {message}
-            </p>
-          </div>
-        </div>
-        <div className="flex justify-end gap-2 mt-6">
+          {title}
+        </ModalHeader>
+        <ModalBody>
+          <p className="text-default-700">{message}</p>
+        </ModalBody>
+        <ModalFooter>
           {onConfirm && (
             <Button color="default" variant="flat" onPress={onClose}>
               {cancelLabel}
@@ -95,8 +77,8 @@ export function Alert({
           >
             {confirmLabel}
           </Button>
-        </div>
-      </div>
-    </div>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }

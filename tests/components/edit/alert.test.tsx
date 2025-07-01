@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { Alert } from "@/components/portfolioEditor/alert";
 
 describe("Alert", () => {
@@ -46,18 +46,18 @@ describe("Alert", () => {
     });
   });
 
-  it("applies correct background color classes for each type", () => {
+  it("applies correct icon color classes for each type", () => {
     const types = [
-      { type: "success" as const, className: "bg-success-100" },
-      { type: "warning" as const, className: "bg-warning-100" },
-      { type: "error" as const, className: "bg-danger-100" },
-      { type: "info" as const, className: "bg-primary-100" },
+      { type: "success" as const, colorClass: "text-success" },
+      { type: "warning" as const, colorClass: "text-warning" },
+      { type: "error" as const, colorClass: "text-danger" },
+      { type: "info" as const, colorClass: "text-primary" },
     ];
 
-    types.forEach(({ type, className }) => {
+    types.forEach(({ type, colorClass }) => {
       const { unmount } = render(<Alert {...defaultProps} type={type} />);
-      const alertContainer = document.querySelector(`.${className}`);
-      expect(alertContainer).toBeInTheDocument();
+      const iconElement = document.querySelector(`.${colorClass}`);
+      expect(iconElement).toBeInTheDocument();
       unmount();
     });
   });
@@ -147,10 +147,10 @@ describe("Alert", () => {
     });
   });
 
-  it("has proper backdrop overlay", () => {
+  it("renders within a modal container", () => {
     render(<Alert {...defaultProps} />);
 
-    const backdrop = document.querySelector(".bg-black\\/50");
-    expect(backdrop).toBeInTheDocument();
+    // Check that the modal is rendered (HeroUI Modal creates specific structure)
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 });
