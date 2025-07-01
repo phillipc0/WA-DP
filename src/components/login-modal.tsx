@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 
@@ -13,6 +13,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -22,6 +23,18 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       .then((data) => setExists(data.exists))
       .catch(() => setExists(false));
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      if (firstElement) {
+        firstElement.focus();
+      }
+    }
+  }, [isOpen, exists]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +66,12 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
   if (exists === null) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div
+        aria-label="Loading authentication status"
+        aria-modal="true"
+        className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+        role="dialog"
+      >
         <div className="bg-background p-6 rounded-lg">Loading...</div>
       </div>
     );
@@ -61,11 +79,17 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
   return (
     <div
+      aria-labelledby="login-modal-title"
+      aria-modal="true"
       className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
       data-testid="login-modal"
+      role="dialog"
     >
-      <div className="bg-background p-6 rounded-lg w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-4">
+      <div
+        ref={modalRef}
+        className="bg-background p-6 rounded-lg w-full max-w-sm"
+      >
+        <h1 className="text-2xl font-bold mb-4" id="login-modal-title">
           {exists ? "Login" : "Create Admin Account"}
         </h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -82,7 +106,11 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="text-danger">{error}</p>}
+          {error && (
+            <p aria-live="polite" className="text-danger" role="alert">
+              {error}
+            </p>
+          )}
           <div className="flex gap-2 justify-end">
             <Button
               color="default"

@@ -46,7 +46,6 @@ export const createUser = (
   username: string,
   hashedPassword: string,
 ): StoredUser => {
-  const users = getUsersFromFile();
   const newUser: StoredUser = { username, password: hashedPassword };
 
   saveUsersToFile([newUser]);

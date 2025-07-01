@@ -51,7 +51,7 @@ export const clearPortfolioDataCache = () => {
   pendingRequest = null;
 };
 
-export const savePortfolioData = async (data: JSON): Promise<boolean> => {
+export const savePortfolioData = async (data: any): Promise<boolean> => {
   try {
     const response = await authenticatedFetch("/api/portfolio", {
       method: "POST",
