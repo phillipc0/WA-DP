@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GithubIntegration } from "@/components/portfolio/github-integration";
 
@@ -451,11 +451,11 @@ describe("GithubIntegration", () => {
     render(<GithubIntegration />);
 
     await waitFor(() => {
-      expect(screen.getByText("1,234")).toBeInTheDocument();
+      expect(screen.getByText("1.234")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("1,234")).toBeInTheDocument();
-    expect(screen.getByText("5,678")).toBeInTheDocument();
+    expect(screen.getByText("1.234")).toBeInTheDocument();
+    expect(screen.getByText("5.678")).toBeInTheDocument();
   });
 
   it("does not render language indicator when language is null", async () => {
