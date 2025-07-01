@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 
 import IndexPage from "@/pages/index";
-import GeneratorPage from "@/pages/generator";
+import EditPage from "@/pages/edit";
 
 function App() {
   return (
     <Routes>
       <Route element={<IndexPage />} path="/" />
-      <Route element={<GeneratorPage />} path="/generator" />
+      <Route element={<EditPage />} path="/edit" />
     </Routes>
   );
 }

@@ -31,7 +31,15 @@ You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 npm install
 ```
 
-### Run the development server
+### Run the development servers
+
+Install backend dependencies once:
+
+```bash
+cd backend && npm install && cd ..
+```
+
+Then start both frontend and backend simultaneously:
 
 ```bash
 npm run dev

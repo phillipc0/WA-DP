@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    setupFiles: ["./tests/setup.ts"],
     alias: {
       "@": "/src",
     },
@@ -19,20 +20,19 @@ export default defineConfig({
         "src/provider.tsx",
         "src/vite-env.d.ts",
         "src/components/icons.tsx",
-        "src/components/primitives.ts",
+        "src/components/primitives.tsx",
         "src/config/site.ts",
         "src/layouts/default.tsx",
         "src/types/**/*.ts",
       ],
       all: true,
       reportOnFailure: true,
-      // TODO: Enable thresholds when coverage is sufficient
-      // thresholds: {
-      //   lines: 80,
-      //   functions: 80,
-      //   branches: 80,
-      //   statements: 80,
-      // },
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
   },
 });
