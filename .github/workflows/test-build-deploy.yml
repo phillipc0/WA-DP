@@ -398,6 +398,13 @@ jobs:
           cp -r dist/* backend/frontend/
           mv backend/ wa-dp/
 
+      - name: Upload Build to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+          retention-days: 14
+
       - name: Remove Old Files on Server
         uses: appleboy/ssh-action@v1.2.2
         with:
