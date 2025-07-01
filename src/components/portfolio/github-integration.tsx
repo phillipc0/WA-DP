@@ -10,6 +10,7 @@ import {
 } from "@heroui/dropdown";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 
 import { GithubIcon } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
@@ -50,9 +51,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper function to check if a repository is a contributor repository
-  const isContributor = (repo: Repository) =>
-    repo.full_name === "phillipc0/WA-DP";
+  // Helper function to check if the current GitHub user is a contributor
+  const isContributor = () => {
+    const contributorUsers = ["phillipc0", "RBN-Apps", "FreakMediaLP"];
+    return contributorUsers.includes(portfolioData.social.github);
+  };
 
   const fetchReposForSort = async (
     githubUsername: string,
@@ -155,7 +158,17 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   }, [sortBy, portfolioData.social.github]);
 
   return (
-    <Card className="w-full border border-default-200/50 shadow-sm">
+    <Card
+      className="w-full border border-default-200/50 shadow-sm"
+      style={
+        isContributor()
+          ? {
+              boxShadow: "0 0 15px 5px rgba(245, 158, 11, 0.5)",
+              borderColor: "#F59E0B",
+            }
+          : {}
+      }
+    >
       <CardHeader className="flex gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-default-900 dark:bg-default-100">
           <GithubIcon
@@ -168,11 +181,26 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
             GitHub Repositories
           </h2>
         </div>
-        <div className="ml-auto">
+        <div className="flex items-center flex-wrap gap-2 sm:gap-4">
+          {isContributor() && (
+            <Tooltip
+              color="warning"
+              content="This user is a contributor to the WA-DP GitHub Project"
+            >
+              <Button
+                className="text-xs font-bold text-yellow-500 ml-auto"
+                size="sm"
+                style={{ borderColor: "#F59E0B" }}
+                variant="bordered"
+              >
+                Contributor
+              </Button>
+            </Tooltip>
+          )}
           <Dropdown>
             <DropdownTrigger>
               <Button
-                className="min-w-[140px] justify-between"
+                className="min-w-[140px] justify-between ml-auto"
                 size="sm"
                 variant="bordered"
               >
@@ -230,15 +258,10 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                 isHoverable
                 isPressable
                 as={Link}
-                className={`group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border ${isContributor(repo) ? "border-yellow-400" : "border-default-200/50"} hover:border-primary/30 repo-card-enter`}
+                className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30 repo-card-enter"
                 href={repo.html_url}
                 style={{
                   animationDelay: `${index * 100}ms`,
-                  ...(isContributor(repo)
-                    ? {
-                        boxShadow: "0 0 15px 5px rgba(245, 158, 11, 0.5)",
-                      }
-                    : {}),
                 }}
               >
                 <CardBody className="p-4">
@@ -262,16 +285,6 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                       )}
                     </div>
                     <div className="ml-4 flex flex-col items-end">
-                      {repo.full_name === "phillipc0/WA-DP" && (
-                        <Button
-                          className="text-xs font-bold text-yellow-500 mb-2"
-                          size="sm"
-                          style={{ borderColor: "#F59E0B" }}
-                          variant="bordered"
-                        >
-                          Contributor
-                        </Button>
-                      )}
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <svg
                           className="w-5 h-5 text-primary"
