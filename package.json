@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "e2e:open": "cypress open",
-    "e2e:run": "cypress run"
+    "e2e:run": "cypress run",
+    "deps:madge": "node scripts/generate-madge.cjs"
   },
   "dependencies": {
     "@heroui/alert": "^2.2.15",
@@ -80,6 +81,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "globals": "^16.2.0",
     "jsdom": "^26.1.0",
+    "madge": "^8.0.0",
     "postcss": "8.5.6",
     "prettier": "3.5.3",
     "ts-loader": "^9.5.2",
