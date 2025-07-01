@@ -230,7 +230,9 @@ describe("portfolio-export utilities", () => {
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Invalid social field: github must be a string");
+      expect(result.errors).toContain(
+        "Invalid social field: github must be a string",
+      );
     });
 
     it("validates CV is an array", () => {
