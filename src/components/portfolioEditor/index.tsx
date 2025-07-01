@@ -7,6 +7,7 @@ import { SocialLinksForm } from "./social-links-form";
 import { SkillsForm } from "./skills-form";
 import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
+import { ImportExportControls } from "./import-export-controls";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
@@ -68,6 +69,8 @@ export function PortfolioEditor() {
     handleEducationDragLeave,
     handleEducationDrop,
     handleEducationDragEnd,
+    // Import/Export
+    handleImportPortfolioData,
   } = usePortfolioEditor();
 
   if (isLoading || !portfolioData) {
@@ -164,10 +167,16 @@ export function PortfolioEditor() {
         </Tab>
       </Tabs>
 
-      <div className="flex justify-between mt-6">
-        <Button color="danger" variant="flat" onPress={handleReset}>
-          Reset to Defaults
-        </Button>
+      <div className="flex flex-wrap justify-between items-center gap-3 mt-6">
+        <div className="flex flex-wrap gap-3">
+          <Button color="danger" variant="flat" onPress={handleReset}>
+            Reset to Defaults
+          </Button>
+          <ImportExportControls
+            portfolioData={portfolioData}
+            onImport={handleImportPortfolioData}
+          />
+        </div>
         <Button color="success" onPress={handleSave}>
           Save Changes
         </Button>
