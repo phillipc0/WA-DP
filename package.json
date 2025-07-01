@@ -9,6 +9,7 @@
     "inst:frontend": "npm install",
     "inst:backend": "cd backend && npm install",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "format": "prettier --write .",
     "install-dev": "concurrently \"npm run inst:frontend\" \"npm run inst:backend\"",
     "build": "tsc && vite build",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
@@ -16,7 +17,8 @@
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "e2e:open": "cypress open",
-    "e2e:run": "cypress run"
+    "e2e:run": "cypress run",
+    "check-all": "npm run build && npm run lint && npm run format"
   },
   "dependencies": {
     "@heroui/alert": "^2.2.15",
