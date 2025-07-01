@@ -42,9 +42,9 @@ When(
     // Wait for modal to be fully loaded and visible
     cy.get('[role="dialog"]').should("be.visible");
 
-    // Use more generic selectors since HeroUI inputs might be complex
-    cy.get('[data-testid="username-input"] input').type(username);
-    cy.get('[data-testid="password-input"] input').type(password);
+    // Use HeroUI Input data-testid selectors
+    cy.get('[data-testid="username-input"]').type(username);
+    cy.get('[data-testid="password-input"]').type(password);
 
     // Find and click the submit button
     cy.get('[role="dialog"] button[type="submit"]').click();
@@ -57,9 +57,9 @@ When(
     // Wait for modal to be fully loaded and visible
     cy.get('[role="dialog"]').should("be.visible");
 
-    // Use more generic selectors since HeroUI inputs might be complex
-    cy.get('[data-testid="username-input"] input').clear().type(username);
-    cy.get('[data-testid="password-input"] input').clear().type(password);
+    // Use HeroUI Input data-testid selectors
+    cy.get('[data-testid="username-input"]').clear().type(username);
+    cy.get('[data-testid="password-input"]').clear().type(password);
 
     // Find and click the submit button
     cy.get('[role="dialog"] button[type="submit"]').click();
