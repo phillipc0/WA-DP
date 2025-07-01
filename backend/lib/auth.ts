@@ -6,11 +6,6 @@ const JWT_SECRET =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_EXPIRES_IN = "24h";
 
-export interface User {
-  username: string;
-  password: string;
-}
-
 export interface AuthenticatedUser {
   username: string;
 }

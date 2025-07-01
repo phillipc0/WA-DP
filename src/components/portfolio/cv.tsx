@@ -14,33 +14,17 @@ export function CV({ refreshTrigger }: CVProps) {
   const experiences: Experience[] = portfolioData.cv || [];
   const education: Education[] = portfolioData.education || [];
 
-  const experienceItems = experiences
-    .map((item, index) => ({
-      ...item,
-      type: "experience" as const,
-      originalIndex: index,
-    }))
-    .sort((a, b) => {
-      const getYear = (duration: string) => {
-        const match = duration.match(/(\d{4})/);
-        return match ? parseInt(match[1]) : 0;
-      };
-      return getYear(b.duration) - getYear(a.duration);
-    });
+  const experienceItems = experiences.map((item, index) => ({
+    ...item,
+    type: "experience" as const,
+    originalIndex: index,
+  }));
 
-  const educationItems = education
-    .map((item, index) => ({
-      ...item,
-      type: "education" as const,
-      originalIndex: index,
-    }))
-    .sort((a, b) => {
-      const getYear = (duration: string) => {
-        const match = duration.match(/(\d{4})/);
-        return match ? parseInt(match[1]) : 0;
-      };
-      return getYear(b.duration) - getYear(a.duration);
-    });
+  const educationItems = education.map((item, index) => ({
+    ...item,
+    type: "education" as const,
+    originalIndex: index,
+  }));
 
   const getIconText = (item: any) => {
     if (item.type === "education") {

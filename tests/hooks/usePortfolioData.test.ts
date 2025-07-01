@@ -41,7 +41,7 @@ describe("usePortfolioData", () => {
     };
   };
 
-  // Helper to setup authenticated state with draft data and wait for loading to complete
+  // Helper to set up authenticated state with draft data and wait for loading to complete
   const setupAuthenticatedWithDraft = async (
     draftData: any,
     serverData: any = null,

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import { Navbar } from "@/components/navbar";
@@ -107,7 +107,7 @@ describe("Navbar", () => {
     return { mockIsAuthenticated, mockValidateToken };
   };
 
-  // Helper to setup authenticated state
+  // Helper to set up authenticated state
   const setupAuthenticatedState = async () => {
     const { mockIsAuthenticated, mockValidateToken } =
       await getMockAuthDependencies();

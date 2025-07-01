@@ -47,7 +47,7 @@ describe("ThemeSwitch", () => {
     };
   };
 
-  // Helper to setup theme and switch mocks with common patterns
+  // Helper to set up theme and switch mocks with common patterns
   const setupThemeAndSwitch = (
     theme: "light" | "dark",
     isSelected: boolean,

@@ -7,9 +7,9 @@ import { SocialLinksForm } from "./social-links-form";
 import { SkillsForm } from "./skills-form";
 import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
-import { usePortfolioEditor } from "./use-portfolio-editor";
 
-import { title, subtitle } from "@/components/primitives";
+import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
+import { subtitle, title } from "@/components/primitives";
 
 export function PortfolioEditor() {
   const {

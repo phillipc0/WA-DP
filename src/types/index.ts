@@ -26,6 +26,7 @@ export interface Skill {
   level: number;
 }
 
+//TODO: consider removing or using this
 export interface PortfolioData {
   name: string;
   title: string;

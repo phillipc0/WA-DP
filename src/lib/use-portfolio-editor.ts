@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { siteConfig } from "@/config/site";
-import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth";
-import { getPortfolioData, savePortfolioData } from "@/lib/portfolio";
+import { siteConfig } from "@/config/site.ts";
+import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth.ts";
+import { getPortfolioData, savePortfolioData } from "@/lib/portfolio.ts";
 import {
   clearDraftFromCookies,
   loadDraftFromCookies,
   saveDraftToCookies,
-} from "@/lib/cookie-persistence";
+} from "@/lib/cookie-persistence.ts";
 import { Education, Experience } from "@/types";
 
 type Skill = { name: string; level: number };
