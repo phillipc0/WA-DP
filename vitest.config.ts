@@ -27,13 +27,12 @@ export default defineConfig({
       ],
       all: true,
       reportOnFailure: true,
-      // TODO: Enable thresholds when coverage is sufficient
-      // thresholds: {
-      //   lines: 80,
-      //   functions: 80,
-      //   branches: 80,
-      //   statements: 80,
-      // },
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
   },
 });
