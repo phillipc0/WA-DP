@@ -2,7 +2,6 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
-import { Tooltip } from "@heroui/tooltip";
 import { Button } from "@heroui/button";
 
 import {
@@ -13,6 +12,7 @@ import {
   RedditIcon,
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
+import { isContributor } from "@/utils/contributor";
 
 interface PersonalInfoProps {
   refreshTrigger?: number;
@@ -20,12 +20,6 @@ interface PersonalInfoProps {
 
 export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
   const { portfolioData } = usePortfolioData(refreshTrigger);
-
-  // Helper function to check if the current GitHub user is a contributor
-  const isContributor = () => {
-    const contributorUsers = ["phillipc0", "rbn-apps", "freakmedialp"];
-    return contributorUsers.includes(portfolioData.social.github.toLowerCase());
-  };
 
   // Get contributor settings from portfolio data
   const contributorSettings = portfolioData?.contributor || {
@@ -35,9 +29,11 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
 
   // Determine if contributor features should be shown
   const shouldShowContributor =
-    isContributor() && contributorSettings.enableContributorStatus;
+    isContributor(portfolioData.social.github) &&
+    contributorSettings.enableContributorStatus;
   const shouldShowGoldenShadow =
-    isContributor() && contributorSettings.showGoldenBoxShadow;
+    isContributor(portfolioData.social.github) &&
+    contributorSettings.showGoldenBoxShadow;
 
   return (
     <Card
@@ -53,19 +49,14 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
     >
       {shouldShowContributor && (
         <div className="absolute top-3 right-3 z-10">
-          <Tooltip
-            color="warning"
-            content="This user is a contributor to the WA-DP GitHub Project"
+          <Button
+            className="text-xs font-bold text-yellow-500"
+            size="sm"
+            style={{ borderColor: "#F59E0B" }}
+            variant="bordered"
           >
-            <Button
-              className="text-xs font-bold text-yellow-500"
-              size="sm"
-              style={{ borderColor: "#F59E0B" }}
-              variant="bordered"
-            >
-              Contributor
-            </Button>
-          </Tooltip>
+            Contributor
+          </Button>
         </div>
       )}
       <CardHeader className="flex gap-3">

@@ -11,6 +11,7 @@ import { ContributorForm } from "./contributor-form";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
+import { isContributor } from "@/utils/contributor";
 
 export function PortfolioEditor() {
   const {
@@ -72,14 +73,6 @@ export function PortfolioEditor() {
     // Contributor functions
     handleContributorChange,
   } = usePortfolioEditor();
-
-  // Check if the current GitHub user is a contributor
-  const isContributor = () => {
-    const contributorUsers = ["phillipc0", "rbn-apps", "freakmedialp"];
-    return contributorUsers.includes(
-      portfolioData?.social?.github.toLowerCase(),
-    );
-  };
 
   if (isLoading || !portfolioData) {
     return (
@@ -174,7 +167,7 @@ export function PortfolioEditor() {
           />
         </Tab>
 
-        {isContributor() && (
+        {isContributor(portfolioData?.social?.github) && (
           <Tab key="contributor" title="Contributor">
             <ContributorForm
               portfolioData={portfolioData}
