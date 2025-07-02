@@ -276,7 +276,7 @@ describe("ImportExportControls", () => {
     it("shows validation errors when data is invalid", async () => {
       vi.mocked(portfolioExport.validatePortfolioData).mockReturnValue({
         isValid: false,
-        errors: ["Name is required", "Skills must be an array"],
+        errors: ["Invalid field: name must be a string", "Skills must be an array"],
       });
 
       render(<ImportExportControls {...defaultProps} />);
@@ -287,17 +287,10 @@ describe("ImportExportControls", () => {
       fireEvent.click(importButton);
 
       const textarea = screen.getByLabelText("Paste JSON Data");
-      // Use data with all required fields filled but invalid structure to trigger validation
+      // Use data with invalid structure to trigger validation
       const invalidData = {
-        name: "Test User",
-        title: "Developer",
-        bio: "Test bio",
-        location: "Test Location",
-        email: "test@example.com",
-        skills: "not-an-array", // This will cause validation error
-        social: {},
-        cv: [],
-        education: [],
+        name: 123, // Invalid type - should be string
+        skills: "not-an-array", // Invalid type - should be array
       };
       fireEvent.change(textarea, {
         target: { value: JSON.stringify(invalidData) },
@@ -308,7 +301,7 @@ describe("ImportExportControls", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Validation Errors:")).toBeInTheDocument();
-        expect(screen.getByText("• Name is required")).toBeInTheDocument();
+        expect(screen.getByText("• Invalid field: name must be a string")).toBeInTheDocument();
         expect(
           screen.getByText("• Skills must be an array"),
         ).toBeInTheDocument();
@@ -458,6 +451,58 @@ describe("ImportExportControls", () => {
       await waitFor(() => {
         expect(portfolioExport.parseJSONFile).toHaveBeenCalledWith(file);
         expect(mockOnImport).toHaveBeenCalledWith(testData);
+      });
+    });
+
+    it("imports minimal data successfully", async () => {
+      const minimalData = { name: "Minimal User" };
+
+      render(<ImportExportControls {...defaultProps} />);
+
+      const importButton = screen.getByRole("button", {
+        name: "Import Portfolio Data",
+      });
+      fireEvent.click(importButton);
+
+      const textarea = screen.getByLabelText("Paste JSON Data");
+      fireEvent.change(textarea, {
+        target: { value: JSON.stringify(minimalData) },
+      });
+
+      const modalImportButton = screen.getByRole("button", { name: "Import" });
+      fireEvent.click(modalImportButton);
+
+      await waitFor(() => {
+        expect(mockOnImport).toHaveBeenCalledWith(minimalData);
+        expect(
+          screen.queryByLabelText("Paste JSON Data"),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it("imports empty object successfully", async () => {
+      const emptyData = {};
+
+      render(<ImportExportControls {...defaultProps} />);
+
+      const importButton = screen.getByRole("button", {
+        name: "Import Portfolio Data",
+      });
+      fireEvent.click(importButton);
+
+      const textarea = screen.getByLabelText("Paste JSON Data");
+      fireEvent.change(textarea, {
+        target: { value: JSON.stringify(emptyData) },
+      });
+
+      const modalImportButton = screen.getByRole("button", { name: "Import" });
+      fireEvent.click(modalImportButton);
+
+      await waitFor(() => {
+        expect(mockOnImport).toHaveBeenCalledWith(emptyData);
+        expect(
+          screen.queryByLabelText("Paste JSON Data"),
+        ).not.toBeInTheDocument();
       });
     });
   });
