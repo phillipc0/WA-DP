@@ -23,8 +23,8 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
 
   // Helper function to check if the current GitHub user is a contributor
   const isContributor = () => {
-    const contributorUsers = ["phillipc0", "RBN-Apps", "FreakMediaLP"];
-    return contributorUsers.includes(portfolioData.social.github);
+    const contributorUsers = ["phillipc0", "rbn-apps", "freakmedialp"];
+    return contributorUsers.includes(portfolioData.social.github.toLowerCase());
   };
 
   // Get contributor settings from portfolio data

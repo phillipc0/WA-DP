@@ -73,6 +73,14 @@ export function PortfolioEditor() {
     handleContributorChange,
   } = usePortfolioEditor();
 
+  // Check if the current GitHub user is a contributor
+  const isContributor = () => {
+    const contributorUsers = ["phillipc0", "rbn-apps", "freakmedialp"];
+    return contributorUsers.includes(
+      portfolioData?.social?.github.toLowerCase(),
+    );
+  };
+
   if (isLoading || !portfolioData) {
     return (
       <div className="py-8 md:py-10">
@@ -166,12 +174,14 @@ export function PortfolioEditor() {
           />
         </Tab>
 
-        <Tab key="contributor" title="Contributor">
-          <ContributorForm
-            portfolioData={portfolioData}
-            onContributorChange={handleContributorChange}
-          />
-        </Tab>
+        {isContributor() && (
+          <Tab key="contributor" title="Contributor">
+            <ContributorForm
+              portfolioData={portfolioData}
+              onContributorChange={handleContributorChange}
+            />
+          </Tab>
+        )}
       </Tabs>
 
       <div className="flex justify-between mt-6">
