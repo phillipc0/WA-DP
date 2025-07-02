@@ -546,6 +546,19 @@ export function usePortfolioEditor() {
     }));
   };
 
+  const handleContributorChange = (field: string, value: boolean) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        contributor: {
+          ...prev.contributor,
+          [field]: value,
+        },
+      };
+    });
+  };
+
   return {
     portfolioData,
     isLoading,
@@ -604,5 +617,7 @@ export function usePortfolioEditor() {
     handleEducationDragLeave,
     handleEducationDrop,
     handleEducationDragEnd,
+    // Contributor functions
+    handleContributorChange,
   };
 }

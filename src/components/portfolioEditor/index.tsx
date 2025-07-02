@@ -7,6 +7,7 @@ import { SocialLinksForm } from "./social-links-form";
 import { SkillsForm } from "./skills-form";
 import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
+import { ContributorForm } from "./contributor-form";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
@@ -68,6 +69,8 @@ export function PortfolioEditor() {
     handleEducationDragLeave,
     handleEducationDrop,
     handleEducationDragEnd,
+    // Contributor functions
+    handleContributorChange,
   } = usePortfolioEditor();
 
   if (isLoading || !portfolioData) {
@@ -160,6 +163,13 @@ export function PortfolioEditor() {
             handleRemoveEducation={handleRemoveEducation}
             newEducation={newEducation}
             portfolioData={portfolioData}
+          />
+        </Tab>
+
+        <Tab key="contributor" title="Contributor">
+          <ContributorForm
+            portfolioData={portfolioData}
+            onContributorChange={handleContributorChange}
           />
         </Tab>
       </Tabs>

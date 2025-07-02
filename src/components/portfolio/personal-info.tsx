@@ -27,11 +27,23 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
     return contributorUsers.includes(portfolioData.social.github);
   };
 
+  // Get contributor settings from portfolio data
+  const contributorSettings = portfolioData?.contributor || {
+    enableContributorStatus: false,
+    showGoldenBoxShadow: false,
+  };
+
+  // Determine if contributor features should be shown
+  const shouldShowContributor =
+    isContributor() && contributorSettings.enableContributorStatus;
+  const shouldShowGoldenShadow =
+    isContributor() && contributorSettings.showGoldenBoxShadow;
+
   return (
     <Card
       className="w-full relative"
       style={
-        isContributor()
+        shouldShowGoldenShadow
           ? {
               boxShadow: "0 0 15px 5px rgba(245, 158, 11, 1)",
               borderColor: "#F59E0B",
@@ -39,7 +51,7 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
           : {}
       }
     >
-      {isContributor() && (
+      {shouldShowContributor && (
         <div className="absolute top-3 right-3 z-10">
           <Tooltip
             color="warning"
