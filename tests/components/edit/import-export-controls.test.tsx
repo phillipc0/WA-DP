@@ -276,7 +276,10 @@ describe("ImportExportControls", () => {
     it("shows validation errors when data is invalid", async () => {
       vi.mocked(portfolioExport.validatePortfolioData).mockReturnValue({
         isValid: false,
-        errors: ["Invalid field: name must be a string", "Skills must be an array"],
+        errors: [
+          "Invalid field: name must be a string",
+          "Skills must be an array",
+        ],
       });
 
       render(<ImportExportControls {...defaultProps} />);
@@ -301,7 +304,9 @@ describe("ImportExportControls", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Validation Errors:")).toBeInTheDocument();
-        expect(screen.getByText("• Invalid field: name must be a string")).toBeInTheDocument();
+        expect(
+          screen.getByText("• Invalid field: name must be a string"),
+        ).toBeInTheDocument();
         expect(
           screen.getByText("• Skills must be an array"),
         ).toBeInTheDocument();

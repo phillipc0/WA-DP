@@ -138,7 +138,12 @@ describe("portfolio-export utilities", () => {
     });
 
     it("allows empty string fields", () => {
-      const dataWithEmptyFields = { ...validPortfolioData, name: "", title: "", bio: "" };
+      const dataWithEmptyFields = {
+        ...validPortfolioData,
+        name: "",
+        title: "",
+        bio: "",
+      };
       const result = validatePortfolioData(dataWithEmptyFields);
 
       expect(result.isValid).toBe(true);
@@ -183,9 +188,7 @@ describe("portfolio-export utilities", () => {
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Skill 1: name must be a string",
-      );
+      expect(result.errors).toContain("Skill 1: name must be a string");
     });
 
     it("allows skills with missing level (optional)", () => {
@@ -290,9 +293,7 @@ describe("portfolio-export utilities", () => {
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Experience 1: company must be a string",
-      );
+      expect(result.errors).toContain("Experience 1: company must be a string");
     });
 
     it("validates education is an array", () => {
