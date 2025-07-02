@@ -152,7 +152,7 @@ describe("SocialLinksForm", () => {
       screen.getByPlaceholderText("Your LinkedIn username"),
     ).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText("Your Discord 000000000000000000"),
+      screen.getByPlaceholderText("000000000000000000"),
     ).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Your Reddit username"),
