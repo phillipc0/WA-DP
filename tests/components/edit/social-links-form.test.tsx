@@ -28,7 +28,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByLabelText("GitHub Username")).toBeInTheDocument();
     expect(screen.getByLabelText("Twitter Username")).toBeInTheDocument();
     expect(screen.getByLabelText("LinkedIn Username")).toBeInTheDocument();
-    expect(screen.getByLabelText("Discord Username")).toBeInTheDocument();
+    expect(screen.getByLabelText("Discord User-ID")).toBeInTheDocument();
     expect(screen.getByLabelText("Reddit Username")).toBeInTheDocument();
   });
 
@@ -38,7 +38,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByLabelText("GitHub Username")).toHaveValue(
       "johndoe_github",
     );
-    expect(screen.getByLabelText("Discord Username")).toHaveValue(
+    expect(screen.getByLabelText("Discord User-ID")).toHaveValue(
       "johndoe#1234",
     );
   });
@@ -107,7 +107,7 @@ describe("SocialLinksForm", () => {
       <SocialLinksForm {...defaultProps} onSocialChange={onSocialChange} />,
     );
 
-    const discordInput = screen.getByLabelText("Discord Username");
+    const discordInput = screen.getByLabelText("Discord User-ID");
     fireEvent.change(discordInput, {
       target: { name: "discord", value: "newdiscord#5678" },
     });
@@ -152,7 +152,7 @@ describe("SocialLinksForm", () => {
       screen.getByPlaceholderText("Your LinkedIn username"),
     ).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText("Your Discord username"),
+      screen.getByPlaceholderText("Your Discord user-id"),
     ).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Your Reddit username"),
@@ -199,7 +199,7 @@ describe("SocialLinksForm", () => {
       "name",
       "linkedin",
     );
-    expect(screen.getByLabelText("Discord Username")).toHaveAttribute(
+    expect(screen.getByLabelText("Discord User-ID")).toHaveAttribute(
       "name",
       "discord",
     );
