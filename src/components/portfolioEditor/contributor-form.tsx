@@ -1,3 +1,4 @@
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Switch } from "@heroui/switch";
 
 interface ContributorFormProps {
@@ -15,50 +16,57 @@ export function ContributorForm({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-default-50 p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Contributor Settings</h2>
-        <p className="text-default-600 mb-6">
+    <Card className="mt-4">
+      <CardHeader>
+        <h2 className="text-xl font-bold">Contributor Settings</h2>
+      </CardHeader>
+      <CardBody className="gap-6">
+        <p className="text-default-600">
           These settings allow you to customize the contributor features of your
           portfolio.
         </p>
 
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="text-medium font-medium">
-                Enable Contributor Status
-              </h3>
-              <p className="text-small text-default-500">
-                Show the contributor button on your profile
-              </p>
-            </div>
-            <Switch
-              isSelected={contributorSettings.enableContributorStatus}
-              onValueChange={(value) =>
-                onContributorChange("enableContributorStatus", value)
-              }
-            />
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h3 className="text-medium font-medium">
+              Enable Contributor Status
+            </h3>
+            <p className="text-small text-default-500">
+              Show the contributor button on your profile
+            </p>
           </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="text-medium font-medium">
-                Show Golden Box Shadow
-              </h3>
-              <p className="text-small text-default-500">
-                Display the golden box shadow around your profile card
-              </p>
-            </div>
-            <Switch
-              isSelected={contributorSettings.showGoldenBoxShadow}
-              onValueChange={(value) =>
-                onContributorChange("showGoldenBoxShadow", value)
+          <Switch
+            isSelected={contributorSettings.enableContributorStatus}
+            onValueChange={(value) => {
+              if (value) {
+                onContributorChange("showGoldenBoxShadow", true);
+              } else {
+                onContributorChange("showGoldenBoxShadow", false);
               }
-            />
-          </div>
+              onContributorChange("enableContributorStatus", value);
+            }}
+          />
         </div>
-      </div>
-    </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h3 className="text-medium font-medium">Show Golden Box Shadow</h3>
+            <p className="text-small text-default-500">
+              Display the golden box shadow around your profile card
+            </p>
+          </div>
+          <Switch
+            isDisabled={!contributorSettings.enableContributorStatus}
+            isSelected={
+              contributorSettings.showGoldenBoxShadow &&
+              contributorSettings.enableContributorStatus
+            }
+            onValueChange={(value) =>
+              onContributorChange("showGoldenBoxShadow", value)
+            }
+          />
+        </div>
+      </CardBody>
+    </Card>
   );
 }
