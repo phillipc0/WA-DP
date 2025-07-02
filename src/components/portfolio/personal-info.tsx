@@ -2,6 +2,8 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
+import { Tooltip } from "@heroui/tooltip";
+import { Button } from "@heroui/button";
 
 import {
   GithubIcon,
@@ -19,8 +21,41 @@ interface PersonalInfoProps {
 export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
   const { portfolioData } = usePortfolioData(refreshTrigger);
 
+  // Helper function to check if the current GitHub user is a contributor
+  const isContributor = () => {
+    const contributorUsers = ["phillipc0", "RBN-Apps", "FreakMediaLP"];
+    return contributorUsers.includes(portfolioData.social.github);
+  };
+
   return (
-    <Card className="w-full">
+    <Card
+      className="w-full relative"
+      style={
+        isContributor()
+          ? {
+              boxShadow: "0 0 15px 5px rgba(245, 158, 11, 1)",
+              borderColor: "#F59E0B",
+            }
+          : {}
+      }
+    >
+      {isContributor() && (
+        <div className="absolute top-3 right-3 z-10">
+          <Tooltip
+            color="warning"
+            content="This user is a contributor to the WA-DP GitHub Project"
+          >
+            <Button
+              className="text-xs font-bold text-yellow-500"
+              size="sm"
+              style={{ borderColor: "#F59E0B" }}
+              variant="bordered"
+            >
+              Contributor
+            </Button>
+          </Tooltip>
+        </div>
+      )}
       <CardHeader className="flex gap-3">
         <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
           <img

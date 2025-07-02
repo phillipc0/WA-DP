@@ -10,7 +10,6 @@ import {
 } from "@heroui/dropdown";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
 
 import { GithubIcon } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
@@ -50,12 +49,6 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Helper function to check if the current GitHub user is a contributor
-  const isContributor = () => {
-    const contributorUsers = ["phillipc0", "RBN-Apps", "FreakMediaLP"];
-    return contributorUsers.includes(portfolioData.social.github);
-  };
 
   const fetchReposForSort = async (
     githubUsername: string,
@@ -158,17 +151,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   }, [sortBy, portfolioData.social.github]);
 
   return (
-    <Card
-      className="w-full border border-default-200/50 shadow-sm"
-      style={
-        isContributor()
-          ? {
-              boxShadow: "0 0 15px 5px rgba(245, 158, 11, 0.5)",
-              borderColor: "#F59E0B",
-            }
-          : {}
-      }
-    >
+    <Card className="w-full border border-default-200/50 shadow-sm">
       <CardHeader className="flex gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-default-900 dark:bg-default-100">
           <GithubIcon
@@ -182,21 +165,6 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
           </h2>
         </div>
         <div className="flex items-center flex-wrap gap-2 sm:gap-4">
-          {isContributor() && (
-            <Tooltip
-              color="warning"
-              content="This user is a contributor to the WA-DP GitHub Project"
-            >
-              <Button
-                className="text-xs font-bold text-yellow-500 ml-auto"
-                size="sm"
-                style={{ borderColor: "#F59E0B" }}
-                variant="bordered"
-              >
-                Contributor
-              </Button>
-            </Tooltip>
-          )}
           <Dropdown>
             <DropdownTrigger>
               <Button
