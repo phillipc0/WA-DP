@@ -54,9 +54,9 @@ export function SocialLinksForm({
           onChange={onSocialChange}
         />
         <Input
-          label="Discord Username"
+          label="Discord User-ID"
           name="discord"
-          placeholder="Your Discord username"
+          placeholder="000000000000000000"
           startContent={
             <span className="text-default-400 whitespace-nowrap">
               discord.com/users/
