@@ -137,12 +137,25 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toEqual([]);
     });
 
-    it("validates required string fields", () => {
-      const invalidData = { ...validPortfolioData, name: "" };
+    it("allows empty string fields", () => {
+      const dataWithEmptyFields = {
+        ...validPortfolioData,
+        name: "",
+        title: "",
+        bio: "",
+      };
+      const result = validatePortfolioData(dataWithEmptyFields);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("validates field types when present", () => {
+      const invalidData = { ...validPortfolioData, name: 123 }; // wrong type
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Missing or invalid field: name");
+      expect(result.errors).toContain("Invalid field: name must be a string");
     });
 
     it("validates skills is an array", () => {
@@ -156,30 +169,37 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain("Skills must be an array");
     });
 
-    it("validates skill name is required and must be a string", () => {
-      const invalidData = {
+    it("allows skills with missing name (optional)", () => {
+      const dataWithMissingSkillName = {
         ...validPortfolioData,
-        skills: [{ level: 90 }], // missing name
+        skills: [{ level: 90 }], // missing name is allowed
       };
-      const result = validatePortfolioData(invalidData);
+      const result = validatePortfolioData(dataWithMissingSkillName);
 
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Skill 1: name is required and must be a string",
-      );
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
     });
 
-    it("validates skills array structure", () => {
+    it("validates skill name type when present", () => {
       const invalidData = {
         ...validPortfolioData,
-        skills: [{ name: "React" }], // missing level
+        skills: [{ name: 123, level: 90 }], // name should be string
       };
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Skill 1: level must be a number between 0 and 100",
-      );
+      expect(result.errors).toContain("Skill 1: name must be a string");
+    });
+
+    it("allows skills with missing level (optional)", () => {
+      const dataWithMissingSkillLevel = {
+        ...validPortfolioData,
+        skills: [{ name: "React" }], // missing level is allowed
+      };
+      const result = validatePortfolioData(dataWithMissingSkillLevel);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
     });
 
     it("validates skill level is a number", () => {
@@ -208,7 +228,7 @@ describe("portfolio-export utilities", () => {
       );
     });
 
-    it("validates social object structure", () => {
+    it("validates social object structure when present", () => {
       const invalidData = {
         ...validPortfolioData,
         social: "invalid-social", // should be object
@@ -216,7 +236,15 @@ describe("portfolio-export utilities", () => {
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Missing or invalid social links object");
+      expect(result.errors).toContain("Social links must be an object");
+    });
+
+    it("allows missing social object", () => {
+      const { social, ...dataWithoutSocial } = validPortfolioData;
+      const result = validatePortfolioData(dataWithoutSocial);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
     });
 
     it("validates social field values are strings", () => {
@@ -246,17 +274,26 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain("CV/Work experience must be an array");
     });
 
-    it("validates CV array structure", () => {
+    it("allows CV entries with missing fields (optional)", () => {
+      const dataWithPartialCV = {
+        ...validPortfolioData,
+        cv: [{ company: "Tech Corp" }], // missing other fields is allowed
+      };
+      const result = validatePortfolioData(dataWithPartialCV);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("validates CV field types when present", () => {
       const invalidData = {
         ...validPortfolioData,
-        cv: [{ company: "Tech Corp" }], // missing required fields
+        cv: [{ company: 123 }], // company should be string
       };
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Experience 1: missing or invalid field: position",
-      );
+      expect(result.errors).toContain("Experience 1: company must be a string");
     });
 
     it("validates education is an array", () => {
@@ -270,16 +307,27 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain("Education must be an array");
     });
 
-    it("validates education array structure", () => {
+    it("allows education entries with missing fields (optional)", () => {
+      const dataWithPartialEducation = {
+        ...validPortfolioData,
+        education: [{ institution: "University" }], // missing other fields is allowed
+      };
+      const result = validatePortfolioData(dataWithPartialEducation);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("validates education field types when present", () => {
       const invalidData = {
         ...validPortfolioData,
-        education: [{ institution: "University" }], // missing required fields
+        education: [{ institution: 123 }], // institution should be string
       };
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Education 1: missing or invalid field: degree",
+        "Education 1: institution must be a string",
       );
     });
 
@@ -319,19 +367,35 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toContain("Data must be a valid JSON object");
     });
 
-    it("allows optional fields to be missing", () => {
-      const minimalData = {
-        name: "John Doe",
-        title: "Developer",
-        bio: "Developer",
-        location: "NYC",
-        email: "john@example.com",
+    it("allows completely minimal data", () => {
+      const minimalData = { name: "John Doe" };
+      const result = validatePortfolioData(minimalData);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("allows empty object", () => {
+      const emptyData = {};
+      const result = validatePortfolioData(emptyData);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("allows all fields to be present but empty", () => {
+      const emptyFieldsData = {
+        name: "",
+        title: "",
+        bio: "",
+        location: "",
+        email: "",
         skills: [],
         social: {},
         cv: [],
         education: [],
       };
-      const result = validatePortfolioData(minimalData);
+      const result = validatePortfolioData(emptyFieldsData);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toEqual([]);
