@@ -3,6 +3,7 @@ import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 
 import {
   GithubIcon,
@@ -41,44 +42,50 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
       style={
         shouldShowGoldenShadow
           ? {
-              boxShadow: "0 0 15px 5px rgba(245, 158, 11, 1)",
-              borderColor: "#F59E0B",
+              boxShadow: "0 0 15px 5px rgba(245, 165, 11, 1.5)",
             }
           : {}
       }
     >
-      {shouldShowContributor && (
-        <div className="absolute top-3 right-3 z-10">
-          <Button
-            className="text-xs font-bold text-yellow-500"
-            size="sm"
-            style={{ borderColor: "#F59E0B" }}
-            variant="bordered"
-          >
-            Contributor
-          </Button>
-        </div>
-      )}
-      <CardHeader className="flex gap-3">
-        <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
-          <img
-            alt={`${portfolioData.name || "User"} avatar`}
-            className="w-full h-full object-cover rounded-full"
-            src={portfolioData.avatar}
-          />
-        </div>
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
-          <p className="text-default-500">{portfolioData.title}</p>
-          <div className="flex gap-2 mt-2">
-            <Chip color="primary" size="sm">
-              {portfolioData.location}
-            </Chip>
-            <Chip color="secondary" size="sm">
-              {portfolioData.email}
-            </Chip>
+      <CardHeader className="flex flex-col sm:flex-row sm:justify-between items-start gap-4">
+        <div className="flex gap-3">
+          <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
+            <img
+              alt={`${portfolioData.name || "User"} avatar`}
+              className="w-full h-full object-cover rounded-full"
+              src={portfolioData.avatar}
+            />
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
+            <p className="text-default-500">{portfolioData.title}</p>
+            <div className="flex gap-2 mt-">
+              <Chip color="primary" size="sm">
+                {portfolioData.location}
+              </Chip>
+              <Chip color="secondary" size="sm">
+                {portfolioData.email}
+              </Chip>
+            </div>
           </div>
         </div>
+        {shouldShowContributor && (
+          <Tooltip
+            closeDelay={125}
+            color="warning"
+            content="This user is a contributor to the WA-DP GitHub project"
+            showArrow={true}
+          >
+            <Button
+              className="text-xs font-bold text-yellow-600 dark:text-yellow-500"
+              size="sm"
+              style={{ borderColor: "#F59E0B" }}
+              variant="ghost"
+            >
+              Contributor
+            </Button>
+          </Tooltip>
+        )}
       </CardHeader>
       <Divider />
       <CardBody>
