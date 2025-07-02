@@ -26,93 +26,137 @@ export function validatePortfolioData(data: any): {
     return { isValid: false, errors };
   }
 
-  // Check required fields
-  const requiredFields = ["name", "title", "bio", "location", "email"];
-  for (const field of requiredFields) {
-    if (!data[field] || typeof data[field] !== "string") {
-      errors.push(`Missing or invalid field: ${field}`);
-    }
-  }
-
-  // Check social object structure
-  if (!data.social || typeof data.social !== "object") {
-    errors.push("Missing or invalid social links object");
-  } else {
-    const socialFields = ["github", "twitter", "linkedin", "discord", "reddit"];
-    for (const field of socialFields) {
-      if (data.social[field] && typeof data.social[field] !== "string") {
-        errors.push(`Invalid social field: ${field} must be a string`);
+  // Check optional basic fields - only validate if present and not empty
+  const basicFields = ["name", "title", "bio", "location", "email"];
+  for (const field of basicFields) {
+    if (
+      data[field] !== undefined &&
+      data[field] !== null &&
+      data[field] !== ""
+    ) {
+      if (typeof data[field] !== "string") {
+        errors.push(`Invalid field: ${field} must be a string`);
       }
     }
   }
 
-  // Check skills array
-  if (!Array.isArray(data.skills)) {
-    errors.push("Skills must be an array");
-  } else {
-    data.skills.forEach((skill: any, index: number) => {
-      if (!skill.name || typeof skill.name !== "string") {
-        errors.push(
-          `Skill ${index + 1}: name is required and must be a string`,
-        );
-      }
-      if (
-        typeof skill.level !== "number" ||
-        skill.level < 0 ||
-        skill.level > 100
-      ) {
-        errors.push(
-          `Skill ${index + 1}: level must be a number between 0 and 100`,
-        );
-      }
-    });
-  }
-
-  // Check cv array
-  if (!Array.isArray(data.cv)) {
-    errors.push("CV/Work experience must be an array");
-  } else {
-    data.cv.forEach((exp: any, index: number) => {
-      const requiredExpFields = [
-        "company",
-        "position",
-        "duration",
-        "location",
-        "description",
+  // Check social object structure - optional
+  if (data.social !== undefined) {
+    if (typeof data.social !== "object" || data.social === null) {
+      errors.push("Social links must be an object");
+    } else {
+      const socialFields = [
+        "github",
+        "twitter",
+        "linkedin",
+        "discord",
+        "reddit",
       ];
-      for (const field of requiredExpFields) {
-        if (!exp[field] || typeof exp[field] !== "string") {
-          errors.push(
-            `Experience ${index + 1}: missing or invalid field: ${field}`,
-          );
+      for (const field of socialFields) {
+        if (
+          data.social[field] !== undefined &&
+          data.social[field] !== null &&
+          data.social[field] !== ""
+        ) {
+          if (typeof data.social[field] !== "string") {
+            errors.push(`Invalid social field: ${field} must be a string`);
+          }
         }
       }
-      if (exp.technologies && !Array.isArray(exp.technologies)) {
-        errors.push(`Experience ${index + 1}: technologies must be an array`);
-      }
-    });
+    }
   }
 
-  // Check education array
-  if (!Array.isArray(data.education)) {
-    errors.push("Education must be an array");
-  } else {
-    data.education.forEach((edu: any, index: number) => {
-      const requiredEduFields = [
-        "institution",
-        "degree",
-        "duration",
-        "location",
-        "description",
-      ];
-      for (const field of requiredEduFields) {
-        if (!edu[field] || typeof edu[field] !== "string") {
-          errors.push(
-            `Education ${index + 1}: missing or invalid field: ${field}`,
-          );
+  // Check skills array - optional
+  if (data.skills !== undefined) {
+    if (!Array.isArray(data.skills)) {
+      errors.push("Skills must be an array");
+    } else {
+      data.skills.forEach((skill: any, index: number) => {
+        if (
+          skill.name !== undefined &&
+          skill.name !== null &&
+          skill.name !== ""
+        ) {
+          if (typeof skill.name !== "string") {
+            errors.push(`Skill ${index + 1}: name must be a string`);
+          }
         }
-      }
-    });
+        if (skill.level !== undefined && skill.level !== null) {
+          if (
+            typeof skill.level !== "number" ||
+            skill.level < 0 ||
+            skill.level > 100
+          ) {
+            errors.push(
+              `Skill ${index + 1}: level must be a number between 0 and 100`,
+            );
+          }
+        }
+      });
+    }
+  }
+
+  // Check cv array - optional
+  if (data.cv !== undefined) {
+    if (!Array.isArray(data.cv)) {
+      errors.push("CV/Work experience must be an array");
+    } else {
+      data.cv.forEach((exp: any, index: number) => {
+        const expFields = [
+          "company",
+          "position",
+          "duration",
+          "location",
+          "description",
+        ];
+        for (const field of expFields) {
+          if (
+            exp[field] !== undefined &&
+            exp[field] !== null &&
+            exp[field] !== ""
+          ) {
+            if (typeof exp[field] !== "string") {
+              errors.push(`Experience ${index + 1}: ${field} must be a string`);
+            }
+          }
+        }
+        if (exp.technologies !== undefined && exp.technologies !== null) {
+          if (!Array.isArray(exp.technologies)) {
+            errors.push(
+              `Experience ${index + 1}: technologies must be an array`,
+            );
+          }
+        }
+      });
+    }
+  }
+
+  // Check education array - optional
+  if (data.education !== undefined) {
+    if (!Array.isArray(data.education)) {
+      errors.push("Education must be an array");
+    } else {
+      data.education.forEach((edu: any, index: number) => {
+        const eduFields = [
+          "institution",
+          "degree",
+          "duration",
+          "location",
+          "description",
+        ];
+        for (const field of eduFields) {
+          if (
+            edu[field] !== undefined &&
+            edu[field] !== null &&
+            edu[field] !== ""
+          ) {
+            if (typeof edu[field] !== "string") {
+              errors.push(`Education ${index + 1}: ${field} must be a string`);
+            }
+          }
+        }
+      });
+    }
   }
 
   return { isValid: errors.length === 0, errors };

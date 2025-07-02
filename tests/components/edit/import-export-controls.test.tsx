@@ -46,8 +46,10 @@ global.FileReader = class MockFileReader {
 describe("ImportExportControls", () => {
   const mockPortfolioData = {
     name: "John Doe",
+    title: "Software Developer",
     bio: "Software Developer",
     location: "New York",
+    email: "john@example.com",
     avatar: "avatar.jpg",
     skills: [{ name: "React", level: 90 }],
     social: { github: "johndoe" },
@@ -135,7 +137,7 @@ describe("ImportExportControls", () => {
       });
       fireEvent.click(importButton);
 
-      expect(screen.getByLabelText("Upload JSON File")).toBeInTheDocument();
+      expect(screen.getByText("Upload JSON File")).toBeInTheDocument();
       expect(screen.getByLabelText("Paste JSON Data")).toBeInTheDocument();
       expect(screen.getByText("OR")).toBeInTheDocument();
     });
@@ -180,7 +182,12 @@ describe("ImportExportControls", () => {
       ) as HTMLTextAreaElement;
       fireEvent.change(textarea, { target: { value: '{"name": "Test"}' } });
 
-      const fileInput = screen.getByLabelText("Upload JSON File");
+      // Get the hidden file input inside the drag & drop zone
+      const fileInput = screen
+        .getByRole("button", {
+          name: "Upload JSON file by clicking or dragging and dropping",
+        })
+        .querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(['{"name": "FromFile"}'], "test.json", {
         type: "application/json",
       });
@@ -197,7 +204,12 @@ describe("ImportExportControls", () => {
       });
       fireEvent.click(importButton);
 
-      const fileInput = screen.getByLabelText("Upload JSON File");
+      // Get the hidden file input inside the drag & drop zone
+      const fileInput = screen
+        .getByRole("button", {
+          name: "Upload JSON file by clicking or dragging and dropping",
+        })
+        .querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(['{"name": "Test"}'], "portfolio.json", {
         type: "application/json",
       });
@@ -216,7 +228,12 @@ describe("ImportExportControls", () => {
       });
       fireEvent.click(importButton);
 
-      const fileInput = screen.getByLabelText("Upload JSON File");
+      // Get the hidden file input inside the drag & drop zone
+      const fileInput = screen
+        .getByRole("button", {
+          name: "Upload JSON file by clicking or dragging and dropping",
+        })
+        .querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["test"], "test.txt", { type: "text/plain" });
       fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -233,7 +250,12 @@ describe("ImportExportControls", () => {
       });
       fireEvent.click(importButton);
 
-      const fileInput = screen.getByLabelText("Upload JSON File");
+      // Get the hidden file input inside the drag & drop zone
+      const fileInput = screen
+        .getByRole("button", {
+          name: "Upload JSON file by clicking or dragging and dropping",
+        })
+        .querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(['{"name": "Test"}'], "test.json", {
         type: "application/json",
       });
@@ -265,7 +287,21 @@ describe("ImportExportControls", () => {
       fireEvent.click(importButton);
 
       const textarea = screen.getByLabelText("Paste JSON Data");
-      fireEvent.change(textarea, { target: { value: '{"invalid": "data"}' } });
+      // Use data with all required fields filled but invalid structure to trigger validation
+      const invalidData = {
+        name: "Test User",
+        title: "Developer",
+        bio: "Test bio",
+        location: "Test Location",
+        email: "test@example.com",
+        skills: "not-an-array", // This will cause validation error
+        social: {},
+        cv: [],
+        education: [],
+      };
+      fireEvent.change(textarea, {
+        target: { value: JSON.stringify(invalidData) },
+      });
 
       const modalImportButton = screen.getByRole("button", { name: "Import" });
       fireEvent.click(modalImportButton);
@@ -313,7 +349,17 @@ describe("ImportExportControls", () => {
 
   describe("Successful import", () => {
     it("calls onImport and closes modal on successful import", async () => {
-      const testData = { name: "Imported User", skills: [] };
+      const testData = {
+        name: "Imported User",
+        title: "Developer",
+        bio: "Test bio",
+        location: "Test Location",
+        email: "test@example.com",
+        skills: [],
+        social: {},
+        cv: [],
+        education: [],
+      };
 
       render(<ImportExportControls {...defaultProps} />);
 
@@ -340,7 +386,17 @@ describe("ImportExportControls", () => {
     });
 
     it("shows success message after successful import", async () => {
-      const testData = { name: "Imported User", skills: [] };
+      const testData = {
+        name: "Imported User",
+        title: "Developer",
+        bio: "Test bio",
+        location: "Test Location",
+        email: "test@example.com",
+        skills: [],
+        social: {},
+        cv: [],
+        education: [],
+      };
 
       render(<ImportExportControls {...defaultProps} />);
 
@@ -365,7 +421,17 @@ describe("ImportExportControls", () => {
     });
 
     it("imports from file successfully", async () => {
-      const testData = { name: "File User", skills: [] };
+      const testData = {
+        name: "File User",
+        title: "Developer",
+        bio: "Test bio",
+        location: "Test Location",
+        email: "test@example.com",
+        skills: [],
+        social: {},
+        cv: [],
+        education: [],
+      };
       vi.mocked(portfolioExport.parseJSONFile).mockResolvedValue(testData);
 
       render(<ImportExportControls {...defaultProps} />);
@@ -375,7 +441,12 @@ describe("ImportExportControls", () => {
       });
       fireEvent.click(importButton);
 
-      const fileInput = screen.getByLabelText("Upload JSON File");
+      // Get the hidden file input inside the drag & drop zone
+      const fileInput = screen
+        .getByRole("button", {
+          name: "Upload JSON file by clicking or dragging and dropping",
+        })
+        .querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File([JSON.stringify(testData)], "test.json", {
         type: "application/json",
       });
@@ -452,7 +523,20 @@ describe("ImportExportControls", () => {
       fireEvent.click(importButton);
 
       const textarea = screen.getByLabelText("Paste JSON Data");
-      fireEvent.change(textarea, { target: { value: '{"name": "Test"}' } });
+      const completeTestData = {
+        name: "Test User",
+        title: "Developer",
+        bio: "Test bio",
+        location: "Test Location",
+        email: "test@example.com",
+        skills: [],
+        social: {},
+        cv: [],
+        education: [],
+      };
+      fireEvent.change(textarea, {
+        target: { value: JSON.stringify(completeTestData) },
+      });
 
       const modalImportButton = screen.getByRole("button", { name: "Import" });
       fireEvent.click(modalImportButton);
@@ -476,7 +560,12 @@ describe("ImportExportControls", () => {
       });
       fireEvent.click(importButton);
 
-      const fileInput = screen.getByLabelText("Upload JSON File");
+      // Get the hidden file input inside the drag & drop zone
+      const fileInput = screen
+        .getByRole("button", {
+          name: "Upload JSON file by clicking or dragging and dropping",
+        })
+        .querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["invalid"], "test.json", {
         type: "application/json",
       });

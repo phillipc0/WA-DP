@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@heroui/button";
 import {
   Modal,
@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/modal";
-import { Input } from "@heroui/input";
 
 import { Alert } from "./alert";
 
@@ -35,6 +34,8 @@ export function ImportExportControls({
   const [importAlertType, setImportAlertType] = useState<"success" | "error">(
     "success",
   );
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportJSON = () => {
     try {
@@ -46,8 +47,7 @@ export function ImportExportControls({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileSelect = (file: File | undefined) => {
     if (file && file.type === "application/json") {
       setImportFile(file);
       setImportText("");
@@ -55,6 +55,51 @@ export function ImportExportControls({
       setImportAlertMessage("Please select a valid JSON file");
       setImportAlertType("error");
       setImportAlert(true);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    handleFileSelect(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    const jsonFile = files.find((file) => file.type === "application/json");
+
+    if (jsonFile) {
+      handleFileSelect(jsonFile);
+    } else {
+      setImportAlertMessage("Please drop a valid JSON file");
+      setImportAlertType("error");
+      setImportAlert(true);
+    }
+  };
+
+  const handleDropZoneClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDropZoneKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fileInputRef.current?.click();
     }
   };
 
@@ -66,6 +111,7 @@ export function ImportExportControls({
   };
 
   const validateAndImport = async (data: any) => {
+    // Validate the data structure
     const validation = validatePortfolioData(data);
 
     if (!validation.isValid) {
@@ -138,23 +184,87 @@ export function ImportExportControls({
           <ModalBody>
             <div className="space-y-4">
               <div>
-                <label
-                  className="block text-sm font-medium mb-2"
-                  htmlFor="file-upload"
-                >
+                <p className="block text-sm font-medium mb-2">
                   Upload JSON File
-                </label>
-                <Input
-                  accept=".json"
-                  className="w-full"
-                  id="file-upload"
-                  type="file"
-                  onChange={handleFileChange}
-                />
+                </p>
+                <div
+                  aria-label="Upload JSON file by clicking or dragging and dropping"
+                  className={`
+                    relative w-full min-h-[120px] p-8 border-2 border-dashed rounded-lg
+                    transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary
+                    ${
+                      isDragging
+                        ? "border-primary bg-primary/5"
+                        : "border-default-300 bg-default-50 hover:border-primary hover:bg-primary/5"
+                    }
+                  `}
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleDropZoneClick}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  onKeyDown={handleDropZoneKeyDown}
+                >
+                  <input
+                    ref={fileInputRef}
+                    accept=".json"
+                    className="hidden"
+                    type="file"
+                    onChange={handleFileChange}
+                  />
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <div className="mb-3">
+                      <svg
+                        className={`w-12 h-12 ${isDragging ? "text-primary" : "text-default-400"}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                        />
+                      </svg>
+                    </div>
+                    <div className="space-y-1">
+                      <p
+                        className={`text-sm font-medium ${isDragging ? "text-primary" : "text-default-700"}`}
+                      >
+                        {isDragging
+                          ? "Drop your file here"
+                          : "Drag & drop your JSON file here"}
+                      </p>
+                      <p className="text-xs text-default-500">
+                        or click to browse files
+                      </p>
+                      <p className="text-xs text-default-400">
+                        Only .json files are accepted
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 {importFile && (
-                  <p className="text-sm text-green-600 mt-1">
-                    File selected: {importFile.name}
-                  </p>
+                  <div className="mt-3 p-3 bg-success/10 border border-success/20 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-4 h-4 text-success"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          clipRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          fillRule="evenodd"
+                        />
+                      </svg>
+                      <p className="text-sm text-success font-medium">
+                        File selected: {importFile.name}
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
 
