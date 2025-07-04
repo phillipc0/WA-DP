@@ -20,7 +20,6 @@ const REPO_PER_PAGE = 4;
 type Repository = {
   id: number;
   name: string;
-  full_name: string;
   description: string;
   html_url: string;
   homepage?: string;

@@ -59,7 +59,7 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
             <p className="text-default-500">{portfolioData.title}</p>
-            <div className="flex gap-2 mt-">
+            <div className="flex gap-2 mt-2">
               <Chip color="primary" size="sm">
                 {portfolioData.location}
               </Chip>
