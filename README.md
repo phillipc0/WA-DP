@@ -21,6 +21,7 @@ A modern full-stack web application for creating and customizing developer portf
 ## Tech Stack
 
 ### Frontend
+
 - React 19 with TypeScript
 - Vite for development
 - HeroUI component library
@@ -28,6 +29,7 @@ A modern full-stack web application for creating and customizing developer portf
 - Framer Motion for animations
 
 ### Backend
+
 - Next.js 15 with API routes
 - JWT authentication with bcryptjs
 - JSON file-based data storage
@@ -35,16 +37,19 @@ A modern full-stack web application for creating and customizing developer portf
 ## Installation
 
 Install all dependencies:
+
 ```bash
 npm run install-dev
 ```
 
 Start development servers:
+
 ```bash
 npm run dev
 ```
 
 The app will be available at:
+
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 
