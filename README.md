@@ -1,61 +1,88 @@
-# Webanwendungen - Developer Portfolio
+# Developer Portfolio
 
-## Deadlines:
+A modern full-stack web application for creating and customizing developer portfolios. Built with React, TypeScript, and Next.js.
+
+## Deadlines
 
 - Wichtigste Funktionen (Trennung & CV): 06.07.2025
 - Code Fertig: 10.08.2025
 - Doku fertig: 22.08.2025
 
-## Technologies Used
+## Features
 
-- [Vite](https://vitejs.dev/guide/)
-- [HeroUI](https://heroui.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
+- Personal information management with avatar and social links
+- Skills showcase with proficiency levels
+- GitHub integration for repository display
+- CV builder with work experience and education
+- Dark/light theme support
+- JWT-based authentication
+- Real-time editing with unsaved changes detection
 
-## How to Use
+## Tech Stack
 
-To clone the project, run the following command:
+### Frontend
+- React 19 with TypeScript
+- Vite for development
+- HeroUI component library
+- Tailwind CSS for styling
+- Framer Motion for animations
 
+### Backend
+- Next.js 15 with API routes
+- JWT authentication with bcryptjs
+- JSON file-based data storage
+
+## Installation
+
+Install all dependencies:
 ```bash
-git clone https://github.com/frontio-ai/vite-template.git
+npm run install-dev
 ```
 
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
-npm install
-```
-
-### Run the development servers
-
-Install backend dependencies once:
-
-```bash
-cd backend && npm install && cd ..
-```
-
-Then start both frontend and backend simultaneously:
-
+Start development servers:
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
+The app will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## Development Scripts
 
 ```bash
-public-hoist-pattern[]=*@heroui/*
+npm run dev              # Start both frontend and backend
+npm run dev:frontend     # Frontend only (port 5173)
+npm run dev:backend      # Backend only (port 3000)
+npm run test             # Run unit tests
+npm run test:cov         # Run tests with coverage
+npm run e2e:open         # Open Cypress test runner
+npm run build            # Build for production
+npm run lint             # Lint and fix code
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed
-correctly.
+## Project Structure
+
+```
+src/                     # Frontend React application
+backend/                 # Next.js API routes and backend logic
+tests/                   # Unit tests with Vitest
+cypress/                 # E2E tests with Cucumber
+```
+
+## Configuration
+
+- Path aliases: `@/*` maps to `./src/*`
+- API proxy: Frontend proxies `/api/*` to backend on port 3000
+- Authentication: JWT tokens stored in secure cookies
+- Data storage: JSON files for users and portfolio data
+
+## Testing
+
+- Unit tests: Vitest
+- E2E tests: Cypress with Cucumber/Gherkin
+- Coverage reports available with `npm run test:cov`
 
 ## License
 
-Licensed under the [MIT license](https://github.com/frontio-ai/vite-template/blob/main/LICENSE).
+Licensed under the [MIT license](LICENSE).
