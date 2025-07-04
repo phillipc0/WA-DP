@@ -8,9 +8,11 @@ import { SkillsForm } from "./skills-form";
 import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
 import { ImportExportControls } from "./import-export-controls";
+import { ContributorForm } from "./contributor-form";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
+import { isContributor } from "@/utils/contributor";
 
 export function PortfolioEditor() {
   const {
@@ -69,6 +71,8 @@ export function PortfolioEditor() {
     handleEducationDragLeave,
     handleEducationDrop,
     handleEducationDragEnd,
+    // Contributor functions
+    handleContributorChange,
     // Import/Export
     handleImportPortfolioData,
   } = usePortfolioEditor();
@@ -165,6 +169,15 @@ export function PortfolioEditor() {
             portfolioData={portfolioData}
           />
         </Tab>
+
+        {isContributor(portfolioData?.social?.github) && (
+          <Tab key="contributor" title="Contributor">
+            <ContributorForm
+              portfolioData={portfolioData}
+              onContributorChange={handleContributorChange}
+            />
+          </Tab>
+        )}
       </Tabs>
 
       <div className="flex flex-wrap justify-between items-center gap-3 mt-6">
