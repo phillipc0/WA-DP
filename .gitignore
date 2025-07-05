@@ -34,3 +34,4 @@ bun.lockb
 /backend/users.json
 /backend/node_modules
 /backend/frontend/
+/.scannerwork/
