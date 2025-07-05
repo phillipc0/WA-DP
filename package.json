@@ -18,7 +18,9 @@
     "test:cov": "vitest run --coverage",
     "e2e:open": "cypress open",
     "e2e:run": "cypress run",
-    "check-all": "npm run build && npm run lint && npm run format"
+    "check-all": "npm run build && npm run lint && npm run format",
+    "sonar": "npx sonar-scanner",
+    "sonar:coverage": "npm run test:cov && npx sonar-scanner"
   },
   "dependencies": {
     "@heroui/alert": "^2.2.15",
@@ -85,6 +87,7 @@
     "jsdom": "^26.1.0",
     "postcss": "8.5.6",
     "prettier": "3.5.3",
+    "sonar-scanner": "^3.1.0",
     "ts-loader": "^9.5.2",
     "typescript": "5.6.3",
     "vite": "^7.0.0",
