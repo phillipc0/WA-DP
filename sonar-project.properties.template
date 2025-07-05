@@ -1,10 +1,13 @@
-# SonarQube Configuration for WA-DP
+# SonarQube Configuration Template for WA-DP
+# Copy this file to sonar-project.properties and configure your settings
 
 sonar.projectKey=wa-dp
 sonar.projectName=WA-DP Portfolio Generator
 sonar.projectVersion=1.0
 sonar.host.url=http://localhost:9000
-# sonar.login=your-token-here
+
+# Authentication - Replace with your actual token
+sonar.login=your-token-here
 
 # Source code paths
 sonar.sources=src,backend/pages
