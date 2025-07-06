@@ -83,7 +83,7 @@ This project includes SonarQube integration for code quality analysis and covera
 4. **Configure Authentication:**
 
    ```bash
-   # Copy the template file for local development  
+   # Copy the template file for local development
    cp sonar-project-local.properties.template sonar-project-local.properties
 
    # Edit sonar-project-local.properties and replace "your-token-here" with your actual token
