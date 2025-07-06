@@ -1,5 +1,5 @@
-# SonarQube Configuration Template for WA-DP
-# Copy this file to sonar-project.properties and configure your settings
+# Local SonarQube Configuration Template for WA-DP
+# Copy this file to sonar-project-local.properties and configure your settings
 
 sonar.projectKey=wa-dp
 sonar.projectName=WA-DP Portfolio Generator

@@ -19,8 +19,8 @@
     "e2e:open": "cypress open",
     "e2e:run": "cypress run",
     "check-all": "npm run build && npm run lint && npm run format",
-    "sonar": "npx sonar-scanner",
-    "sonar:coverage": "npm run test:cov && npx sonar-scanner"
+    "sonar": "npx sonar-scanner -Dproject.settings=sonar-project-local.properties",
+    "sonar:coverage": "npm run test:cov && npx sonar-scanner -Dproject.settings=sonar-project-local.properties"
   },
   "dependencies": {
     "@heroui/alert": "^2.2.15",

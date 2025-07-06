@@ -37,4 +37,4 @@ bun.lockb
 
 # SonarQube
 /.scannerwork/
-sonar-project.properties
+sonar-project-local.properties
