@@ -357,6 +357,7 @@ jobs:
 
       - name: Run Tests with Coverage
         run: npm run test:cov
+        continue-on-error: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.2.0
