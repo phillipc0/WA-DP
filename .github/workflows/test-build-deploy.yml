@@ -368,8 +368,6 @@ jobs:
           projectBaseDir: .
           args: >
             -Dproject.settings=sonar-project-sonarcloud.properties
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
 
   e2e:
     name: E2E Tests
