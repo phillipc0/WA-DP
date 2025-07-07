@@ -34,3 +34,7 @@ bun.lockb
 /backend/users.json
 /backend/node_modules
 /backend/frontend/
+
+# SonarQube
+/.scannerwork/
+sonar-project-local.properties
