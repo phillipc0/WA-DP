@@ -34,3 +34,14 @@ bun.lockb
 /backend/users.json
 /backend/node_modules
 /backend/frontend/
+
+# Testing
+cypress/videos
+cypress/screenshots
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/tests/screenshot/*-actual.png
+/tests/screenshot/*-diff.png
