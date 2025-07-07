@@ -546,6 +546,11 @@ export function usePortfolioEditor() {
     }));
   };
 
+  const handleImportPortfolioData = (data: any) => {
+    setPortfolioData(data);
+    clearDraftFromCookies();
+  };
+
   return {
     portfolioData,
     isLoading,
@@ -604,5 +609,7 @@ export function usePortfolioEditor() {
     handleEducationDragLeave,
     handleEducationDrop,
     handleEducationDragEnd,
+    // Import/Export
+    handleImportPortfolioData,
   };
 }

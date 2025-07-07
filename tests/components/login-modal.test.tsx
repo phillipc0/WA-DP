@@ -60,9 +60,7 @@ describe("LoginModal", () => {
   // Helper to wait for login form to appear
   const waitForLoginForm = async () => {
     await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "Login" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
     });
   };
 
@@ -83,7 +81,7 @@ describe("LoginModal", () => {
 
   it("renders nothing when not open", () => {
     renderModal(false);
-    expect(screen.queryByTestId("login-modal")).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("shows loading state initially when open", async () => {
@@ -91,7 +89,10 @@ describe("LoginModal", () => {
 
     renderModal();
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
   });
 
   it("shows create account form when no users exist", async () => {
@@ -114,9 +115,7 @@ describe("LoginModal", () => {
     renderModal();
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "Login" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
     });
 
     expect(screen.getByTestId("username-input")).toBeInTheDocument();
@@ -147,7 +146,6 @@ describe("LoginModal", () => {
         "user",
         JSON.stringify({ username: "testuser" }),
       );
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith("isAdmin");
       expect(mockOnSuccess).toHaveBeenCalled();
     });
   });

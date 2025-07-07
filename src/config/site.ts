@@ -14,7 +14,7 @@ export const siteConfig = {
       github: "johndoe",
       twitter: "johndoe",
       linkedin: "johndoe",
-      discord: "johndoe",
+      discord: "99010890275225600",
       reddit: "johndoe",
     },
     skills: [

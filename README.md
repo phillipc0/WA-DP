@@ -70,6 +70,55 @@ module.
 The generated files are excluded from version control via `.gitignore`.
 Make sure [Graphviz](https://graphviz.org/download/) is installed locally so Madge can create the SVG image.
 
+## SonarQube Setup
+
+This project includes SonarQube integration for code quality analysis and coverage reporting.
+
+### Local SonarQube Server
+
+1. **Start SonarQube locally using Docker:**
+
+   ```bash
+   docker-compose -f docker-compose.sonar.yml up -d
+   ```
+
+2. **Access SonarQube:**
+
+   - Open http://localhost:9000 in your browser
+   - Login with default credentials: `admin/admin`
+   - Change password when prompted
+
+3. **Generate Authentication Token:**
+
+   - Go to: User → My Account → Security → Generate Tokens
+   - Enter a name and select "User Token" in the dropdown then click "Generate"
+   - Copy the generated token
+
+4. **Configure Authentication:**
+
+   ```bash
+   # Copy the template file for local development
+   cp sonar-project-local.properties.template sonar-project-local.properties
+
+   # Edit sonar-project-local.properties and replace "your-token-here" with your actual token
+   ```
+
+### Running SonarQube Analysis
+
+```bash
+# Run analysis only
+npm run sonar
+
+# Run tests with coverage + analysis
+npm run sonar:coverage
+```
+
+### Stop SonarQube
+
+```bash
+docker-compose -f docker-compose.sonar.yml down
+```
+
 ## License
 
 Licensed under the [MIT license](https://github.com/frontio-ai/vite-template/blob/main/LICENSE).
