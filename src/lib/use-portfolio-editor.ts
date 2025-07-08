@@ -546,6 +546,19 @@ export function usePortfolioEditor() {
     }));
   };
 
+  const handleContributorChange = (field: string, value: boolean) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        contributor: {
+          ...prev.contributor,
+          [field]: value,
+        },
+      };
+    });
+  };
+
   const handleImportPortfolioData = (data: any) => {
     setPortfolioData(data);
     clearDraftFromCookies();
@@ -609,6 +622,8 @@ export function usePortfolioEditor() {
     handleEducationDragLeave,
     handleEducationDrop,
     handleEducationDragEnd,
+    // Contributor functions
+    handleContributorChange,
     // Import/Export
     handleImportPortfolioData,
   };

@@ -20,7 +20,8 @@
     "e2e:run": "cypress run",
     "check-all": "npm run build && npm run lint && npm run format",
     "sonar": "npx sonar-scanner -Dproject.settings=sonar-project-local.properties",
-    "sonar:coverage": "npm run test:cov && npx sonar-scanner -Dproject.settings=sonar-project-local.properties"
+    "sonar:coverage": "npm run test:cov && npx sonar-scanner -Dproject.settings=sonar-project-local.properties",
+    "deps:madge": "node scripts/generate-madge.cjs"
   },
   "dependencies": {
     "@heroui/alert": "^2.2.15",
@@ -85,6 +86,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "globals": "^16.2.0",
     "jsdom": "^26.1.0",
+    "madge": "^8.0.0",
     "postcss": "8.5.6",
     "prettier": "3.5.3",
     "sonar-scanner": "^3.1.0",

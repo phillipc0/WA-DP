@@ -54,6 +54,10 @@ export const siteConfig = {
           "Specialized in Software Engineering and Machine Learning. Graduated with honors and completed thesis on distributed systems.",
       },
     ],
+    contributor: {
+      enableContributorStatus: false,
+      showGoldenBoxShadow: false,
+    },
   },
   navItems: [
     {
