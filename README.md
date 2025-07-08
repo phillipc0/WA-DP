@@ -4,9 +4,9 @@ A modern full-stack web application to create and customize your personal develo
 
 ## Deadlines
 
-- Wichtigste Funktionen (Trennung & CV): 06.07.2025
-- Code Fertig: 10.08.2025
-- Doku fertig: 22.08.2025
+- ✅Important Functionalities (FE/BE Split & CV): 06.07.2025
+- Feature Complete (at-least medium & high): 10.08.2025
+- In-depth Documentation: 22.08.2025
 
 ## Features
 
