@@ -8,7 +8,7 @@ export const siteConfig = {
     bio: "Passionate developer with expertise in React, TypeScript, and Node.js. I love building beautiful and functional web applications.",
     location: "New York, USA",
     email: "john.doe@example.com",
-    avatar: "/assets/favicon.png",
+    avatar: "/assets/favicon.svg",
     social: {
       github: "johndoe",
       twitter: "johndoe",

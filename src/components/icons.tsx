@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import favicon from "../../assets/favicon.svg";
+
 import { IconSvgProps } from "@/types";
 
 export const Logo: React.FC<IconSvgProps> = ({
@@ -11,7 +13,7 @@ export const Logo: React.FC<IconSvgProps> = ({
   <img
     alt="WA-DP Developer Portfolio Logo"
     height={size || height}
-    src="/assets/favicon.png"
+    src={favicon}
     style={{ objectFit: "contain" }}
     width={size || height}
     {...props}
