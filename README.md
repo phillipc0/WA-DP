@@ -1,6 +1,6 @@
 # Developer Portfolio
 
-A modern full-stack web application for creating and customizing developer portfolios. Built with React, TypeScript, and Next.js.
+A modern full-stack web application to create and customize your personal developer portfolio. Built in TypeScript with React and Next.js.
 
 ## Deadlines
 
