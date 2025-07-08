@@ -970,4 +970,165 @@ describe("usePortfolioEditor", () => {
       description: "",
     });
   });
+
+  // Contributor Settings Tests
+  it("handles contributor settings change - enableContributorStatus", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Initially should not have contributor settings
+    expect(result.current.portfolioData.contributor).toBeUndefined();
+
+    // Enable contributor status
+    act(() => {
+      result.current.handleContributorChange("enableContributorStatus", true);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: true,
+    });
+  });
+
+  it("handles contributor settings change - showGoldenBoxShadow", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Enable golden box shadow
+    act(() => {
+      result.current.handleContributorChange("showGoldenBoxShadow", true);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      showGoldenBoxShadow: true,
+    });
+  });
+
+  it("handles contributor settings change with existing contributor data", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // First set some contributor data
+    act(() => {
+      result.current.handleContributorChange("enableContributorStatus", true);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: true,
+    });
+
+    // Then add the second setting
+    act(() => {
+      result.current.handleContributorChange("showGoldenBoxShadow", true);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: true,
+      showGoldenBoxShadow: true,
+    });
+  });
+
+  it("handles contributor settings change - disabling settings", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // First enable both settings
+    act(() => {
+      result.current.handleContributorChange("enableContributorStatus", true);
+    });
+    act(() => {
+      result.current.handleContributorChange("showGoldenBoxShadow", true);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: true,
+      showGoldenBoxShadow: true,
+    });
+
+    // Then disable enableContributorStatus
+    act(() => {
+      result.current.handleContributorChange("enableContributorStatus", false);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: false,
+      showGoldenBoxShadow: true,
+    });
+
+    // Then disable showGoldenBoxShadow
+    act(() => {
+      result.current.handleContributorChange("showGoldenBoxShadow", false);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: false,
+      showGoldenBoxShadow: false,
+    });
+  });
+
+  it("handles contributor settings type safety", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Test that both field types are accepted
+    act(() => {
+      result.current.handleContributorChange("enableContributorStatus", true);
+    });
+
+    act(() => {
+      result.current.handleContributorChange("showGoldenBoxShadow", false);
+    });
+
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: true,
+      showGoldenBoxShadow: false,
+    });
+  });
+
+  it("preserves existing portfolio data when updating contributor settings", async () => {
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // First modify some basic info
+    act(() => {
+      result.current.handleBasicInfoChange({
+        target: { name: "name", value: "Test User" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    // Add a skill
+    await addSkillToPortfolio(result, "React");
+
+    const originalName = result.current.portfolioData.name;
+    const originalSkills = result.current.portfolioData.skills;
+
+    // Now update contributor settings
+    act(() => {
+      result.current.handleContributorChange("enableContributorStatus", true);
+    });
+
+    // Verify that other data is preserved
+    expect(result.current.portfolioData.name).toBe(originalName);
+    expect(result.current.portfolioData.skills).toEqual(originalSkills);
+    expect(result.current.portfolioData.contributor).toEqual({
+      enableContributorStatus: true,
+    });
+  });
 });
