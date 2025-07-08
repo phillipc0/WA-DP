@@ -4,11 +4,11 @@ import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
 
 import {
-  GithubIcon,
-  TwitterIcon,
-  LinkedInIcon,
   DiscordIcon,
+  GithubIcon,
+  LinkedInIcon,
   RedditIcon,
+  TwitterIcon,
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
@@ -25,7 +25,7 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
         <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
           <img
             alt={`${portfolioData.name || "User"} avatar`}
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover rounded-full bg-white"
             src={portfolioData.avatar}
           />
         </div>

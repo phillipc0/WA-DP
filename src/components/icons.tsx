@@ -11,8 +11,13 @@ export const Logo: React.FC<IconSvgProps> = ({
   <img
     alt="WA-DP Developer Portfolio Logo"
     height={size || height}
-    src="https://raw.githubusercontent.com/phillipc0/WA-DP/refs/heads/main/assets/favicon.png"
-    style={{ objectFit: "contain" }}
+    src="/assets/favicon.svg"
+    style={{
+      objectFit: "contain",
+      backgroundColor: "white",
+      borderRadius: "25%",
+      overflow: "hidden",
+    }}
     width={size || height}
     {...props}
   />
