@@ -34,6 +34,25 @@ A modern full-stack web application to create and customize your personal develo
 - JWT authentication with bcryptjs
 - JSON file-based data storage
 
+## Pipeline
+
+This project includes a CI/CD pipeline powered by GitHub Actions.
+
+Checks for every push on a pull request or the the main branch:
+
+- Linting & Formatting using ESLint
+- Lines of code are measured
+- Unit tests using Vitest including coverage (>80%)
+- E2E tests using Cypress
+- Lighthouse report (>80%)
+- SonarCloud static code analysis (A-Marks)
+- On the main branch: Website is deployed
+
+The dependencies between the pipelines are as follows:
+<img width="978" alt="image" src="https://github.com/user-attachments/assets/531eca22-d38a-4681-b5ce-9402d1e23c38" />
+
+The pipeline configuration is located in `.github/workflows/test-build-deploy.yml`.
+
 ## Installation
 
 Install all dependencies:
