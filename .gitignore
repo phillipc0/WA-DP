@@ -28,9 +28,15 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb
 /coverage/
+docs/dependency-graph.svg
+docs/dependency-metrics.json
 
 # Backend
 /backend/.next
 /backend/users.json
 /backend/node_modules
 /backend/frontend/
+
+# SonarQube
+/.scannerwork/
+sonar-project-local.properties
