@@ -13,8 +13,12 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
         method: "GET",
       });
 
+      const content = await response.text();
+      if (content.startsWith("<!doctype html>")) {
+        return null; // Case: No portfolio.json available
+      }
       if (response.ok) {
-        return await response.json();
+        return await JSON.parse(content);
       } else {
         console.error("Failed to fetch portfolio data:", response.statusText);
         return null;
