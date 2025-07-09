@@ -5,12 +5,14 @@ import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 
+import favicon from "../../../assets/favicon.svg";
+
 import {
-  GithubIcon,
-  TwitterIcon,
-  LinkedInIcon,
   DiscordIcon,
+  GithubIcon,
+  LinkedInIcon,
   RedditIcon,
+  TwitterIcon,
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { isContributor } from "@/utils/contributor";
@@ -53,7 +55,11 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
             <img
               alt={`${portfolioData.name || "User"} avatar`}
               className="w-full h-full object-cover rounded-full bg-white"
-              src={portfolioData.avatar}
+              src={
+                portfolioData.avatar.trim() !== ""
+                  ? portfolioData.avatar
+                  : favicon
+              }
             />
           </div>
           <div className="flex flex-col">

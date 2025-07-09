@@ -14,7 +14,10 @@ export const Logo: React.FC<IconSvgProps> = ({
     alt="WA-DP Developer Portfolio Logo"
     height={size || height}
     src={favicon}
-    style={{ objectFit: "contain" }}
+    style={{
+      objectFit: "contain",
+      borderRadius: "25%",
+    }}
     width={size || height}
     {...props}
   />
