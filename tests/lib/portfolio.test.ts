@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  getPortfolioData,
-  savePortfolioData,
-  clearPortfolioDataCache,
-} from "@/lib/portfolio";
+import { getPortfolioData, savePortfolioData } from "@/lib/portfolio";
 
 // Mock authenticatedFetch
 vi.mock("@/lib/auth", () => ({
@@ -47,8 +43,6 @@ describe("portfolio", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset the cache and pending request state
-    clearPortfolioDataCache();
     // Suppress console.error for cleaner test output
     vi.spyOn(console, "error").mockImplementation(() => {});
   });

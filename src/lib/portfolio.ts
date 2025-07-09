@@ -1,22 +1,10 @@
 import { authenticatedFetch } from "./auth";
 
-let portfolioDataCache: JSON | null = null;
-let cacheTimestamp: number | null = null;
 let pendingRequest: Promise<JSON | null> | null = null;
-
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const getPortfolioData = async (): Promise<JSON | null> => {
   if (pendingRequest) {
     return pendingRequest;
-  }
-
-  if (
-    portfolioDataCache &&
-    cacheTimestamp &&
-    Date.now() - cacheTimestamp < CACHE_DURATION
-  ) {
-    return portfolioDataCache;
   }
 
   pendingRequest = (async () => {
@@ -26,10 +14,7 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        portfolioDataCache = data;
-        cacheTimestamp = Date.now();
-        return data;
+        return await response.json();
       } else {
         console.error("Failed to fetch portfolio data:", response.statusText);
         return null;
@@ -45,12 +30,6 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
   return pendingRequest;
 };
 
-export const clearPortfolioDataCache = () => {
-  portfolioDataCache = null;
-  cacheTimestamp = null;
-  pendingRequest = null;
-};
-
 export const savePortfolioData = async (data: any): Promise<boolean> => {
   try {
     const response = await authenticatedFetch("/api/portfolio", {
@@ -59,7 +38,6 @@ export const savePortfolioData = async (data: any): Promise<boolean> => {
     });
 
     if (response.ok) {
-      clearPortfolioDataCache();
       return true;
     } else {
       const errorData = await response
