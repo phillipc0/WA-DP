@@ -62,12 +62,12 @@ function SkillCard({ skill, index }: SkillCardProps) {
             </h3>
           </div>
           <Chip
-            className="h-6 text-sm bg-opacity-85"
+            className="h-6 text-sm text-default-900"
             color={getChipColorForSkill(index)}
             size="sm"
-            variant="shadow"
+            variant="bordered"
           >
-            {skill.level}%
+            <div style={{ transform: "translateY(-1px)" }}>{skill.level}%</div>
           </Chip>
         </div>
         <Progress

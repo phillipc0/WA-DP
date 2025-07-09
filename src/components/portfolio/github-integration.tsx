@@ -237,7 +237,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                       <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors duration-200">
                         {repo.name}
                       </h3>
-                      <p className="text-sm text-default-600 mt-1 line-clamp-2">
+                      <p className="text-sm text-default-700 mt-1 line-clamp-2">
                         {repo.description || "No description available"}
                       </p>
                       {repo.homepage && (
