@@ -243,7 +243,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                       {repo.homepage && (
                         <Link
                           isExternal
-                          className="text-xs text-primary hover:text-primary-600 transition-colors duration-200 mt-1 inline-block"
+                          className="text-sm text-primary hover:text-primary-600 transition-colors duration-200 mt-1 py-0.5 inline-block"
                           href={repo.homepage}
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -305,7 +305,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                               backgroundColor: getLanguageColor(repo.language),
                             }}
                           />
-                          <span className="text-xs text-default-600 font-medium">
+                          <span className="text-sm text-default-600 font-medium">
                             {repo.language}
                           </span>
                         </div>
@@ -313,12 +313,12 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
 
                       <Link
                         isExternal
-                        className="flex items-center gap-1 text-xs text-default-500 hover:text-primary transition-colors duration-200"
+                        className="flex items-center gap-1 text-sm py-0.5 text-primary-300 hover:text-primary-600 transition-colors duration-200"
                         href={`${repo.html_url}/stargazers`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <svg
-                          className="w-4 h-4"
+                          className="w-5 h-5 mt-0.5"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -331,12 +331,12 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
 
                       <Link
                         isExternal
-                        className="flex items-center gap-1 text-xs text-default-500 hover:text-primary transition-colors duration-200"
+                        className="flex items-center gap-1 text-sm py-0.5 text-primary-300 hover:text-primary-600 transition-colors duration-200"
                         href={`${repo.html_url}/network/members`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <svg
-                          className="w-4 h-4"
+                          className="w-5 h-5 mt-0.5"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
