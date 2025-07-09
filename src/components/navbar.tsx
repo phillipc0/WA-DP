@@ -70,44 +70,45 @@ export const Navbar = () => {
   return (
     <>
       <HeroUINavbar maxWidth="xl" position="sticky">
+        <NavbarBrand className="gap-3 max-w-fit">
+          <Link
+            className="flex justify-start items-center gap-3"
+            color="foreground"
+            href="https://github.com/phillipc0/WA-DP"
+            target="_blank"
+          >
+            <Logo />
+            <p className="font-bold text-inherit">WA-DP</p>
+          </Link>
+        </NavbarBrand>
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-          <NavbarBrand className="gap-3 max-w-fit">
-            <Link
-              className="flex justify-start items-center gap-3"
-              color="foreground"
-              href="https://github.com/phillipc0/WA-DP"
-              target="_blank"
-            >
-              <Logo />
-              <p className="font-bold text-inherit">WA-DP</p>
-            </Link>
-          </NavbarBrand>
-          <div className="hidden sm:flex gap-4 justify-start ml-2">
-            {siteConfig.navItems.map((item) => {
-              if (item.href === "/edit" && !isAdmin) {
-                return null;
-              }
+          {siteConfig.navItems.map((item) => {
+            if (item.href === "/edit" && !isAdmin) {
+              return null;
+            }
 
-              return (
-                <NavbarItem key={item.href}>
-                  <Link
-                    className={clsx(
-                      linkStyles({
-                        color: "foreground",
-                      }),
-                      "font-bold",
-                      location.pathname === item.href &&
-                        "border-b-2 border-primary",
-                    )}
-                    color="foreground"
-                    href={item.href}
-                  >
-                    {item.label}
-                  </Link>
-                </NavbarItem>
-              );
-            })}
-          </div>
+            return (
+              <NavbarItem
+                key={item.href}
+                className="hidden sm:flex gap-4 justify-start ml-2"
+              >
+                <Link
+                  className={clsx(
+                    linkStyles({
+                      color: "foreground",
+                    }),
+                    "font-bold",
+                    location.pathname === item.href &&
+                      "border-b-2 border-primary",
+                  )}
+                  color="foreground"
+                  href={item.href}
+                >
+                  {item.label}
+                </Link>
+              </NavbarItem>
+            );
+          })}
         </NavbarContent>
 
         <NavbarContent
