@@ -52,7 +52,7 @@ describe("portfolio", () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: vi.fn().mockResolvedValue(mockPortfolioData),
+        text: vi.fn().mockResolvedValue(JSON.stringify(mockPortfolioData)),
       } as any);
 
       const result = await getPortfolioData();
@@ -72,6 +72,7 @@ describe("portfolio", () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         statusText: "Not Found",
+        text: vi.fn().mockResolvedValue(null),
       } as any);
 
       const result = await getPortfolioData();
@@ -190,6 +191,23 @@ describe("portfolio", () => {
       );
 
       consoleSpy.mockRestore();
+    });
+
+    it("returns null if portfolio.json not available", async () => {
+      const mockFetch = vi.mocked(fetch);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: vi
+          .fn()
+          .mockResolvedValue("<!doctype html> <html lang='en'></html>"),
+      } as any);
+
+      const result = await getPortfolioData();
+
+      expect(result).toEqual(null);
+      expect(mockFetch).toHaveBeenCalledWith("/portfolio.json", {
+        method: "GET",
+      });
     });
   });
 });
