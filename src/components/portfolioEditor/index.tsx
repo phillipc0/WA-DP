@@ -30,6 +30,7 @@ export function PortfolioEditor() {
     handleSocialChange,
     handleAddSkill,
     handleRemoveSkill,
+    handleSkillChange,
     handleSkillLevelChange,
     handleSkillNameChange,
     SKILL_LEVELS,
@@ -132,6 +133,7 @@ export function PortfolioEditor() {
             onDragStart={handleDragStart}
             onDrop={handleDrop}
             onRemoveSkill={handleRemoveSkill}
+            onSkillChange={handleSkillChange}
             onSkillLevelChange={handleSkillLevelChange}
             onSkillNameChange={handleSkillNameChange}
           />

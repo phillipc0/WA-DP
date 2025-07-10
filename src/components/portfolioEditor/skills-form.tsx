@@ -3,18 +3,21 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
+import { Slider } from "@heroui/slider";
 import { Tooltip } from "@heroui/tooltip";
 
-type Skill = { name: string; level: number };
+import { SkillLevel } from "@/types";
 
 interface SkillsFormProps {
   portfolioData: any;
-  newSkill: Skill;
+  newSkill: { name: string; level: SkillLevel };
   onAddSkill: () => void;
   onRemoveSkill: (index: number) => void;
-  onSkillChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSkillLevelChange: (index: number, level: number) => void;
   onSkillNameChange: (index: number, name: string) => void;
+  onSkillLevelChange: (index: number, level: SkillLevel) => void;
+  handleNewSkillLevelChange: (level: SkillLevel) => void;
+  SKILL_LEVELS: SkillLevel[];
+  onSkillChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDragStart: (e: React.DragEvent, index: number) => void;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: (e: React.DragEvent) => void;
@@ -22,122 +25,122 @@ interface SkillsFormProps {
   onDragEnd: (e: React.DragEvent) => void;
 }
 
-export function SkillsForm({
-  portfolioData,
-  newSkill,
-  onAddSkill,
-  onRemoveSkill,
-  onSkillChange,
-  onSkillLevelChange,
-  onSkillNameChange,
-  onDragStart,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-  onDragEnd,
-}: SkillsFormProps) {
+export function SkillsForm(props: SkillsFormProps) {
+  const {
+    portfolioData,
+    newSkill,
+    onAddSkill,
+    onRemoveSkill,
+    onSkillChange,
+    onSkillNameChange,
+    onSkillLevelChange,
+    handleNewSkillLevelChange,
+    SKILL_LEVELS,
+    onDragStart,
+    onDragOver,
+    onDragLeave,
+    onDrop,
+    onDragEnd,
+  } = props;
+
+  const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
+  const indexToLevel = (i: number) => SKILL_LEVELS[i] as SkillLevel;
+
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
   return (
     <Card className="mt-4">
       <CardHeader>
         <h2 className="text-xl font-bold">Your Skills</h2>
       </CardHeader>
+
       <CardBody>
-        <div className="mb-6">
-          <h3 className="text-lg font-medium mb-2">Add New Skill</h3>
-          <div className="flex gap-2 items-end">
-            <Input
-              className="flex-1"
-              label="Skill Name"
-              name="name"
-              placeholder="e.g. React"
-              value={newSkill.name}
-              onChange={onSkillChange}
-            />
-            <Input
-              className="w-32"
-              label="Proficiency Level (0-100)"
-              max={100}
-              min={0}
-              name="level"
-              type="number"
-              // @ts-ignore
-              value={newSkill.level}
-              onChange={onSkillChange}
-            />
-            <Button color="primary" onPress={onAddSkill}>
-              Add Skill
-            </Button>
-          </div>
+        <div className="mb-6 space-y-4">
+          <h3 className="text-lg font-medium">Add New Skill</h3>
+          <Input
+            label="Skill name"
+            name="name"
+            placeholder="e.g. React"
+            value={newSkill.name}
+            onChange={onSkillChange}
+          />
+          <Slider
+            disableThumbScale
+            showSteps
+            label={`Proficiency: ${newSkill.level}`}
+            marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+            maxValue={4}
+            minValue={0}
+            step={1}
+            value={levelToIndex(newSkill.level)}
+            // @ts-ignore
+            onChange={(val) => handleNewSkillLevelChange(indexToLevel(val))}
+          />
+          <Button
+            color="primary"
+            isDisabled={newSkill.name.trim() === ""}
+            onPress={onAddSkill}
+          >
+            Add Skill
+          </Button>
         </div>
 
-        <Divider className="my-4" />
+        <Divider className="my-6" />
 
-        <div>
-          <h3 className="text-lg font-medium mb-4">Current Skills</h3>
-          {portfolioData.skills.length === 0 ? (
-            <p className="text-default-500">No skills added yet.</p>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-default-500 mb-2">
-                Drag and drop skills to reorder them
-              </p>
-              {portfolioData.skills.map((skill: any, index: any) => (
-                <div
-                  key={index}
-                  draggable
-                  className="flex items-center gap-2 p-2 border border-default-200 rounded-md"
-                  onDragEnd={onDragEnd}
-                  onDragLeave={onDragLeave}
-                  onDragOver={onDragOver}
-                  onDragStart={(e) => onDragStart(e, index)}
-                  onDrop={(e) => onDrop(e, index)}
-                >
-                  <div
-                    className="cursor-move p-1 text-default-400 hover:text-default-600"
-                    title="Drag to reorder"
-                  >
-                    ⋮⋮
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between mb-2">
-                      <Input
-                        className="max-w-[70%]"
-                        placeholder="Skill name"
-                        size="sm"
-                        value={skill.name}
-                        onChange={(e) =>
-                          onSkillNameChange(index, e.target.value)
-                        }
-                      />
-                      <span>{skill.level}%</span>
-                    </div>
-                    <Input
-                      className="mt-1"
-                      max={100}
-                      min={0}
-                      type="range"
-                      // @ts-ignore
-                      value={skill.level}
-                      onChange={(e) =>
-                        onSkillLevelChange(index, Number(e.target.value))
-                      }
-                    />
-                  </div>
+        {portfolioData.skills.length === 0 ? (
+          <p className="text-default-500">No skills added yet.</p>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-default-500 mb-2">
+              Drag &amp; drop to reorder
+            </p>
+            {portfolioData.skills.map((skill: any, idx: number) => (
+              <div
+                key={idx}
+                draggable
+                className="flex flex-col gap-2 border rounded-md p-3 cursor-move hover:bg-default-50 transition-colors"
+                onDragEnd={onDragEnd}
+                onDragLeave={onDragLeave}
+                onDragOver={onDragOver}
+                onDragStart={(e) => onDragStart(e, idx)}
+                onDrop={(e) => onDrop(e, idx)}
+              >
+                <div className="flex justify-between items-center gap-2">
+                  <Input
+                    className="max-w-[60%]"
+                    size="sm"
+                    value={skill.name}
+                    onChange={(e) => onSkillNameChange(idx, e.target.value)}
+                  />
+
                   <Tooltip content="Remove skill">
                     <Button
                       isIconOnly
                       color="danger"
                       variant="light"
-                      onPress={() => onRemoveSkill(index)}
+                      onPress={() => onRemoveSkill(idx)}
                     >
                       ✕
                     </Button>
                   </Tooltip>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+
+                <Slider
+                  disableThumbScale
+                  showSteps
+                  marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+                  maxValue={4}
+                  minValue={0}
+                  step={1}
+                  value={levelToIndex(skill.level)}
+                  // @ts-ignore
+                  onChange={(val) => onSkillLevelChange(idx, indexToLevel(val))}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </CardBody>
     </Card>
   );
