@@ -313,7 +313,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
 
                       <Link
                         isExternal
-                        className="flex items-center gap-1 text-sm py-0.5 text-primary-300 hover:text-primary-600 transition-colors duration-200"
+                        className="flex items-center gap-1 text-sm py-0.5 text-default-500 hover:text-primary-600 transition-colors duration-200"
                         href={`${repo.html_url}/stargazers`}
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -331,7 +331,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
 
                       <Link
                         isExternal
-                        className="flex items-center gap-1 text-sm py-0.5 text-primary-300 hover:text-primary-600 transition-colors duration-200"
+                        className="flex items-center gap-1 text-sm py-0.5 text-default-500 hover:text-primary-600 transition-colors duration-200"
                         href={`${repo.html_url}/network/members`}
                         onClick={(e) => e.stopPropagation()}
                       >
