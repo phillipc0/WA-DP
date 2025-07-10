@@ -67,7 +67,9 @@ function SkillCard({ skill, index }: SkillCardProps) {
             size="sm"
             variant="bordered"
           >
-            <div style={{ transform: "translateY(-1px)" }}>{skill.level}%</div>
+            <div style={{ transform: "translateY(-1px)" }}>
+              {skill.level}% {/* Move text 1px up to center it in the chip */}
+            </div>
           </Chip>
         </div>
         <Progress

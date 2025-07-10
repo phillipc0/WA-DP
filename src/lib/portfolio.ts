@@ -14,8 +14,8 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
       });
 
       const content = await response.text();
-      if (content && content.startsWith("<!doctype html>")) {
-        return null; // Case: No portfolio.json available
+      if (content?.toLowerCase().startsWith("<!doctype html>")) {
+        return null; // Case: No portfolio.json available, browser supplies index.html
       }
       if (response.ok) {
         return await JSON.parse(content);
