@@ -30,9 +30,10 @@ export function PortfolioEditor() {
     handleSocialChange,
     handleAddSkill,
     handleRemoveSkill,
-    handleSkillChange,
     handleSkillLevelChange,
     handleSkillNameChange,
+    SKILL_LEVELS,
+    handleNewSkillLevelChange,
     handleDragStart,
     handleDragOver,
     handleDragLeave,
@@ -120,6 +121,8 @@ export function PortfolioEditor() {
 
         <Tab key="skills" title="Skills">
           <SkillsForm
+            SKILL_LEVELS={SKILL_LEVELS}
+            handleNewSkillLevelChange={handleNewSkillLevelChange}
             newSkill={newSkill}
             portfolioData={portfolioData}
             onAddSkill={handleAddSkill}
@@ -129,7 +132,6 @@ export function PortfolioEditor() {
             onDragStart={handleDragStart}
             onDrop={handleDrop}
             onRemoveSkill={handleRemoveSkill}
-            onSkillChange={handleSkillChange}
             onSkillLevelChange={handleSkillLevelChange}
             onSkillNameChange={handleSkillNameChange}
           />
