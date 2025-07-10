@@ -1,17 +1,26 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Progress } from "@heroui/progress";
 import { Chip } from "@heroui/chip";
+import { Slider } from "@heroui/slider";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
+import { Skill, SkillLevel } from "@/types";
 
 interface SkillsProps {
   refreshTrigger?: number;
 }
 
+const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
+const SKILL_LEVELS: SkillLevel[] = [
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Expert",
+  "Master",
+];
+
 export function Skills({ refreshTrigger }: SkillsProps) {
   const { portfolioData } = usePortfolioData(refreshTrigger);
-
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
       <CardHeader className="flex gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">
@@ -38,7 +47,7 @@ export function Skills({ refreshTrigger }: SkillsProps) {
 }
 
 interface SkillCardProps {
-  skill: { name: string; level: number };
+  skill: Skill;
   index: number;
 }
 
@@ -67,14 +76,22 @@ function SkillCard({ skill, index }: SkillCardProps) {
             size="sm"
             variant="flat"
           >
-            {skill.level}%
+            {skill.level}
           </Chip>
         </div>
-        <Progress
-          aria-label={`${skill.name} skill level`}
-          className="h-2"
-          color={getColorForSkill(index)}
-          value={skill.level}
+        <Slider
+          disableThumbScale
+          isDisabled
+          showSteps
+          className="opacity-100"
+          color={getChipColorForSkill(index)}
+          marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+          maxValue={4}
+          minValue={0}
+          step={1}
+          value={levelToIndex(skill.level)}
+          // @ts-ignore
+          onChange={(val) => handleNewSkillLevelChange(indexToLevel(val))}
         />
       </CardBody>
     </Card>
