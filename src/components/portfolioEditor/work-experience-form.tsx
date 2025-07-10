@@ -91,38 +91,37 @@ export default function WorkExperienceForm({
             </label>
           </div>
           <div className="mb-4">
-            <label className="text-sm font-medium mb-2 block">
-              Technologies
-              {portfolioData.skills?.length > 0 ? (
-                <div className="mb-2">
-                  <p className="text-sm text-default-500 mb-2">
-                    Select from your skills:
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {portfolioData.skills
-                      .filter((skill: any) => !selectedSkills.has(skill.name))
-                      .map((skill: any, index: number) => (
-                        <Button
-                          key={index}
-                          size="sm"
-                          variant="bordered"
-                          onPress={() =>
-                            setSelectedSkills(
-                              new Set([...selectedSkills, skill.name]),
-                            )
-                          }
-                        >
-                          + {skill.name}
-                        </Button>
-                      ))}
-                  </div>
-                </div>
-              ) : (
+            <p className="text-sm font-medium mb-2">Technologies</p>
+            {portfolioData.skills?.length > 0 ? (
+              <div className="mb-2">
                 <p className="text-sm text-default-500 mb-2">
-                  Add skills first to select technologies.
+                  Select from your skills:
                 </p>
-              )}
-            </label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {portfolioData.skills
+                    .filter((skill: any) => !selectedSkills.has(skill.name))
+                    .map((skill: any) => (
+                      <Button
+                        key={skill.name}
+                        size="sm"
+                        type="button"
+                        variant="bordered"
+                        onPress={() =>
+                          setSelectedSkills(
+                            new Set([...selectedSkills, skill.name]),
+                          )
+                        }
+                      >
+                        + {skill.name}
+                      </Button>
+                    ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-default-500 mb-2">
+                Add skills first to select technologies.
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               {Array.from(selectedSkills).map((skill) => (
                 <span
