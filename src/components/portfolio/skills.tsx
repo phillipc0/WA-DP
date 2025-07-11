@@ -4,6 +4,10 @@ import { Chip } from "@heroui/chip";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
+import {
+  getHoverEffectClasses,
+  getTextHoverEffectClasses,
+} from "@/components/ui/hover-effect";
 
 interface SkillsProps {
   refreshTrigger?: number;
@@ -46,7 +50,7 @@ function SkillCard({ skill, index }: SkillCardProps) {
   return (
     <Card
       isHoverable
-      className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30"
+      className={`${getHoverEffectClasses()} border border-default-200/50`}
     >
       <CardBody className="p-4">
         <div className="flex items-center justify-between mb-3">
@@ -57,7 +61,9 @@ function SkillCard({ skill, index }: SkillCardProps) {
                 backgroundColor: getSkillColor(index),
               }}
             />
-            <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors duration-200">
+            <h3
+              className={`font-semibold text-lg text-foreground ${getTextHoverEffectClasses()}`}
+            >
               {skill.name}
             </h3>
           </div>

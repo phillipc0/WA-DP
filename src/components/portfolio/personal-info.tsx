@@ -7,6 +7,7 @@ import { Tooltip } from "@heroui/tooltip";
 
 import favicon from "../../../assets/favicon.svg";
 
+import { HoverEffect } from "@/components/ui/hover-effect";
 import {
   DiscordIcon,
   GithubIcon,
@@ -66,12 +67,20 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
             <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
             <p className="text-default-500">{portfolioData.title}</p>
             <div className="flex gap-2 mt-2">
-              <Chip color="primary" size="sm">
-                {portfolioData.location}
-              </Chip>
-              <Chip color="secondary" size="sm">
-                {portfolioData.email}
-              </Chip>
+              <HoverEffect inheritChildStyle>
+                <Chip color="primary" size="sm">
+                  {portfolioData.location}
+                </Chip>
+              </HoverEffect>
+              <HoverEffect
+                inheritChildStyle
+                href={`mailto:${portfolioData.email}`}
+                isClickable={true}
+              >
+                <Chip color="secondary" size="sm">
+                  {portfolioData.email}
+                </Chip>
+              </HoverEffect>
             </div>
           </div>
         </div>
@@ -80,7 +89,6 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
             closeDelay={125}
             color="warning"
             content="This user is a contributor to the WA-DP GitHub project"
-            showArrow={true}
           >
             <Button
               className="text-xs font-bold text-yellow-600 dark:text-yellow-500"

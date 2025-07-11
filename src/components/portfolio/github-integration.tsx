@@ -14,6 +14,10 @@ import { Button } from "@heroui/button";
 import { GithubIcon } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { getLanguageColor } from "@/lib/language-colors";
+import {
+  getHoverEffectClasses,
+  getTextHoverEffectClasses,
+} from "@/components/ui/hover-effect";
 
 const REPO_PER_PAGE = 4;
 
@@ -222,10 +226,9 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
               <Card
                 key={repo.id}
                 isExternal
-                isHoverable
                 isPressable
                 as={Link}
-                className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30 repo-card-enter"
+                className={`${getHoverEffectClasses()} border border-default-200/50 repo-card-enter`}
                 href={repo.html_url}
                 style={{
                   animationDelay: `${index * 100}ms`,
@@ -234,7 +237,9 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                 <CardBody className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors duration-200">
+                      <h3
+                        className={`font-semibold text-lg text-foreground ${getTextHoverEffectClasses()}`}
+                      >
                         {repo.name}
                       </h3>
                       <p className="text-sm text-default-700 mt-1 line-clamp-2">
