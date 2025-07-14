@@ -3,6 +3,11 @@ import { Chip } from "@heroui/chip";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { Education, Experience } from "@/types";
+import {
+  HoverEffect,
+  getHoverEffectClasses,
+  getTextHoverEffectClasses,
+} from "@/components/ui/hover-effect";
 
 interface CVProps {
   refreshTrigger?: number;
@@ -60,11 +65,13 @@ export function CV({ refreshTrigger }: CVProps) {
             {isLeft ? (
               <>
                 <div className="w-1/2 pr-8">
-                  <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <Card className={`shadow-lg ${getHoverEffectClasses()}`}>
                     <CardBody className="p-6">
                       <div className="space-y-3">
                         <div className="flex flex-col gap-2">
-                          <h3 className="text-lg font-semibold text-foreground">
+                          <h3
+                            className={`text-lg font-semibold text-foreground ${getTextHoverEffectClasses()}`}
+                          >
                             {item.type === "experience"
                               ? item.position
                               : item.degree}
@@ -89,15 +96,16 @@ export function CV({ refreshTrigger }: CVProps) {
                             <div className="flex flex-wrap gap-1 mt-3">
                               {item.technologies.map(
                                 (tech: string, techIndex: number) => (
-                                  <Chip
-                                    key={techIndex}
-                                    className="text-xs"
-                                    color="secondary"
-                                    size="sm"
-                                    variant="bordered"
-                                  >
-                                    {tech}
-                                  </Chip>
+                                  <HoverEffect key={techIndex}>
+                                    <Chip
+                                      className="text-xs"
+                                      color="secondary"
+                                      size="sm"
+                                      variant="bordered"
+                                    >
+                                      {tech}
+                                    </Chip>
+                                  </HoverEffect>
                                 ),
                               )}
                             </div>
@@ -107,34 +115,40 @@ export function CV({ refreshTrigger }: CVProps) {
                   </Card>
                 </div>
                 <div className="w-1/2 pl-8 flex justify-start items-start pt-4">
-                  <Chip
-                    className="font-medium"
-                    color="primary"
-                    size="md"
-                    variant="flat"
-                  >
-                    {item.duration}
-                  </Chip>
+                  <HoverEffect inheritChildStyle>
+                    <Chip
+                      className="font-medium"
+                      color="primary"
+                      size="md"
+                      variant="flat"
+                    >
+                      {item.duration}
+                    </Chip>
+                  </HoverEffect>
                 </div>
               </>
             ) : (
               <>
                 <div className="w-1/2 pr-8 flex justify-end items-start pt-4">
-                  <Chip
-                    className="font-medium"
-                    color="primary"
-                    size="md"
-                    variant="flat"
-                  >
-                    {item.duration}
-                  </Chip>
+                  <HoverEffect inheritChildStyle>
+                    <Chip
+                      className="font-medium"
+                      color="primary"
+                      size="md"
+                      variant="flat"
+                    >
+                      {item.duration}
+                    </Chip>
+                  </HoverEffect>
                 </div>
                 <div className="w-1/2 pl-8">
-                  <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <Card className={`shadow-lg ${getHoverEffectClasses()}`}>
                     <CardBody className="p-6">
                       <div className="space-y-3">
                         <div className="flex flex-col gap-2">
-                          <h3 className="text-lg font-semibold text-foreground">
+                          <h3
+                            className={`text-lg font-semibold text-foreground ${getTextHoverEffectClasses()}`}
+                          >
                             {item.type === "experience"
                               ? item.position
                               : item.degree}
@@ -159,15 +173,16 @@ export function CV({ refreshTrigger }: CVProps) {
                             <div className="flex flex-wrap gap-1 mt-3">
                               {item.technologies.map(
                                 (tech: string, techIndex: number) => (
-                                  <Chip
-                                    key={techIndex}
-                                    className="text-xs"
-                                    color="secondary"
-                                    size="sm"
-                                    variant="bordered"
-                                  >
-                                    {tech}
-                                  </Chip>
+                                  <HoverEffect key={techIndex}>
+                                    <Chip
+                                      className="text-xs"
+                                      color="secondary"
+                                      size="sm"
+                                      variant="bordered"
+                                    >
+                                      {tech}
+                                    </Chip>
+                                  </HoverEffect>
                                 ),
                               )}
                             </div>
@@ -193,21 +208,25 @@ export function CV({ refreshTrigger }: CVProps) {
           {/* Content */}
           <div className="flex-1">
             <div className="mb-3">
-              <Chip
-                className="font-medium mb-3"
-                color="primary"
-                size="sm"
-                variant="flat"
-              >
-                {item.duration}
-              </Chip>
+              <HoverEffect inheritChildStyle>
+                <Chip
+                  className="font-medium mb-3"
+                  color="primary"
+                  size="sm"
+                  variant="flat"
+                >
+                  {item.duration}
+                </Chip>
+              </HoverEffect>
             </div>
 
-            <Card className="shadow-lg">
+            <Card className={`shadow-lg ${getHoverEffectClasses()}`}>
               <CardBody className="p-4">
                 <div className="space-y-3">
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3
+                      className={`text-lg font-semibold text-foreground ${getTextHoverEffectClasses()}`}
+                    >
                       {item.type === "experience" ? item.position : item.degree}
                     </h3>
                     <h4 className="text-md font-medium text-primary">
@@ -228,15 +247,16 @@ export function CV({ refreshTrigger }: CVProps) {
                       <div className="flex flex-wrap gap-1 mt-3">
                         {item.technologies.map(
                           (tech: string, techIndex: number) => (
-                            <Chip
-                              key={techIndex}
-                              className="text-xs"
-                              color="secondary"
-                              size="sm"
-                              variant="bordered"
-                            >
-                              {tech}
-                            </Chip>
+                            <HoverEffect key={techIndex}>
+                              <Chip
+                                className="text-xs"
+                                color="secondary"
+                                size="sm"
+                                variant="bordered"
+                              >
+                                {tech}
+                              </Chip>
+                            </HoverEffect>
                           ),
                         )}
                       </div>
