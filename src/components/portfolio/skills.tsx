@@ -57,7 +57,7 @@ function SkillCard({ skill, index }: SkillCardProps) {
       isHoverable
       className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30"
     >
-      <CardBody className="p-4">
+      <CardBody className="py-2.5 px-3">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div
@@ -83,7 +83,7 @@ function SkillCard({ skill, index }: SkillCardProps) {
           disableThumbScale
           isDisabled
           showSteps
-          className="opacity-100"
+          className="opacity-100 px-4"
           color={getChipColorForSkill(index)}
           marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
           maxValue={4}
