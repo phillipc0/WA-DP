@@ -85,7 +85,10 @@ function SkillCard({ skill, index }: SkillCardProps) {
           showSteps
           className="opacity-100 px-4"
           color={getChipColorForSkill(index)}
-          marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+          marks={SKILL_LEVELS.map((label, i) => {
+            if (i === levelToIndex(skill.level)) return { value: i, label };
+            else return { value: i, label: "" };
+          })}
           maxValue={4}
           minValue={0}
           step={1}
