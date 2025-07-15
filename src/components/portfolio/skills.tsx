@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Slider } from "@heroui/slider";
+import { Divider } from "@heroui/divider";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
@@ -10,7 +11,6 @@ interface SkillsProps {
   refreshTrigger?: number;
 }
 
-const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
 const SKILL_LEVELS: SkillLevel[] = [
   "Beginner",
   "Intermediate",
@@ -19,16 +19,29 @@ const SKILL_LEVELS: SkillLevel[] = [
   "Master",
 ];
 
+const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
+
 export function Skills({ refreshTrigger }: SkillsProps) {
   const { portfolioData } = usePortfolioData(refreshTrigger);
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
-      <CardHeader className="flex gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary">
+      <CardHeader className="flex flex-wrap gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">
+        <div className="flex justify-center items-center w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary">
           <SkillsIcon />
         </div>
-        <div className="flex flex-col flex-1">
-          <h2 className="text-xl font-bold text-foreground">Skills</h2>
+        <h2 className="text-xl font-bold text-foreground">Skills</h2>
+
+        <Divider className="basis-full" />
+
+        <div className="basis-full mx-4 grid grid-cols-9 text-center text-default-700 text-sm font-medium select-none">
+          {SKILL_LEVELS.map((level) => (
+            <>
+              <span key={level} className="flex justify-center">
+                {level}
+              </span>
+              <span />
+            </>
+          ))}
         </div>
       </CardHeader>
       <CardBody className="p-4">
