@@ -5,19 +5,13 @@ import { Slider } from "@heroui/slider";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
 import { Skill, SkillLevel } from "@/types";
+import { getSliderMarks, SKILL_LEVELS } from "@/utils/skills.ts";
 
 interface SkillsProps {
   refreshTrigger?: number;
 }
 
 const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
-const SKILL_LEVELS: SkillLevel[] = [
-  "Beginner",
-  "Intermediate",
-  "Advanced",
-  "Expert",
-  "Master",
-];
 
 export function Skills({ refreshTrigger }: SkillsProps) {
   const { portfolioData } = usePortfolioData(refreshTrigger);
@@ -85,7 +79,7 @@ function SkillCard({ skill, index }: SkillCardProps) {
           showSteps
           className="opacity-100 px-4"
           color={getChipColorForSkill(index)}
-          marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+          marks={getSliderMarks()}
           maxValue={4}
           minValue={0}
           step={1}

@@ -7,6 +7,7 @@ import { Slider } from "@heroui/slider";
 import { Tooltip } from "@heroui/tooltip";
 
 import { SkillLevel } from "@/types";
+import { getSliderMarks } from "@/utils/skills.ts";
 
 interface SkillsFormProps {
   portfolioData: any;
@@ -70,7 +71,7 @@ export function SkillsForm(props: SkillsFormProps) {
             showSteps
             className="pb-4 px-5"
             label={`Proficiency: ${newSkill.level}`}
-            marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+            marks={getSliderMarks()}
             maxValue={4}
             minValue={0}
             step={1}
@@ -131,7 +132,7 @@ export function SkillsForm(props: SkillsFormProps) {
                   disableThumbScale
                   showSteps
                   className="px-4"
-                  marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
+                  marks={getSliderMarks()}
                   maxValue={4}
                   minValue={0}
                   step={1}
