@@ -68,6 +68,7 @@ export function SkillsForm(props: SkillsFormProps) {
           <Slider
             disableThumbScale
             showSteps
+            className="pb-4 px-5"
             label={`Proficiency: ${newSkill.level}`}
             marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
             maxValue={4}
@@ -86,7 +87,7 @@ export function SkillsForm(props: SkillsFormProps) {
           </Button>
         </div>
 
-        <Divider className="my-6" />
+        <Divider className="mb-5" />
 
         {portfolioData.skills.length === 0 ? (
           <p className="text-default-500">No skills added yet.</p>
@@ -99,7 +100,7 @@ export function SkillsForm(props: SkillsFormProps) {
               <div
                 key={idx}
                 draggable
-                className="flex flex-col gap-2 border rounded-md p-3 cursor-move hover:bg-default-50 transition-colors"
+                className="flex flex-col gap-2 border border-gray-400 rounded-md p-3 cursor-move hover:bg-default-50 transition-colors"
                 onDragEnd={onDragEnd}
                 onDragLeave={onDragLeave}
                 onDragOver={onDragOver}
@@ -129,6 +130,7 @@ export function SkillsForm(props: SkillsFormProps) {
                 <Slider
                   disableThumbScale
                   showSteps
+                  className="px-4"
                   marks={SKILL_LEVELS.map((label, i) => ({ value: i, label }))}
                   maxValue={4}
                   minValue={0}
