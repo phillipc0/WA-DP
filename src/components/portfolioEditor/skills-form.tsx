@@ -6,8 +6,8 @@ import { Divider } from "@heroui/divider";
 import { Slider } from "@heroui/slider";
 import { Tooltip } from "@heroui/tooltip";
 
-import { SkillLevel } from "@/types";
-import { getSliderMarks } from "@/utils/skills.ts";
+import { Skill, SkillLevel } from "@/types";
+import { getSliderMarks, useIsSmallScreen } from "@/utils/skills.ts";
 
 interface SkillsFormProps {
   portfolioData: any;
@@ -44,6 +44,7 @@ export function SkillsForm(props: SkillsFormProps) {
     onDragEnd,
   } = props;
 
+  const isSmallScreen = useIsSmallScreen();
   const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
   const indexToLevel = (i: number) => SKILL_LEVELS[i] as SkillLevel;
 
@@ -71,7 +72,7 @@ export function SkillsForm(props: SkillsFormProps) {
             showSteps
             className="pb-4 px-5"
             label={`Proficiency: ${newSkill.level}`}
-            marks={getSliderMarks()}
+            marks={getSliderMarks(newSkill.level, isSmallScreen)}
             maxValue={4}
             minValue={0}
             step={1}
@@ -97,7 +98,7 @@ export function SkillsForm(props: SkillsFormProps) {
             <p className="text-sm text-default-500 mb-2">
               Drag &amp; drop to reorder
             </p>
-            {portfolioData.skills.map((skill: any, idx: number) => (
+            {portfolioData.skills.map((skill: Skill, idx: number) => (
               <div
                 key={idx}
                 draggable
@@ -132,7 +133,7 @@ export function SkillsForm(props: SkillsFormProps) {
                   disableThumbScale
                   showSteps
                   className="px-4"
-                  marks={getSliderMarks()}
+                  marks={getSliderMarks(skill.level, isSmallScreen)}
                   maxValue={4}
                   minValue={0}
                   step={1}

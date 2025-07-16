@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { SkillLevel } from "@/types";
 
 export const SKILL_LEVELS: SkillLevel[] = [
@@ -8,6 +10,32 @@ export const SKILL_LEVELS: SkillLevel[] = [
   "Master",
 ];
 
-export function getSliderMarks() {
-  return SKILL_LEVELS.map((label, i) => ({ value: i, label }));
+export function useIsSmallScreen() {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 500px)");
+    const handleChange = (e: any) => setIsSmallScreen(e.matches);
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+  return isSmallScreen;
+}
+
+export function getSliderMarks(
+  selectedSkill: SkillLevel,
+  isSmallScreen: boolean,
+) {
+  return SKILL_LEVELS.map((label, i) => {
+    {
+      if (isSmallScreen) {
+        // For small screens only show selected mark, to avoid overlapping
+        if (selectedSkill === label) return { value: i, label };
+        else return { value: i, label: "" };
+      } else {
+        return { value: i, label };
+      }
+    }
+  });
 }

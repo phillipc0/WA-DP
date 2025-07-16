@@ -5,7 +5,11 @@ import { Slider } from "@heroui/slider";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
 import { Skill, SkillLevel } from "@/types";
-import { getSliderMarks, SKILL_LEVELS } from "@/utils/skills.ts";
+import {
+  getSliderMarks,
+  SKILL_LEVELS,
+  useIsSmallScreen,
+} from "@/utils/skills.ts";
 
 interface SkillsProps {
   refreshTrigger?: number;
@@ -14,6 +18,7 @@ interface SkillsProps {
 const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
 
 export function Skills({ refreshTrigger }: SkillsProps) {
+  const isSmallScreen = useIsSmallScreen();
   const { portfolioData } = usePortfolioData(refreshTrigger);
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
@@ -31,6 +36,7 @@ export function Skills({ refreshTrigger }: SkillsProps) {
             <SkillCard
               key={`${skill.name}-${index}`}
               index={index}
+              isSmallScreen={isSmallScreen}
               skill={skill}
             />
           ))}
@@ -43,9 +49,10 @@ export function Skills({ refreshTrigger }: SkillsProps) {
 interface SkillCardProps {
   skill: Skill;
   index: number;
+  isSmallScreen: boolean;
 }
 
-function SkillCard({ skill, index }: SkillCardProps) {
+function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
   return (
     <Card
       isHoverable
@@ -79,7 +86,7 @@ function SkillCard({ skill, index }: SkillCardProps) {
           showSteps
           className="opacity-100 px-4"
           color={getChipColorForSkill(index)}
-          marks={getSliderMarks()}
+          marks={getSliderMarks(skill.level, isSmallScreen)}
           maxValue={4}
           minValue={0}
           step={1}
