@@ -28,6 +28,7 @@ export function PortfolioEditor() {
     handleBasicInfoChange,
     handleFileSelect,
     handleSocialChange,
+    handleSocialSelectChange,
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,
@@ -115,6 +116,7 @@ export function PortfolioEditor() {
           <SocialLinksForm
             portfolioData={portfolioData}
             onSocialChange={handleSocialChange}
+            onSocialSelectChange={handleSocialSelectChange}
           />
         </Tab>
 

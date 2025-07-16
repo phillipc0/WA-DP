@@ -7,9 +7,11 @@ describe("SocialLinksForm", () => {
     social: {
       github: "johndoe_github",
       twitter: "johndoe_twitter",
+      twitterPlatform: "twitter",
       linkedin: "johndoe_linkedin",
       discord: "johndoe#1234",
       reddit: "johndoe_reddit",
+      youtube: "johndoe_youtube",
     },
   };
 
@@ -30,6 +32,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByLabelText("LinkedIn Username")).toBeInTheDocument();
     expect(screen.getByLabelText("Discord User-ID")).toBeInTheDocument();
     expect(screen.getByLabelText("Reddit Username")).toBeInTheDocument();
+    expect(screen.getByLabelText("YouTube Username")).toBeInTheDocument();
   });
 
   it("displays correct values in input fields", () => {
@@ -51,6 +54,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByText("linkedin.com/in/")).toBeInTheDocument();
     expect(screen.getByText("discord.com/users/")).toBeInTheDocument();
     expect(screen.getByText("reddit.com/user/")).toBeInTheDocument();
+    expect(screen.getByText("youtube.com/@")).toBeInTheDocument();
   });
 
   it("calls onSocialChange when GitHub input changes", () => {
@@ -157,6 +161,9 @@ describe("SocialLinksForm", () => {
     expect(
       screen.getByPlaceholderText("Your Reddit username"),
     ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Your YouTube username"),
+    ).toBeInTheDocument();
   });
 
   it("handles empty social data gracefully", () => {
@@ -215,5 +222,119 @@ describe("SocialLinksForm", () => {
     const githubInput = screen.getByLabelText("GitHub Username");
     expect(githubInput).toBeInTheDocument();
     expect(githubInput.tagName).toBe("INPUT");
+  });
+
+  it("calls onSocialChange when YouTube input changes", () => {
+    const onSocialChange = vi.fn();
+    render(
+      <SocialLinksForm {...defaultProps} onSocialChange={onSocialChange} />,
+    );
+
+    const youtubeInput = screen.getByLabelText("YouTube Username");
+    fireEvent.change(youtubeInput, {
+      target: { name: "youtube", value: "newyoutube" },
+    });
+
+    expect(onSocialChange).toHaveBeenCalled();
+    const call = onSocialChange.mock.calls[0][0];
+    expect(call.target.name).toBe("youtube");
+  });
+
+  it("renders YouTube input with correct attributes", () => {
+    render(<SocialLinksForm {...defaultProps} />);
+
+    const youtubeInput = screen.getByLabelText("YouTube Username");
+    expect(youtubeInput).toHaveAttribute("name", "youtube");
+    expect(youtubeInput).toHaveValue("johndoe_youtube");
+  });
+
+  it("renders Twitter/X platform selector", () => {
+    render(<SocialLinksForm {...defaultProps} />);
+
+    expect(screen.getByLabelText("Platform")).toBeInTheDocument();
+    const twitterOptions = screen.getAllByText("Twitter");
+    expect(twitterOptions.length).toBeGreaterThan(0);
+  });
+
+  it("has onSocialSelectChange prop for platform switching", () => {
+    const onSocialSelectChange = vi.fn();
+    render(
+      <SocialLinksForm
+        {...defaultProps}
+        onSocialSelectChange={onSocialSelectChange}
+      />,
+    );
+
+    // Test that the component renders with the callback prop
+    expect(screen.getByLabelText("Platform")).toBeInTheDocument();
+    expect(onSocialSelectChange).toBeDefined();
+  });
+
+  it("displays X platform URL prefix when twitterPlatform is x", () => {
+    const xPortfolioData = {
+      social: {
+        ...mockPortfolioData.social,
+        twitterPlatform: "x",
+      },
+    };
+
+    render(
+      <SocialLinksForm
+        portfolioData={xPortfolioData}
+        onSocialChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("x.com/")).toBeInTheDocument();
+    expect(screen.getByLabelText("X Username")).toBeInTheDocument();
+  });
+
+  it("displays Twitter platform URL prefix when twitterPlatform is twitter", () => {
+    render(<SocialLinksForm {...defaultProps} />);
+
+    expect(screen.getByText("twitter.com/")).toBeInTheDocument();
+    expect(screen.getByLabelText("Twitter Username")).toBeInTheDocument();
+  });
+
+  it("updates placeholder text based on platform selection", () => {
+    const xPortfolioData = {
+      social: {
+        ...mockPortfolioData.social,
+        twitterPlatform: "x",
+      },
+    };
+
+    render(
+      <SocialLinksForm
+        portfolioData={xPortfolioData}
+        onSocialChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByPlaceholderText("Your X username")).toBeInTheDocument();
+  });
+
+  it("handles empty YouTube data gracefully", () => {
+    const emptyPortfolioData = {
+      social: {
+        github: "",
+        twitter: "",
+        twitterPlatform: "twitter",
+        linkedin: "",
+        discord: "",
+        reddit: "",
+        youtube: "",
+      },
+    };
+
+    render(
+      <SocialLinksForm
+        portfolioData={emptyPortfolioData}
+        onSocialChange={vi.fn()}
+      />,
+    );
+
+    const youtubeInput = screen.getByLabelText("YouTube Username");
+    expect(youtubeInput).toHaveValue("");
   });
 });

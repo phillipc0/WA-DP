@@ -37,9 +37,11 @@ export interface PortfolioData {
   social: {
     github: string;
     twitter: string;
+    twitterPlatform: "twitter" | "x";
     linkedin: string;
     discord: string;
     reddit: string;
+    youtube: string;
   };
   skills: Skill[];
   cv: Experience[];

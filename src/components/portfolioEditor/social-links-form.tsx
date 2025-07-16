@@ -1,15 +1,18 @@
 import React from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
+import { Select, SelectItem } from "@heroui/select";
 
 interface SocialLinksFormProps {
   portfolioData: any;
   onSocialChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSocialSelectChange?: (field: string, value: string) => void;
 }
 
 export function SocialLinksForm({
   portfolioData,
   onSocialChange,
+  onSocialSelectChange,
 }: SocialLinksFormProps) {
   return (
     <Card className="mt-4">
@@ -29,18 +32,35 @@ export function SocialLinksForm({
           value={portfolioData.social.github}
           onChange={onSocialChange}
         />
-        <Input
-          label="Twitter Username"
-          name="twitter"
-          placeholder="Your Twitter username"
-          startContent={
-            <span className="text-default-400 whitespace-nowrap">
-              twitter.com/
-            </span>
-          }
-          value={portfolioData.social.twitter}
-          onChange={onSocialChange}
-        />
+        <div className="flex gap-2">
+          <Select
+            className="w-32"
+            label="Platform"
+            selectedKeys={[portfolioData.social.twitterPlatform || "twitter"]}
+            onSelectionChange={(keys) => {
+              const selectedPlatform = Array.from(keys)[0] as string;
+              onSocialSelectChange?.("twitterPlatform", selectedPlatform);
+            }}
+          >
+            <SelectItem key="twitter">Twitter</SelectItem>
+            <SelectItem key="x">X</SelectItem>
+          </Select>
+          <Input
+            className="flex-1"
+            label={`${portfolioData.social.twitterPlatform === "x" ? "X" : "Twitter"} Username`}
+            name="twitter"
+            placeholder={`Your ${portfolioData.social.twitterPlatform === "x" ? "X" : "Twitter"} username`}
+            startContent={
+              <span className="text-default-400 whitespace-nowrap">
+                {portfolioData.social.twitterPlatform === "x"
+                  ? "x.com/"
+                  : "twitter.com/"}
+              </span>
+            }
+            value={portfolioData.social.twitter}
+            onChange={onSocialChange}
+          />
+        </div>
         <Input
           label="LinkedIn Username"
           name="linkedin"
@@ -75,6 +95,18 @@ export function SocialLinksForm({
             </span>
           }
           value={portfolioData.social.reddit}
+          onChange={onSocialChange}
+        />
+        <Input
+          label="YouTube Username"
+          name="youtube"
+          placeholder="Your YouTube username"
+          startContent={
+            <span className="text-default-400 whitespace-nowrap">
+              youtube.com/@
+            </span>
+          }
+          value={portfolioData.social.youtube}
           onChange={onSocialChange}
         />
       </CardBody>

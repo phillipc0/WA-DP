@@ -206,6 +206,19 @@ export function usePortfolioEditor() {
     });
   };
 
+  const handleSocialSelectChange = (field: string, value: string) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        social: {
+          ...prev.social,
+          [field]: value,
+        },
+      };
+    });
+  };
+
   const handleAddSkill = () => {
     if (newSkill.name.trim() === "") return;
 
@@ -577,6 +590,7 @@ export function usePortfolioEditor() {
     handleBasicInfoChange,
     handleFileSelect,
     handleSocialChange,
+    handleSocialSelectChange,
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,
