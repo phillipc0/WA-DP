@@ -102,13 +102,19 @@ export function SkillsForm(props: SkillsFormProps) {
               <div
                 key={idx}
                 draggable
-                className="flex flex-col gap-2 border border-gray-400 rounded-md p-3 cursor-move hover:bg-default-50 transition-colors"
+                className="flex items-center gap-2 border border-gray-400 rounded-md p-3 cursor-move hover:bg-default-50 transition-colors"
                 onDragEnd={onDragEnd}
                 onDragLeave={onDragLeave}
                 onDragOver={onDragOver}
                 onDragStart={(e) => onDragStart(e, idx)}
                 onDrop={(e) => onDrop(e, idx)}
               >
+                <div
+                  className="cursor-move p-1 text-default-400 hover:text-default-600"
+                  title="Drag to reorder"
+                >
+                  ⋮⋮
+                </div>
                 <div className="flex justify-between items-center gap-2">
                   <Input
                     className="max-w-[60%]"

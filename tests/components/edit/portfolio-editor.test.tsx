@@ -20,18 +20,19 @@ const mockUsePortfolioEditor = {
       reddit: "johndoe",
     },
     skills: [
-      { name: "JavaScript", level: 85 },
-      { name: "React", level: 80 },
+      { name: "UI/UX Design", level: "Intermediate" },
+      { name: "React", level: "Master" },
     ],
   },
   isLoading: false,
-  newSkill: { name: "", level: 50 },
+  newSkill: { name: "", level: "Intermediate" },
   useUrlForAvatar: true,
   isUploadedImage: false,
   saveAlert: false,
   resetAlert: false,
   fileAlert: false,
   fileAlertMessage: "",
+  SKILL_LEVELS: ["Beginner", "Intermediate", "Advanced", "Expert", "Master"],
   handleBasicInfoChange: vi.fn(),
   handleFileSelect: vi.fn(),
   handleSocialChange: vi.fn(),
@@ -90,8 +91,8 @@ describe("PortfolioEditor", () => {
         reddit: "johndoe",
       },
       skills: [
-        { name: "JavaScript", level: 85 },
-        { name: "React", level: 80 },
+        { name: "UI/UX Design", level: "Intermediate" },
+        { name: "React", level: "Master" },
       ],
     };
     mockUsePortfolioEditor.saveAlert = false;
