@@ -38,6 +38,7 @@
     "@heroui/modal": "^2.2.19",
     "@heroui/navbar": "2.2.20",
     "@heroui/progress": "^2.2.18",
+    "@heroui/select": "^2.4.24",
     "@heroui/snippet": "2.2.23",
     "@heroui/spinner": "^2.2.19",
     "@heroui/switch": "2.2.20",
