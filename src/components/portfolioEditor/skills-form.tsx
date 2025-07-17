@@ -75,6 +75,7 @@ export function SkillsForm(props: SkillsFormProps) {
             marks={getSliderMarks(newSkill.level, isSmallScreen)}
             maxValue={4}
             minValue={0}
+            name="level"
             step={1}
             value={levelToIndex(newSkill.level)}
             // @ts-ignore

@@ -10,7 +10,7 @@ Feature: Complete User Flow
     When I create a new account with username "testuser" and password "testpass123"
     Then I should be logged in and see the portfolio editor
     When I update my portfolio with name "Jane Smith" and title "Senior Developer"
-    And I add a new skill "Python" with level 95
+    And I add a new skill "Python" with level 4 of 4
     And I save the changes
     Then I should see the success message
     When I navigate to the home page
