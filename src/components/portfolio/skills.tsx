@@ -1,17 +1,25 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Progress } from "@heroui/progress";
 import { Chip } from "@heroui/chip";
+import { Slider } from "@heroui/slider";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
+import { Skill, SkillLevel } from "@/types";
+import {
+  getSliderMarks,
+  SKILL_LEVELS,
+  useIsSmallScreen,
+} from "@/utils/skills.ts";
 
 interface SkillsProps {
   refreshTrigger?: number;
 }
 
-export function Skills({ refreshTrigger }: SkillsProps) {
-  const { portfolioData } = usePortfolioData(refreshTrigger);
+const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
 
+export function Skills({ refreshTrigger }: SkillsProps) {
+  const isSmallScreen = useIsSmallScreen();
+  const { portfolioData } = usePortfolioData(refreshTrigger);
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
       <CardHeader className="flex gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">
@@ -28,6 +36,7 @@ export function Skills({ refreshTrigger }: SkillsProps) {
             <SkillCard
               key={`${skill.name}-${index}`}
               index={index}
+              isSmallScreen={isSmallScreen}
               skill={skill}
             />
           ))}
@@ -38,17 +47,18 @@ export function Skills({ refreshTrigger }: SkillsProps) {
 }
 
 interface SkillCardProps {
-  skill: { name: string; level: number };
+  skill: Skill;
   index: number;
+  isSmallScreen: boolean;
 }
 
-function SkillCard({ skill, index }: SkillCardProps) {
+function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
   return (
     <Card
       isHoverable
       className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30"
     >
-      <CardBody className="p-4">
+      <CardBody className="py-2.5 px-3">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div
@@ -67,14 +77,22 @@ function SkillCard({ skill, index }: SkillCardProps) {
             size="sm"
             variant="bordered"
           >
-            {skill.level}%
+            {skill.level}
           </Chip>
         </div>
-        <Progress
-          aria-label={`${skill.name} skill level`}
-          className="h-2"
-          color={getColorForSkill(index)}
-          value={skill.level}
+        <Slider
+          disableThumbScale
+          isDisabled
+          showSteps
+          className="opacity-100 px-4"
+          color={getChipColorForSkill(index)}
+          marks={getSliderMarks(skill.level, isSmallScreen)}
+          maxValue={4}
+          minValue={0}
+          step={1}
+          value={levelToIndex(skill.level)}
+          // @ts-ignore
+          onChange={(val) => handleNewSkillLevelChange(indexToLevel(val))}
         />
       </CardBody>
     </Card>

@@ -301,11 +301,11 @@ describe("Portfolio", () => {
 
     const container = screen
       .getByTestId("personal-info")
-      .closest(".md\\:col-span-2");
+      .closest(".ml\\:col-span-2");
     expect(container).toBeInTheDocument();
 
     const gridContainer = screen.getByTestId("personal-info").closest(".grid");
-    expect(gridContainer).toHaveClass("grid-cols-1", "md:grid-cols-2", "gap-6");
+    expect(gridContainer).toHaveClass("grid-cols-1", "ml:grid-cols-2", "gap-6");
   });
 
   it("handles authentication state correctly in useEffect", async () => {
