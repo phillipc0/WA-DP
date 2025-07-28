@@ -410,7 +410,7 @@ jobs:
         run: cd backend && npm ci
 
       - name: Run Cypress E2E Tests
-        uses: cypress-io/github-action@v6.10.1
+        uses: cypress-io/github-action@v6.10.2
         with:
           start: npm run dev
           wait-on: http://localhost:5173
