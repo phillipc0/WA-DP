@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Cypress E2E Tests" type="JavaScriptTestRunnerCypress">
+    <config value="$PROJECT_DIR$/cypress.config.ts" />
+    <node-interpreter value="project" />
+    <cypress-package value="$PROJECT_DIR$/node_modules/cypress" />
+    <working-dir value="$PROJECT_DIR$" />
+    <cypress-options value="-q" />
+    <envs />
+    <scope-kind value="TEST_FILE" />
+    <test-file value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
