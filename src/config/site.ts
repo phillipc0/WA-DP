@@ -12,9 +12,11 @@ export const siteConfig = {
     social: {
       github: "johndoe",
       twitter: "johndoe",
+      twitterPlatform: "twitter" as "twitter" | "x",
       linkedin: "johndoe",
       discord: "99010890275225600",
       reddit: "johndoe",
+      youtube: "johndoe",
     },
     skills: [
       { name: "React", level: "Master" },

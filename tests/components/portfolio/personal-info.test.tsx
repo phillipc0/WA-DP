@@ -1,29 +1,50 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { PersonalInfo } from "@/components/portfolio/personal-info";
 
 // Mock the usePortfolioData hook
 vi.mock("@/hooks/usePortfolioData", () => ({
-  usePortfolioData: vi.fn(() => ({
-    portfolioData: {
-      name: "John Doe",
-      title: "Software Engineer",
-      location: "San Francisco, CA",
-      email: "john@example.com",
-      bio: "Passionate software engineer with 5 years of experience.",
-      avatar: "https://example.com/avatar.jpg",
-      social: {
-        github: "johndoe",
-        twitter: "johndoe",
-        linkedin: "johndoe",
-        discord: "johndoe#1234",
-        reddit: "johndoe",
-      },
-    },
-  })),
+  usePortfolioData: vi.fn(),
+}));
+
+// Mock the contributor utility
+vi.mock("@/utils/contributor", () => ({
+  isContributor: vi.fn(),
 }));
 
 describe("PersonalInfo", () => {
+  beforeEach(async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+    const { isContributor } = await import("@/utils/contributor");
+
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        name: "John Doe",
+        title: "Software Engineer",
+        location: "San Francisco, CA",
+        email: "john@example.com",
+        bio: "Passionate software engineer with 5 years of experience.",
+        avatar: "https://example.com/avatar.jpg",
+        social: {
+          github: "johndoe",
+          twitter: "johndoe",
+          twitterPlatform: "twitter",
+          linkedin: "johndoe",
+          discord: "johndoe#1234",
+          reddit: "johndoe",
+          youtube: "johndoe",
+        },
+        contributor: {
+          enableContributorStatus: false,
+          showGoldenBoxShadow: false,
+        },
+      },
+      isLoading: false,
+    });
+
+    vi.mocked(isContributor).mockReturnValue(false);
+  });
+
   it("renders personal information correctly", () => {
     render(<PersonalInfo />);
 
@@ -54,6 +75,7 @@ describe("PersonalInfo", () => {
     expect(screen.getByText("LinkedIn")).toBeInTheDocument();
     expect(screen.getByText("Discord")).toBeInTheDocument();
     expect(screen.getByText("Reddit")).toBeInTheDocument();
+    expect(screen.getByText("YouTube")).toBeInTheDocument();
 
     const githubLink = screen.getByRole("link", { name: /github/i });
     expect(githubLink).toHaveAttribute("href", "https://github.com/johndoe");
@@ -78,6 +100,9 @@ describe("PersonalInfo", () => {
       "href",
       "https://reddit.com/user/johndoe",
     );
+
+    const youtubeLink = screen.getByRole("link", { name: /youtube/i });
+    expect(youtubeLink).toHaveAttribute("href", "https://youtube.com/@johndoe");
   });
 
   it("all social links open in new tab", () => {
