@@ -10,7 +10,7 @@ export const SKILL_LEVELS: SkillLevel[] = [
   "Master",
 ];
 
-export function useIsSmallScreen() {
+export function useIsSmallScreen(pixels: number = 500) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function useIsSmallScreen() {
       return;
     }
 
-    const mediaQuery = window.matchMedia("(max-width: 500px)");
+    const mediaQuery = window.matchMedia("(max-width: " + pixels + "px)");
     const handleChange = (e: any) => setIsSmallScreen(e.matches);
 
     mediaQuery.addEventListener("change", handleChange);

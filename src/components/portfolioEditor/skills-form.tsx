@@ -45,6 +45,7 @@ export function SkillsForm(props: SkillsFormProps) {
   } = props;
 
   const isSmallScreen = useIsSmallScreen();
+  const isMediumScreen = useIsSmallScreen(650);
   const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
   const indexToLevel = (i: number) => SKILL_LEVELS[i] as SkillLevel;
 
@@ -140,7 +141,7 @@ export function SkillsForm(props: SkillsFormProps) {
                   disableThumbScale
                   showSteps
                   className="px-4"
-                  marks={getSliderMarks(skill.level, isSmallScreen)}
+                  marks={getSliderMarks(skill.level, isMediumScreen)}
                   maxValue={4}
                   minValue={0}
                   step={1}
