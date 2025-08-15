@@ -33,7 +33,7 @@ We welcome any contributions to the Developer Portfolio project. Please follow t
 
 1. Start the development servers (see README)
 2. Make your changes following the existing code style and patterns
-3. Test your changes using the development scripts above
+3. Test your changes using the scripts listed in the "Development Scripts" section of the README
 4. Commit your changes with descriptive messages
 
 ### Code Standards
