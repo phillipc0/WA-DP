@@ -128,18 +128,6 @@ describe("SkillsForm", () => {
       expect(onSkillNameChange).toHaveBeenCalledWith(0, "JavaScript ES6");
     }
   });
-  // TODO: fix
-  // it("calls onSkillLevelChange when skill level slider is changed", () => {
-  //   const onSkillLevelChange = vi.fn();
-  //   render(
-  //     <SkillsForm {...defaultProps} onSkillLevelChange={onSkillLevelChange} />,
-  //   );
-  //
-  //   const sliders = screen.getAllByRole("slider");
-  //   fireEvent.change(sliders[0], { target: { value: "Beginner" } });
-  //
-  //   expect(onSkillLevelChange).toHaveBeenCalledOnce();
-  // });
 
   it("calls onRemoveSkill when remove button is clicked", () => {
     const onRemoveSkill = vi.fn();

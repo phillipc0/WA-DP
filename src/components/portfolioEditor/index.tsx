@@ -13,6 +13,7 @@ import { ContributorForm } from "./contributor-form";
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
 import { isContributor } from "@/utils/contributor";
+import { SKILL_LEVELS } from "@/utils/skills.ts";
 
 export function PortfolioEditor() {
   const {
@@ -33,7 +34,6 @@ export function PortfolioEditor() {
     handleSkillChange,
     handleSkillLevelChange,
     handleSkillNameChange,
-    SKILL_LEVELS,
     handleNewSkillLevelChange,
     handleDragStart,
     handleDragOver,

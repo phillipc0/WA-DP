@@ -240,14 +240,6 @@ export function usePortfolioEditor() {
     }));
   };
 
-  const SKILL_LEVELS: SkillLevel[] = [
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-    "Expert",
-    "Master",
-  ];
-
   const handleSkillLevelChange = (index: number, level: SkillLevel) => {
     if (!portfolioData) return;
     const updated = [...portfolioData.skills];
@@ -586,7 +578,6 @@ export function usePortfolioEditor() {
     handleSkillChange,
     handleNewSkillLevelChange,
     handleSkillLevelChange,
-    SKILL_LEVELS,
     handleSkillNameChange,
     handleDragStart,
     handleDragOver,

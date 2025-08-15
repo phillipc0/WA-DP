@@ -260,7 +260,7 @@ describe("usePortfolioEditor", () => {
 
     act(() => {
       result.current.handleSkillChange({
-        target: { name: "level", value: "85" },
+        target: { name: "level", value: "1" },
       } as React.ChangeEvent<HTMLInputElement>);
     });
 
@@ -272,7 +272,7 @@ describe("usePortfolioEditor", () => {
     expect(result.current.portfolioData.skills).toHaveLength(1);
     expect(result.current.portfolioData.skills[0]).toEqual({
       name: "React",
-      level: 85, //TODO: check why this works
+      level: 1,
     });
     expect(result.current.newSkill).toEqual({
       name: "",
