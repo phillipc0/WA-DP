@@ -4,6 +4,8 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Switch } from "@heroui/switch";
 
+import { AIBioGenerator } from "./ai-bio-generator";
+
 interface BasicInfoFormProps {
   portfolioData: any;
   useUrlForAvatar: boolean;
@@ -24,6 +26,18 @@ export function BasicInfoForm({
   onToggleAvatarMode,
 }: BasicInfoFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBioGenerated = (bio: string) => {
+    // Create a synthetic event to update the bio field
+    const event = {
+      target: {
+        name: "bio",
+        value: bio,
+      },
+    } as React.ChangeEvent<HTMLTextAreaElement>;
+
+    onBasicInfoChange(event);
+  };
 
   return (
     <Card className="mt-4">
@@ -49,14 +63,22 @@ export function BasicInfoForm({
           <label className="text-sm font-medium" htmlFor="bio">
             Bio
           </label>
-          <textarea
-            className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
-            id="bio"
-            name="bio"
-            placeholder="Write a short bio about yourself"
-            value={portfolioData.bio}
-            onChange={onBasicInfoChange}
-          />
+          <div className="flex gap-2">
+            <textarea
+              className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+              id="bio"
+              name="bio"
+              placeholder="Write a short bio about yourself"
+              value={portfolioData.bio}
+              onChange={onBasicInfoChange}
+            />
+            <AIBioGenerator
+              name={portfolioData.name}
+              skills={portfolioData.skills || []}
+              title={portfolioData.title}
+              onBioGenerated={handleBioGenerated}
+            />
+          </div>
         </div>
         <Input
           label="Location"

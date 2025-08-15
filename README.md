@@ -16,6 +16,8 @@ A modern full-stack web application to create and customize your personal develo
 - Skills showcase with proficiency levels
 - GitHub integration for repository display
 - CV builder with work experience and education
+- AI-powered bio generation with Gemini
+- API key management for AI services
 - Dark/light theme support
 - JWT-based authentication
 - Real-time editing with unsaved changes detection

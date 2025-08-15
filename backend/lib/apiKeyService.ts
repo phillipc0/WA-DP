@@ -1,0 +1,73 @@
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+
+const USERS_FILE = path.join(process.cwd(), "users.json");
+const ENCRYPTION_KEY =
+  process.env.ENCRYPTION_KEY || "fallback-key-change-in-production";
+
+// Encrypt API key
+export const encryptApiKey = (apiKey: string): string => {
+  const algorithm = "aes-256-cbc";
+  const iv = crypto.randomBytes(16);
+  const key = crypto.scryptSync(ENCRYPTION_KEY, "salt", 32);
+
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
+  let encrypted = cipher.update(apiKey, "utf8", "hex");
+  encrypted += cipher.final("hex");
+
+  return iv.toString("hex") + ":" + encrypted;
+};
+
+// Decrypt API key
+export const decryptApiKey = (encryptedApiKey: string): string => {
+  const algorithm = "aes-256-cbc";
+  const [ivHex, encryptedData] = encryptedApiKey.split(":");
+  const iv = Buffer.from(ivHex, "hex");
+  const key = crypto.scryptSync(ENCRYPTION_KEY, "salt", 32);
+
+  const decipher = crypto.createDecipheriv(algorithm, key, iv);
+  let decrypted = decipher.update(encryptedData, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+
+  return decrypted;
+};
+
+// Function to save API key securely in user data
+export const saveApiKey = (username: string, apiKey: string): void => {
+  try {
+    const users = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+    const encryptedKey = encryptApiKey(apiKey);
+
+    const userIndex = users.findIndex(
+      (user: any) => user.username === username,
+    );
+    if (userIndex !== -1) {
+      users[userIndex].geminiApiKey = encryptedKey;
+      fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+    } else {
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    console.error("Error saving API key:", error);
+    throw new Error("Failed to save API key");
+  }
+};
+
+// Function to get API key securely from user data
+export const getApiKey = (username: string): string | null => {
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      const users = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+      const user = users.find((user: any) => user.username === username);
+
+      if (user && user.geminiApiKey) {
+        return decryptApiKey(user.geminiApiKey);
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Error reading API key:", error);
+    return null;
+  }
+};
