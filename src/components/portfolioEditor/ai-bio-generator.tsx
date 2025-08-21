@@ -9,7 +9,6 @@ import { ApiSettingsModal } from "./api-settings-modal";
 import { getAuthHeaders } from "@/lib/auth";
 import { SettingsIcon } from "@/components/icons";
 
-
 interface AIBioGeneratorProps {
   name: string;
   title: string;

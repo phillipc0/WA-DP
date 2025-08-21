@@ -49,25 +49,32 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
 
     // Define skill level priority (higher number = higher proficiency)
     const skillLevelPriority = {
-      "Master": 5,
-      "Expert": 4,
-      "Advanced": 3,
-      "Intermediate": 2,
-      "Beginner": 1,
+      Master: 5,
+      Expert: 4,
+      Advanced: 3,
+      Intermediate: 2,
+      Beginner: 1,
     };
 
     // Sanitize inputs
     const sanitizedName = sanitizeInput(name);
     const sanitizedTitle = sanitizeInput(title);
     const sanitizedSkills = skills
-      .filter((skill) => skill && typeof skill.name === "string" && typeof skill.level === "string")
+      .filter(
+        (skill) =>
+          skill &&
+          typeof skill.name === "string" &&
+          typeof skill.level === "string",
+      )
       .map((skill) => ({
         name: sanitizeInput(skill.name),
         level: sanitizeInput(skill.level),
       }))
       .sort((a, b) => {
         // Sort by proficiency level (highest first), then by name for consistency
-        const levelDiff = (skillLevelPriority[b.level] || 0) - (skillLevelPriority[a.level] || 0);
+        const levelDiff =
+          (skillLevelPriority[b.level] || 0) -
+          (skillLevelPriority[a.level] || 0);
         return levelDiff !== 0 ? levelDiff : a.name.localeCompare(b.name);
       })
       .slice(0, 10); // Limit to top 10 skills by proficiency

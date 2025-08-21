@@ -1,4 +1,5 @@
 import { NextApiResponse } from "next";
+
 import { AuthenticatedRequest, authenticateToken } from "../../lib/auth";
 import { saveApiKey, getApiKey } from "../../lib/apiKeyService";
 
@@ -31,12 +32,10 @@ const handlePost = async (req: AuthenticatedRequest, res: NextApiResponse) => {
 
   // Basic validation for Gemini API key format
   if (!apiKey.startsWith("AIza") || apiKey.length < 35) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 35 characters long.",
-      });
+    return res.status(400).json({
+      error:
+        "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 35 characters long.",
+    });
   }
 
   try {
