@@ -19,7 +19,6 @@ export function PortfolioEditor() {
     portfolioData,
     isLoading,
     newSkill,
-    useUrlForAvatar,
     saveAlert,
     resetAlert,
     fileAlert,
@@ -43,7 +42,6 @@ export function PortfolioEditor() {
     setSaveAlert,
     setResetAlert,
     setFileAlert,
-    setUseUrlForAvatar,
     // CV state
     newExperience,
     newEducation,
@@ -102,9 +100,7 @@ export function PortfolioEditor() {
         <Tab key="basic" title="Basic Information">
           <BasicInfoForm
             portfolioData={portfolioData}
-            useUrlForAvatar={useUrlForAvatar}
             onBasicInfoChange={handleBasicInfoChange}
-            onToggleAvatarMode={() => setUseUrlForAvatar(!useUrlForAvatar)}
           />
         </Tab>
 
