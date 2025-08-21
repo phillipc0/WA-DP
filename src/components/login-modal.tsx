@@ -56,7 +56,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} placement="center" onClose={onClose}>
       <ModalContent>
         {(onClose) => (
           <>
