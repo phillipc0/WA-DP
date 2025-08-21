@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Spinner } from "@heroui/spinner";
@@ -11,9 +17,15 @@ interface ApiSettingsModalProps {
   onClose: () => void;
 }
 
+/**
+ * Modal component for configuring Gemini API key settings
+ * @param props - Component props
+ * @param props.isOpen - Whether the modal is open
+ * @param props.onClose - Callback function to close the modal
+ * @returns Modal component for API key configuration
+ */
 export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
   const [apiKey, setApiKey] = useState("");
-  const [setSavedApiKey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +38,7 @@ export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
           setIsLoading(true);
           setError(null);
           setSuccess(null);
-          
+
           const response = await fetch("/api/gemini-key", {
             method: "GET",
             headers: {
@@ -40,7 +52,6 @@ export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
           }
 
           const data = await response.json();
-          setSavedApiKey(data.apiKey);
           setApiKey(data.apiKey);
         } catch (err) {
           setError("Failed to load API key");
@@ -76,7 +87,6 @@ export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
         throw new Error(errorData.error || "Failed to save API key");
       }
 
-      setSavedApiKey(apiKey);
       setSuccess("API key saved successfully!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save API key");
@@ -93,7 +103,7 @@ export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="md">
+    <Modal isOpen={isOpen} size="md" onClose={handleClose}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           <h2 className="text-xl font-bold">Gemini API Configuration</h2>
@@ -120,17 +130,15 @@ export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
                 <p className="text-sm text-danger-500">Error: {error}</p>
               )}
 
-              {success && (
-                <p className="text-sm text-success-500">{success}</p>
-              )}
+              {success && <p className="text-sm text-success-500">{success}</p>}
 
               <p className="text-xs text-default-500">
                 Note: You can get a free Gemini API key from{" "}
                 <a
-                  href="https://aistudio.google.com/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="text-primary hover:underline"
+                  href="https://aistudio.google.com/apikey"
+                  rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Google AI Studio
                 </a>
@@ -140,11 +148,7 @@ export function ApiSettingsModal({ isOpen, onClose }: ApiSettingsModalProps) {
           )}
         </ModalBody>
         <ModalFooter>
-          <Button
-            color="danger"
-            variant="light"
-            onPress={handleClose}
-          >
+          <Button color="danger" variant="light" onPress={handleClose}>
             Cancel
           </Button>
           <Button

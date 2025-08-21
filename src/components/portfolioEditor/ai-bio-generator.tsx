@@ -7,7 +7,6 @@ import { ApiSettingsModal } from "./api-settings-modal";
 import { getAuthHeaders } from "@/lib/auth";
 import { SettingsIcon } from "@/components/icons";
 
-
 interface AIBioGeneratorProps {
   name: string;
   title: string;
@@ -15,6 +14,15 @@ interface AIBioGeneratorProps {
   onBioGenerated: (bio: string) => void;
 }
 
+/**
+ * Component for generating AI-powered professional bio based on user information
+ * @param props - Component props
+ * @param props.name - User's full name
+ * @param props.title - User's professional title
+ * @param props.skills - Array of user's skills
+ * @param props.onBioGenerated - Callback function called when bio is successfully generated
+ * @returns AI bio generator component with settings modal
+ */
 export function AIBioGenerator({
   name,
   title,

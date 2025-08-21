@@ -2,9 +2,9 @@ import React from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 
-import { AvatarPlaceholderIcon } from "@/components/icons";
-
 import { AIBioGenerator } from "./ai-bio-generator";
+
+import { AvatarPlaceholderIcon } from "@/components/icons";
 
 interface BasicInfoFormProps {
   portfolioData: any;
