@@ -183,12 +183,4 @@ describe("BasicInfoForm", () => {
 
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
   });
-
-  it("has proper file input attributes", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={false} />);
-
-    const fileInput = document.querySelector('input[type="file"]');
-    expect(fileInput).toHaveAttribute("accept", "image/*");
-    expect(fileInput).toHaveClass("hidden");
-  });
 });

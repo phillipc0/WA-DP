@@ -4,11 +4,9 @@ import { Input } from "@heroui/input";
 
 interface BasicInfoFormProps {
   portfolioData: any;
-  useUrlForAvatar: boolean;
   onBasicInfoChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
-  onToggleAvatarMode: () => void;
 }
 
 export function BasicInfoForm({
