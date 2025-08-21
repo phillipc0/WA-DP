@@ -6,7 +6,7 @@ import { loadDraftFromCookies } from "@/lib/cookie-persistence";
 import { isAuthenticated } from "@/lib/auth";
 
 export function usePortfolioData(refreshTrigger?: number) {
-  const [portfolioData, setPortfolioData] = useState<any>(null);
+  const [portfolioData, setPortfolioData] = useState<any>(siteConfig.portfolio);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
