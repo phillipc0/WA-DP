@@ -15,6 +15,14 @@ interface LoginModalProps {
   onSuccess: () => void;
 }
 
+/**
+ * Login modal component for user authentication
+ * @param props - Component props
+ * @param props.isOpen - Whether the modal is open
+ * @param props.onClose - Callback when modal is closed
+ * @param props.onSuccess - Callback when login is successful
+ * @returns Login modal component
+ */
 export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   const [exists, setExists] = useState<boolean | null>(null);
   const [username, setUsername] = useState("");

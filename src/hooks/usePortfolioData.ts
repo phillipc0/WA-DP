@@ -5,6 +5,11 @@ import { getPortfolioData } from "@/lib/portfolio";
 import { loadDraftFromCookies } from "@/lib/cookie-persistence";
 import { isAuthenticated } from "@/lib/auth";
 
+/**
+ * Custom hook for managing portfolio data with authentication and draft support
+ * @param refreshTrigger - Optional trigger to refresh data
+ * @returns Object containing portfolio data and loading state
+ */
 export function usePortfolioData(refreshTrigger?: number) {
   const [portfolioData, setPortfolioData] = useState<any>(siteConfig.portfolio);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +23,7 @@ export function usePortfolioData(refreshTrigger?: number) {
           const draftData = loadDraftFromCookies();
           if (draftData) {
             setPortfolioData(draftData);
+            setIsLoading(false);
             return;
           }
         }
@@ -25,6 +31,9 @@ export function usePortfolioData(refreshTrigger?: number) {
         const data = await getPortfolioData();
         if (data) {
           setPortfolioData(data);
+        } else {
+          // Fallback to default data if no real data is available
+          setPortfolioData(siteConfig.portfolio);
         }
       } catch (error) {
         console.error("Error loading portfolio data:", error);

@@ -11,6 +11,12 @@ interface UnsavedChangesBannerProps {
   onDiscardChanges?: () => void;
 }
 
+/**
+ * Banner component that alerts users about unsaved changes with save/discard options
+ * @param props - Component props
+ * @param props.onDiscardChanges - Optional callback when changes are discarded
+ * @returns Unsaved changes alert banner
+ */
 export function UnsavedChangesBanner({
   onDiscardChanges,
 }: UnsavedChangesBannerProps) {
