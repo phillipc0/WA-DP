@@ -116,7 +116,7 @@ describe("PersonalInfo", () => {
 
   it("renders skeleton when portfolio is loading", async () => {
     const { usePortfolioData } = await import("@/hooks/usePortfolioData");
-    
+
     vi.mocked(usePortfolioData).mockReturnValue({
       portfolioData: null,
       isLoading: true,
@@ -130,7 +130,7 @@ describe("PersonalInfo", () => {
 
   it("renders skeleton when portfolio data is null", async () => {
     const { usePortfolioData } = await import("@/hooks/usePortfolioData");
-    
+
     vi.mocked(usePortfolioData).mockReturnValue({
       portfolioData: null,
       isLoading: false,

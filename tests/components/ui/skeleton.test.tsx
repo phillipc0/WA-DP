@@ -44,7 +44,7 @@ describe("Skeleton", () => {
 describe("PersonalInfoSkeleton", () => {
   it("renders personal info skeleton structure", () => {
     render(<PersonalInfoSkeleton />);
-    
+
     // Check for skeleton animations
     const skeletons = document.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThan(0);
@@ -78,7 +78,7 @@ describe("PersonalInfoSkeleton", () => {
 describe("SkillsSkeleton", () => {
   it("renders skills skeleton structure", () => {
     render(<SkillsSkeleton />);
-    
+
     // Check for skeleton animations
     const skeletons = document.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThan(0);
@@ -124,7 +124,9 @@ describe("CVSkeleton", () => {
 
   it("renders experience section header", () => {
     render(<CVSkeleton />);
-    const header = document.querySelector("[style*='width: 200px'][style*='height: 32px']");
+    const header = document.querySelector(
+      "[style*='width: 200px'][style*='height: 32px']",
+    );
     expect(header).toBeInTheDocument();
   });
 
@@ -144,7 +146,9 @@ describe("CVSkeleton", () => {
 
   it("renders education section", () => {
     render(<CVSkeleton />);
-    const educationHeader = document.querySelector("[style*='width: 150px'][style*='height: 32px']");
+    const educationHeader = document.querySelector(
+      "[style*='width: 150px'][style*='height: 32px']",
+    );
     expect(educationHeader).toBeInTheDocument();
   });
 
@@ -173,7 +177,9 @@ describe("GithubIntegrationSkeleton", () => {
 
   it("renders sort dropdown skeleton", () => {
     render(<GithubIntegrationSkeleton />);
-    const dropdownSkeleton = document.querySelector("[style*='width: 140px'][style*='height: 32px']");
+    const dropdownSkeleton = document.querySelector(
+      "[style*='width: 140px'][style*='height: 32px']",
+    );
     expect(dropdownSkeleton).toBeInTheDocument();
   });
 
@@ -185,13 +191,17 @@ describe("GithubIntegrationSkeleton", () => {
 
   it("renders repository name and description skeletons", () => {
     render(<GithubIntegrationSkeleton />);
-    const nameSkeletons = document.querySelectorAll("[style*='width: 150px'][style*='height: 20px']");
+    const nameSkeletons = document.querySelectorAll(
+      "[style*='width: 150px'][style*='height: 20px']",
+    );
     expect(nameSkeletons.length).toBe(4);
   });
 
   it("renders language tag skeletons", () => {
     render(<GithubIntegrationSkeleton />);
-    const languageSkeletons = document.querySelectorAll("[style*='width: 60px'][style*='height: 20px']");
+    const languageSkeletons = document.querySelectorAll(
+      "[style*='width: 60px'][style*='height: 20px']",
+    );
     expect(languageSkeletons.length).toBe(12); // 3 tags per repo × 4 repos
   });
 
@@ -203,7 +213,9 @@ describe("GithubIntegrationSkeleton", () => {
 
   it("renders footer skeleton", () => {
     render(<GithubIntegrationSkeleton />);
-    const footerSkeleton = document.querySelector(".border-t.border-default-200\\/50");
+    const footerSkeleton = document.querySelector(
+      ".border-t.border-default-200\\/50",
+    );
     expect(footerSkeleton).toBeInTheDocument();
   });
 });
