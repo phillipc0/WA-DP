@@ -192,7 +192,7 @@ jobs:
   dependency-graph:
     name: Generate Dependency Graph
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [lint, format]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
