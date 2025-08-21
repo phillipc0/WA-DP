@@ -18,13 +18,18 @@ import {
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { isContributor } from "@/utils/contributor";
+import { PersonalInfoSkeleton } from "@/components/ui/skeleton";
 
 interface PersonalInfoProps {
   refreshTrigger?: number;
 }
 
 export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
-  const { portfolioData } = usePortfolioData(refreshTrigger);
+  const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
+
+  if (isLoading || !portfolioData) {
+    return <PersonalInfoSkeleton />;
+  }
 
   // Get contributor settings from portfolio data
   const contributorSettings = portfolioData?.contributor || {

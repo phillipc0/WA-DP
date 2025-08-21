@@ -4,13 +4,18 @@ import { Chip } from "@heroui/chip";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
+import { SkillsSkeleton } from "@/components/ui/skeleton";
 
 interface SkillsProps {
   refreshTrigger?: number;
 }
 
 export function Skills({ refreshTrigger }: SkillsProps) {
-  const { portfolioData } = usePortfolioData(refreshTrigger);
+  const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
+
+  if (isLoading || !portfolioData) {
+    return <SkillsSkeleton />;
+  }
 
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
