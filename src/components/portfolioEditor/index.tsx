@@ -20,13 +20,11 @@ export function PortfolioEditor() {
     isLoading,
     newSkill,
     useUrlForAvatar,
-    isUploadedImage,
     saveAlert,
     resetAlert,
     fileAlert,
     fileAlertMessage,
     handleBasicInfoChange,
-    handleFileSelect,
     handleSocialChange,
     handleSocialSelectChange,
     handleAddSkill,
@@ -103,11 +101,9 @@ export function PortfolioEditor() {
       <Tabs aria-label="Portfolio sections">
         <Tab key="basic" title="Basic Information">
           <BasicInfoForm
-            isUploadedImage={isUploadedImage}
             portfolioData={portfolioData}
             useUrlForAvatar={useUrlForAvatar}
             onBasicInfoChange={handleBasicInfoChange}
-            onFileSelect={handleFileSelect}
             onToggleAvatarMode={() => setUseUrlForAvatar(!useUrlForAvatar)}
           />
         </Tab>

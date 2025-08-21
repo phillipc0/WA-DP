@@ -125,13 +125,7 @@ describe("BasicInfoForm", () => {
   });
 
   it("shows empty avatar URL input when isUploadedImage is true", () => {
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        useUrlForAvatar={true}
-        isUploadedImage={true}
-      />,
-    );
+    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
 
     const avatarInput = screen.getByPlaceholderText(
       "URL to your profile picture",
@@ -140,13 +134,7 @@ describe("BasicInfoForm", () => {
   });
 
   it("shows actual avatar URL when isUploadedImage is false", () => {
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        useUrlForAvatar={true}
-        isUploadedImage={false}
-      />,
-    );
+    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
 
     const avatarInput = screen.getByPlaceholderText(
       "URL to your profile picture",
@@ -156,13 +144,7 @@ describe("BasicInfoForm", () => {
 
   it("calls onFileSelect when file is selected", () => {
     const onFileSelect = vi.fn();
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        useUrlForAvatar={false}
-        onFileSelect={onFileSelect}
-      />,
-    );
+    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={false} />);
 
     // Create a mock file
     const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
