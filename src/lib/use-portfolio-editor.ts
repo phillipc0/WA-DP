@@ -9,15 +9,16 @@ import {
   loadDraftFromCookies,
   saveDraftToCookies,
 } from "@/lib/cookie-persistence.ts";
-import { Education, Experience } from "@/types";
-
-type Skill = { name: string; level: number };
+import { Education, Experience, Skill, SkillLevel } from "@/types";
 
 export function usePortfolioEditor() {
   const navigate = useNavigate();
   const [portfolioData, setPortfolioData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [newSkill, setNewSkill] = useState<Skill>({ name: "", level: 50 });
+  const [newSkill, setNewSkill] = useState<Skill>({
+    name: "",
+    level: "Intermediate",
+  });
   const [saveAlert, setSaveAlert] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
@@ -216,7 +217,7 @@ export function usePortfolioEditor() {
       };
     });
 
-    setNewSkill({ name: "", level: 50 });
+    setNewSkill({ name: "", level: "Intermediate" });
   };
 
   const handleRemoveSkill = (index: number) => {
@@ -238,20 +239,15 @@ export function usePortfolioEditor() {
     }));
   };
 
-  const handleSkillLevelChange = (index: number, level: number) => {
+  const handleSkillLevelChange = (index: number, level: SkillLevel) => {
     if (!portfolioData) return;
-
-    const updatedSkills = [...portfolioData.skills];
-    updatedSkills[index] = { ...updatedSkills[index], level };
-
-    setPortfolioData((prev: any) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        skills: updatedSkills,
-      };
-    });
+    const updated = [...portfolioData.skills];
+    updated[index] = { ...updated[index], level };
+    setPortfolioData((p: any) => ({ ...p, skills: updated }));
   };
+
+  const handleNewSkillLevelChange = (level: SkillLevel) =>
+    setNewSkill((s) => ({ ...s, level }));
 
   const handleSkillNameChange = (index: number, name: string) => {
     if (!portfolioData) return;
@@ -577,6 +573,7 @@ export function usePortfolioEditor() {
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,
+    handleNewSkillLevelChange,
     handleSkillLevelChange,
     handleSkillNameChange,
     handleDragStart,

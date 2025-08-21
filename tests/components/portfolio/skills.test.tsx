@@ -8,9 +8,9 @@ vi.mock("@/hooks/usePortfolioData", () => ({
   usePortfolioData: vi.fn(() => ({
     portfolioData: {
       skills: [
-        { name: "JavaScript", level: 85 },
-        { name: "TypeScript", level: 90 },
-        { name: "React", level: 80 },
+        { name: "UI/UX Design", level: "Intermediate" },
+        { name: "TypeScript", level: "Expert" },
+        { name: "React", level: "Master" },
       ],
     },
     isLoading: false,
@@ -23,24 +23,11 @@ describe("Skills", () => {
       render(<Skills />);
 
       expect(screen.getByText("Skills")).toBeInTheDocument();
-      expect(screen.getByText("JavaScript")).toBeInTheDocument();
+      expect(screen.getByText("UI/UX Design")).toBeInTheDocument();
       expect(screen.getByText("TypeScript")).toBeInTheDocument();
       expect(screen.getByText("React")).toBeInTheDocument();
-      expect(screen.getByText("85%")).toBeInTheDocument();
-      expect(screen.getByText("90%")).toBeInTheDocument();
-      expect(screen.getByText("80%")).toBeInTheDocument();
-    });
-
-    it("renders progress bars with correct aria-labels", () => {
-      render(<Skills />);
-
-      expect(
-        screen.getByLabelText("JavaScript skill level"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByLabelText("TypeScript skill level"),
-      ).toBeInTheDocument();
-      expect(screen.getByLabelText("React skill level")).toBeInTheDocument();
+      expect(screen.getAllByText("Expert")[0]).toBeInTheDocument();
+      expect(screen.getAllByText("Intermediate")[0]).toBeInTheDocument();
     });
   });
 
