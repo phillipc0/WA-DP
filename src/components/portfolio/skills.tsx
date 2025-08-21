@@ -5,6 +5,7 @@ import { Slider } from "@heroui/slider";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { SkillsIcon } from "@/components/icons.tsx";
 import { Skill, SkillLevel } from "@/types";
+import { SkillsSkeleton } from "@/components/ui/skeleton";
 import {
   getSliderMarks,
   SKILL_LEVELS,
@@ -19,7 +20,12 @@ const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
 
 export function Skills({ refreshTrigger }: SkillsProps) {
   const isSmallScreen = useIsSmallScreen();
-  const { portfolioData } = usePortfolioData(refreshTrigger);
+  const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
+
+  if (isLoading || !portfolioData) {
+    return <SkillsSkeleton />;
+  }
+
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
       <CardHeader className="flex gap-3 items-center bg-gradient-to-r from-default-50 to-default-100/50 border-b border-default-200/50">

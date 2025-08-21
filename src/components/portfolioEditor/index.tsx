@@ -20,14 +20,11 @@ export function PortfolioEditor() {
     portfolioData,
     isLoading,
     newSkill,
-    useUrlForAvatar,
-    isUploadedImage,
     saveAlert,
     resetAlert,
     fileAlert,
     fileAlertMessage,
     handleBasicInfoChange,
-    handleFileSelect,
     handleSocialChange,
     handleSocialSelectChange,
     handleAddSkill,
@@ -47,7 +44,6 @@ export function PortfolioEditor() {
     setSaveAlert,
     setResetAlert,
     setFileAlert,
-    setUseUrlForAvatar,
     // CV state
     newExperience,
     newEducation,
@@ -105,12 +101,8 @@ export function PortfolioEditor() {
       <Tabs aria-label="Portfolio sections">
         <Tab key="basic" title="Basic Information">
           <BasicInfoForm
-            isUploadedImage={isUploadedImage}
             portfolioData={portfolioData}
-            useUrlForAvatar={useUrlForAvatar}
             onBasicInfoChange={handleBasicInfoChange}
-            onFileSelect={handleFileSelect}
-            onToggleAvatarMode={() => setUseUrlForAvatar(!useUrlForAvatar)}
           />
         </Tab>
 

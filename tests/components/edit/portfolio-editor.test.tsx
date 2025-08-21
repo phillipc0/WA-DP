@@ -52,7 +52,6 @@ const mockUsePortfolioEditor = {
   setSaveAlert: vi.fn(),
   setResetAlert: vi.fn(),
   setFileAlert: vi.fn(),
-  setUseUrlForAvatar: vi.fn(),
 };
 
 vi.mock("@/lib/use-portfolio-editor", () => ({

@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { getColorForSkill, Skills } from "@/components/portfolio/skills";
+import { Skills, getColorForSkill } from "@/components/portfolio/skills";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 // Mock the usePortfolioData hook
 vi.mock("@/hooks/usePortfolioData", () => ({
@@ -12,6 +13,7 @@ vi.mock("@/hooks/usePortfolioData", () => ({
         { name: "React", level: "Master" },
       ],
     },
+    isLoading: false,
   })),
 }));
 
@@ -44,6 +46,32 @@ describe("Skills", () => {
       const color = getColorForSkill(0);
       expect(typeof color).toBe("string");
       expect(expected).toContain(color);
+    });
+  });
+
+  describe("Loading states", () => {
+    it("renders skeleton when portfolio is loading", () => {
+      vi.mocked(usePortfolioData).mockReturnValue({
+        portfolioData: null,
+        isLoading: true,
+      });
+
+      render(<Skills />);
+
+      // Should render skeleton component
+      expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
+    });
+
+    it("renders skeleton when portfolio data is null", () => {
+      vi.mocked(usePortfolioData).mockReturnValue({
+        portfolioData: null,
+        isLoading: false,
+      });
+
+      render(<Skills />);
+
+      // Should render skeleton component
+      expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
     });
   });
 });
