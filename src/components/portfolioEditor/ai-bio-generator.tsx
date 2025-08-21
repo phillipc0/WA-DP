@@ -37,8 +37,25 @@ export function AIBioGenerator({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const generateBio = async () => {
-    setIsLoading(true);
     setError(null);
+
+    // Validate required fields
+    if (!name?.trim()) {
+      setError("Name is required to generate a bio");
+      return;
+    }
+
+    if (!title?.trim()) {
+      setError("Professional title is required to generate a bio");
+      return;
+    }
+
+    if (!skills || skills.length === 0) {
+      setError("At least one skill is required to generate a bio");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/generate-bio", {
@@ -85,7 +102,7 @@ export function AIBioGenerator({
         <Button
           className="flex-1"
           color="primary"
-          disabled={isLoading || !name || !title || skills.length === 0}
+          disabled={isLoading}
           variant="flat"
           onPress={generateBio}
         >
