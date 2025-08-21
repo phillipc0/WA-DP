@@ -58,7 +58,7 @@ describe("portfolio", () => {
       const result = await getPortfolioData();
 
       expect(result).toEqual(mockPortfolioData);
-      expect(mockFetch).toHaveBeenCalledWith("/portfolio.json", {
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining("/portfolio.json?_t="), {
         method: "GET",
       });
     });
@@ -205,9 +205,41 @@ describe("portfolio", () => {
       const result = await getPortfolioData();
 
       expect(result).toEqual(null);
-      expect(mockFetch).toHaveBeenCalledWith("/portfolio.json", {
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining("/portfolio.json?_t="), {
         method: "GET",
       });
+    });
+
+    it("uses cache busting to prevent stale data", async () => {
+      const mockFetch = vi.mocked(fetch);
+      
+      // Mock first call
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: vi.fn().mockResolvedValue(JSON.stringify({ data: "first" })),
+      } as any);
+
+      // First call
+      const result1 = await getPortfolioData();
+      expect(result1).toEqual({ data: "first" });
+      
+      // Verify cache busting URL was used
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringMatching(/\/portfolio\.json\?_t=\d+/), {
+        method: "GET",
+      });
+      
+      // Mock second call for when cache is cleared
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: vi.fn().mockResolvedValue(JSON.stringify({ data: "second" })),
+      } as any);
+
+      // Second call after cache is cleared
+      const result2 = await getPortfolioData();
+      
+      // Should get second result after cache clears
+      expect(result2).toEqual({ data: "second" });
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
   });
 });

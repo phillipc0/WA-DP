@@ -9,7 +9,9 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
 
   pendingRequest = (async () => {
     try {
-      const response = await fetch("/portfolio.json", {
+      // Add cache busting to prevent stale data after server restart
+      const cacheBuster = new Date().getTime();
+      const response = await fetch(`/portfolio.json?_t=${cacheBuster}`, {
         method: "GET",
       });
 
