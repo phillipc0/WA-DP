@@ -49,9 +49,6 @@ export function SkillsForm(props: SkillsFormProps) {
   const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
   const indexToLevel = (i: number) => SKILL_LEVELS[i] as SkillLevel;
 
-  // @ts-ignore
-  // @ts-ignore
-  // @ts-ignore
   return (
     <Card className="mt-4">
       <CardHeader>

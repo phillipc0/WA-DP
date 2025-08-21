@@ -19,8 +19,6 @@ export function usePortfolioEditor() {
     name: "",
     level: "Intermediate",
   });
-  const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
-  const [isUploadedImage, setIsUploadedImage] = useState(false);
   const [saveAlert, setSaveAlert] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
