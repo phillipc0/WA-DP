@@ -5,9 +5,8 @@ import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 
-import favicon from "../../../assets/favicon.svg";
-
 import {
+  AvatarPlaceholderIcon,
   DiscordIcon,
   GithubIcon,
   LinkedInIcon,
@@ -18,6 +17,7 @@ import {
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { isContributor } from "@/utils/contributor";
+import { PersonalInfoSkeleton } from "@/components/ui/skeleton";
 
 interface PersonalInfoProps {
   refreshTrigger?: number;
@@ -30,7 +30,11 @@ interface PersonalInfoProps {
  * @returns Personal info card with avatar, bio, and social links
  */
 export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
-  const { portfolioData } = usePortfolioData(refreshTrigger);
+  const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
+
+  if (isLoading || !portfolioData) {
+    return <PersonalInfoSkeleton />;
+  }
 
   // Get contributor settings from portfolio data
   const contributorSettings = portfolioData?.contributor || {
@@ -59,16 +63,20 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
     >
       <CardHeader className="flex flex-col sm:flex-row sm:justify-between items-start gap-4">
         <div className="flex gap-3">
-          <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800">
-            <img
-              alt={`${portfolioData.name || "User"} avatar`}
-              className="w-full h-full object-cover rounded-full bg-white"
-              src={
-                portfolioData.avatar.trim() !== ""
-                  ? portfolioData.avatar
-                  : favicon
-              }
-            />
+          <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden">
+            {portfolioData.avatar && portfolioData.avatar.trim() !== "" ? (
+              <img
+                alt={`${portfolioData.name || "User"} avatar`}
+                className="w-full h-full object-cover rounded-full bg-white"
+                src={portfolioData.avatar}
+              />
+            ) : (
+              <AvatarPlaceholderIcon
+                aria-label={`${portfolioData.name || "User"} avatar`}
+                className="w-10 h-10 text-zinc-400"
+                role="img"
+              />
+            )}
           </div>
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold">{portfolioData.name}</h1>

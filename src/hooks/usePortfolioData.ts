@@ -23,6 +23,7 @@ export function usePortfolioData(refreshTrigger?: number) {
           const draftData = loadDraftFromCookies();
           if (draftData) {
             setPortfolioData(draftData);
+            setIsLoading(false);
             return;
           }
         }
@@ -30,6 +31,9 @@ export function usePortfolioData(refreshTrigger?: number) {
         const data = await getPortfolioData();
         if (data) {
           setPortfolioData(data);
+        } else {
+          // Fallback to default data if no real data is available
+          setPortfolioData(siteConfig.portfolio);
         }
       } catch (error) {
         console.error("Error loading portfolio data:", error);

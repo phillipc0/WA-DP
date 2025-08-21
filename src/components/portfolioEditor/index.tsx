@@ -13,6 +13,7 @@ import { ContributorForm } from "./contributor-form";
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
 import { isContributor } from "@/utils/contributor";
+import { SKILL_LEVELS } from "@/utils/skills.ts";
 
 /**
  * Main portfolio editor component with tabbed interface for editing portfolio data
@@ -23,14 +24,11 @@ export function PortfolioEditor() {
     portfolioData,
     isLoading,
     newSkill,
-    useUrlForAvatar,
-    isUploadedImage,
     saveAlert,
     resetAlert,
     fileAlert,
     fileAlertMessage,
     handleBasicInfoChange,
-    handleFileSelect,
     handleSocialChange,
     handleSocialSelectChange,
     handleAddSkill,
@@ -38,6 +36,7 @@ export function PortfolioEditor() {
     handleSkillChange,
     handleSkillLevelChange,
     handleSkillNameChange,
+    handleNewSkillLevelChange,
     handleDragStart,
     handleDragOver,
     handleDragLeave,
@@ -49,7 +48,6 @@ export function PortfolioEditor() {
     setSaveAlert,
     setResetAlert,
     setFileAlert,
-    setUseUrlForAvatar,
     // CV state
     newExperience,
     newEducation,
@@ -107,12 +105,8 @@ export function PortfolioEditor() {
       <Tabs aria-label="Portfolio sections">
         <Tab key="basic" title="Basic Information">
           <BasicInfoForm
-            isUploadedImage={isUploadedImage}
             portfolioData={portfolioData}
-            useUrlForAvatar={useUrlForAvatar}
             onBasicInfoChange={handleBasicInfoChange}
-            onFileSelect={handleFileSelect}
-            onToggleAvatarMode={() => setUseUrlForAvatar(!useUrlForAvatar)}
           />
         </Tab>
 
@@ -126,6 +120,8 @@ export function PortfolioEditor() {
 
         <Tab key="skills" title="Skills">
           <SkillsForm
+            SKILL_LEVELS={SKILL_LEVELS}
+            handleNewSkillLevelChange={handleNewSkillLevelChange}
             newSkill={newSkill}
             portfolioData={portfolioData}
             onAddSkill={handleAddSkill}

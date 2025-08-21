@@ -1,11 +1,32 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('heroui-theme') || 'light';
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preload" href="/portfolio.json" as="fetch" type="application/json" crossorigin="anonymous" />
-    <link rel="preload" href="/assets/favicon.svg" as="image" crossorigin="anonymous" />
+    <link
+      rel="preload"
+      href="/portfolio.json"
+      as="fetch"
+      type="application/json"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/assets/favicon.svg"
+      as="image"
+      crossorigin="anonymous"
+    />
     <title>Developer Portfolio</title>
     <meta content="Developer Portfolio" property="og:title" />
     <meta

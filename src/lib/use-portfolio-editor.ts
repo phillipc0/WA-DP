@@ -9,9 +9,7 @@ import {
   loadDraftFromCookies,
   saveDraftToCookies,
 } from "@/lib/cookie-persistence.ts";
-import { Education, Experience } from "@/types";
-
-type Skill = { name: string; level: number };
+import { Education, Experience, Skill, SkillLevel } from "@/types";
 
 /**
  * Custom hook for managing portfolio editor state and operations
@@ -21,9 +19,10 @@ export function usePortfolioEditor() {
   const navigate = useNavigate();
   const [portfolioData, setPortfolioData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [newSkill, setNewSkill] = useState<Skill>({ name: "", level: 50 });
-  const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
-  const [isUploadedImage, setIsUploadedImage] = useState(false);
+  const [newSkill, setNewSkill] = useState<Skill>({
+    name: "",
+    level: "Intermediate",
+  });
   const [saveAlert, setSaveAlert] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
@@ -100,12 +99,6 @@ export function usePortfolioEditor() {
   }, []);
 
   useEffect(() => {
-    if (portfolioData?.avatar) {
-      setIsUploadedImage(portfolioData.avatar.startsWith("data:"));
-    }
-  }, [portfolioData?.avatar]);
-
-  useEffect(() => {
     if (portfolioData && !isLoading) {
       saveDraftToCookies(portfolioData);
     }
@@ -123,10 +116,6 @@ export function usePortfolioEditor() {
         [name]: value,
       };
     });
-
-    if (name === "avatar") {
-      setIsUploadedImage(false);
-    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,8 +174,6 @@ export function usePortfolioEditor() {
             avatar: resizedImage,
           };
         });
-
-        setIsUploadedImage(true);
       };
 
       img.src = event.target.result as string;
@@ -234,7 +221,7 @@ export function usePortfolioEditor() {
       };
     });
 
-    setNewSkill({ name: "", level: 50 });
+    setNewSkill({ name: "", level: "Intermediate" });
   };
 
   const handleRemoveSkill = (index: number) => {
@@ -256,20 +243,15 @@ export function usePortfolioEditor() {
     }));
   };
 
-  const handleSkillLevelChange = (index: number, level: number) => {
+  const handleSkillLevelChange = (index: number, level: SkillLevel) => {
     if (!portfolioData) return;
-
-    const updatedSkills = [...portfolioData.skills];
-    updatedSkills[index] = { ...updatedSkills[index], level };
-
-    setPortfolioData((prev: any) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        skills: updatedSkills,
-      };
-    });
+    const updated = [...portfolioData.skills];
+    updated[index] = { ...updated[index], level };
+    setPortfolioData((p: any) => ({ ...p, skills: updated }));
   };
+
+  const handleNewSkillLevelChange = (level: SkillLevel) =>
+    setNewSkill((s) => ({ ...s, level }));
 
   const handleSkillNameChange = (index: number, name: string) => {
     if (!portfolioData) return;
@@ -334,7 +316,6 @@ export function usePortfolioEditor() {
 
   const confirmReset = () => {
     setPortfolioData(siteConfig.portfolio);
-    setIsUploadedImage(false);
     setResetAlert(false);
   };
 
@@ -585,8 +566,6 @@ export function usePortfolioEditor() {
     portfolioData,
     isLoading,
     newSkill,
-    useUrlForAvatar,
-    isUploadedImage,
     saveAlert,
     resetAlert,
     fileAlert,
@@ -598,6 +577,7 @@ export function usePortfolioEditor() {
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,
+    handleNewSkillLevelChange,
     handleSkillLevelChange,
     handleSkillNameChange,
     handleDragStart,
@@ -611,7 +591,6 @@ export function usePortfolioEditor() {
     setSaveAlert,
     setResetAlert,
     setFileAlert,
-    setUseUrlForAvatar,
     // CV state
     newExperience,
     setNewExperience,

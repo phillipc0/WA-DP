@@ -14,6 +14,7 @@ import { Button } from "@heroui/button";
 import { GithubIcon } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { getLanguageColor } from "@/lib/language-colors";
+import { GithubIntegrationSkeleton } from "@/components/ui/skeleton";
 
 const REPO_PER_PAGE = 4;
 
@@ -88,9 +89,14 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
 
   useEffect(() => {
     const initializeRepos = async () => {
+      if (portfolioLoading || !portfolioData) {
+        setLoading(false);
+        return;
+      }
+
       const githubUsername = portfolioData.social.github;
 
-      if (portfolioLoading || !githubUsername) {
+      if (!githubUsername) {
         setLoading(false);
         return;
       }
@@ -115,10 +121,14 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     };
 
     initializeRepos().catch(console.error);
-  }, [portfolioData.social.github, portfolioLoading]);
+  }, [portfolioData?.social?.github, portfolioLoading]);
 
   useEffect(() => {
     const loadReposForSort = async () => {
+      if (!portfolioData) {
+        return;
+      }
+
       const githubUsername = portfolioData.social.github;
 
       if (!githubUsername) {
@@ -153,7 +163,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     };
 
     loadReposForSort().catch(console.error);
-  }, [sortBy, portfolioData.social.github]);
+  }, [sortBy, portfolioData?.social?.github]);
+
+  if (portfolioLoading || !portfolioData) {
+    return <GithubIntegrationSkeleton />;
+  }
 
   return (
     <Card className="w-full border border-default-200/50 shadow-sm">
@@ -363,26 +377,28 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
         )}
       </CardBody>
       <CardFooter className="border-t border-default-200/50 bg-default-50/50">
-        <Link
-          isExternal
-          className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-600 transition-colors duration-200"
-          href={`https://github.com/${portfolioData.social.github}`}
-        >
-          <span>View all repositories</span>
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {portfolioData?.social?.github && (
+          <Link
+            isExternal
+            className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-600 transition-colors duration-200"
+            href={`https://github.com/${portfolioData.social.github}`}
           >
-            <path
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-            />
-          </svg>
-        </Link>
+            <span>View all repositories</span>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+              />
+            </svg>
+          </Link>
+        )}
       </CardFooter>
     </Card>
   );
