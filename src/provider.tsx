@@ -9,6 +9,12 @@ declare module "@react-types/shared" {
   }
 }
 
+/**
+ * Provider component that wraps the app with HeroUI provider and routing
+ * @param props - Component props
+ * @param props.children - Child components to wrap
+ * @returns Provider wrapper component
+ */
 export function Provider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
