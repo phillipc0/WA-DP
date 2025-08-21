@@ -470,22 +470,6 @@ describe("usePortfolioEditor", () => {
     expect(result.current.portfolioData.skills).toHaveLength(0);
   });
 
-  it("handles avatar URL change by setting isUploadedImage to false", async () => {
-    const { result } = renderHook(() => usePortfolioEditor());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    act(() => {
-      result.current.handleBasicInfoChange({
-        target: { name: "avatar", value: "new-url.jpg" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    expect(result.current.isUploadedImage).toBe(false);
-  });
-
   // Experience/CV Tests
   it("handles adding new experience", async () => {
     const { result } = renderHook(() => usePortfolioEditor());

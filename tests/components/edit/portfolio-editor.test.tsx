@@ -26,8 +26,6 @@ const mockUsePortfolioEditor = {
   },
   isLoading: false,
   newSkill: { name: "", level: 50 },
-  useUrlForAvatar: true,
-  isUploadedImage: false,
   saveAlert: false,
   resetAlert: false,
   fileAlert: false,
@@ -51,7 +49,6 @@ const mockUsePortfolioEditor = {
   setSaveAlert: vi.fn(),
   setResetAlert: vi.fn(),
   setFileAlert: vi.fn(),
-  setUseUrlForAvatar: vi.fn(),
 };
 
 vi.mock("@/lib/use-portfolio-editor", () => ({

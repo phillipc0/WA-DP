@@ -18,8 +18,6 @@ export function usePortfolioEditor() {
   const [portfolioData, setPortfolioData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [newSkill, setNewSkill] = useState<Skill>({ name: "", level: 50 });
-  const [useUrlForAvatar, setUseUrlForAvatar] = useState(true);
-  const [isUploadedImage, setIsUploadedImage] = useState(false);
   const [saveAlert, setSaveAlert] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
@@ -96,12 +94,6 @@ export function usePortfolioEditor() {
   }, []);
 
   useEffect(() => {
-    if (portfolioData?.avatar) {
-      setIsUploadedImage(portfolioData.avatar.startsWith("data:"));
-    }
-  }, [portfolioData?.avatar]);
-
-  useEffect(() => {
     if (portfolioData && !isLoading) {
       saveDraftToCookies(portfolioData);
     }
@@ -119,10 +111,6 @@ export function usePortfolioEditor() {
         [name]: value,
       };
     });
-
-    if (name === "avatar") {
-      setIsUploadedImage(false);
-    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,8 +169,6 @@ export function usePortfolioEditor() {
             avatar: resizedImage,
           };
         });
-
-        setIsUploadedImage(true);
       };
 
       img.src = event.target.result as string;
@@ -330,7 +316,6 @@ export function usePortfolioEditor() {
 
   const confirmReset = () => {
     setPortfolioData(siteConfig.portfolio);
-    setIsUploadedImage(false);
     setResetAlert(false);
   };
 
@@ -581,8 +566,6 @@ export function usePortfolioEditor() {
     portfolioData,
     isLoading,
     newSkill,
-    useUrlForAvatar,
-    isUploadedImage,
     saveAlert,
     resetAlert,
     fileAlert,
@@ -607,7 +590,6 @@ export function usePortfolioEditor() {
     setSaveAlert,
     setResetAlert,
     setFileAlert,
-    setUseUrlForAvatar,
     // CV state
     newExperience,
     setNewExperience,
