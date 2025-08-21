@@ -17,7 +17,7 @@ export function usePortfolioEditor() {
   const [isLoading, setIsLoading] = useState(true);
   const [newSkill, setNewSkill] = useState<Skill>({
     name: "",
-    level: "Intermediate",
+    level: "B1",
   });
   const [saveAlert, setSaveAlert] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
@@ -217,7 +217,7 @@ export function usePortfolioEditor() {
       };
     });
 
-    setNewSkill({ name: "", level: "Intermediate" });
+    setNewSkill({ name: "", level: "B1" });
   };
 
   const handleRemoveSkill = (index: number) => {

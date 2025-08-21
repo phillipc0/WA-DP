@@ -276,7 +276,7 @@ describe("usePortfolioEditor", () => {
     });
     expect(result.current.newSkill).toEqual({
       name: "",
-      level: "Intermediate",
+      level: "B1",
     });
   });
 
@@ -312,10 +312,10 @@ describe("usePortfolioEditor", () => {
 
     // Change skill level
     act(() => {
-      result.current.handleSkillLevelChange(0, "Master");
+      result.current.handleSkillLevelChange(0, "C2");
     });
 
-    expect(result.current.portfolioData.skills[0].level).toBe("Master");
+    expect(result.current.portfolioData.skills[0].level).toBe("C2");
   });
 
   it("handles skill name change", async () => {
@@ -904,7 +904,7 @@ describe("usePortfolioEditor", () => {
 
     // These should not throw errors when portfolio data is null
     act(() => {
-      result.current.handleSkillLevelChange(0, "Intermediate");
+      result.current.handleSkillLevelChange(0, "B1");
     });
 
     act(() => {

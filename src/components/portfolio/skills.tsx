@@ -93,7 +93,7 @@ function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
           className="opacity-100 px-4"
           color={getChipColorForSkill(index)}
           marks={getSliderMarks(skill.level, isSmallScreen)}
-          maxValue={4}
+          maxValue={5}
           minValue={0}
           step={1}
           value={levelToIndex(skill.level)}
