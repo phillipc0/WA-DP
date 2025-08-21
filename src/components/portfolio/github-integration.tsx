@@ -37,6 +37,12 @@ interface GithubIntegrationProps {
   refreshTrigger?: number;
 }
 
+/**
+ * GitHub integration component that displays user repositories with sorting options
+ * @param props - Component props
+ * @param props.refreshTrigger - Optional trigger to refresh the portfolio data
+ * @returns GitHub repositories display component
+ */
 export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
   const { portfolioData, isLoading: portfolioLoading } =
     usePortfolioData(refreshTrigger);

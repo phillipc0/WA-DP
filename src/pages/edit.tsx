@@ -1,6 +1,10 @@
 import { PortfolioEditor } from "@/components/portfolioEditor";
 import DefaultLayout from "@/layouts/default";
 
+/**
+ * Portfolio editing page component
+ * @returns Edit page with portfolio editor
+ */
 export default function EditPage() {
   return (
     <DefaultLayout>

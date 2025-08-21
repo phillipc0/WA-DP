@@ -18,6 +18,12 @@ interface SkillsProps {
 
 const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
 
+/**
+ * Skills component that displays user skills with progress bars
+ * @param props - Component props
+ * @param props.refreshTrigger - Optional trigger to refresh the portfolio data
+ * @returns Skills display component with progress indicators
+ */
 export function Skills({ refreshTrigger }: SkillsProps) {
   const isSmallScreen = useIsSmallScreen();
   const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
@@ -58,6 +64,14 @@ interface SkillCardProps {
   isSmallScreen: boolean;
 }
 
+/**
+ * Individual skill card component
+ * @param props - Component props
+ * @param props.skill - Skill object with name and level
+ * @param props.index - Index of the skill for color assignment
+ * @param props.isSmallScreen - Whether screen size is small
+ * @returns Skill card with progress bar
+ */
 function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
   return (
     <Card
@@ -105,6 +119,11 @@ function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
   );
 }
 
+/**
+ * Gets the color for a skill based on its index
+ * @param index - The skill index
+ * @returns Color string for the skill
+ */
 export function getColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 
@@ -116,12 +135,22 @@ export function getColorForSkill(index: number) {
     | "danger";
 }
 
+/**
+ * Gets the hex color for a skill based on its index
+ * @param index - The skill index
+ * @returns Hex color string for the skill
+ */
 export function getSkillColor(index: number) {
   const colors = ["#006FEE", "#7828C8", "#17C964", "#F5A524", "#F31260"];
 
   return colors[index % colors.length];
 }
 
+/**
+ * Gets the chip color for a skill based on its index
+ * @param index - The skill index
+ * @returns Chip color string for the skill
+ */
 export function getChipColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 

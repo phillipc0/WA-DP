@@ -14,6 +14,10 @@ import {
 } from "@/lib/cookie-persistence";
 import { getPortfolioData } from "@/lib/portfolio";
 
+/**
+ * Main portfolio component that displays all portfolio sections
+ * @returns Complete portfolio display with all sections
+ */
 export function Portfolio() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);

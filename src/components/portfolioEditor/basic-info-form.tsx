@@ -11,6 +11,13 @@ interface BasicInfoFormProps {
   ) => void;
 }
 
+/**
+ * Form component for editing basic portfolio information
+ * @param props - Component props
+ * @param props.portfolioData - Current portfolio data
+ * @param props.onBasicInfoChange - Handler for basic info changes
+ * @returns Basic info form component
+ */
 export function BasicInfoForm({
   portfolioData,
   onBasicInfoChange,

@@ -15,6 +15,10 @@ import { subtitle, title } from "@/components/primitives";
 import { isContributor } from "@/utils/contributor";
 import { SKILL_LEVELS } from "@/utils/skills.ts";
 
+/**
+ * Main portfolio editor component with tabbed interface for editing portfolio data
+ * @returns JSX element containing the complete portfolio editor interface
+ */
 export function PortfolioEditor() {
   const {
     portfolioData,

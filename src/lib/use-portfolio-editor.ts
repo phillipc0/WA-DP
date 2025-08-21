@@ -11,6 +11,10 @@ import {
 } from "@/lib/cookie-persistence.ts";
 import { Education, Experience, Skill, SkillLevel } from "@/types";
 
+/**
+ * Custom hook for managing portfolio editor state and operations
+ * @returns Object containing portfolio editor state and handler functions
+ */
 export function usePortfolioEditor() {
   const navigate = useNavigate();
   const [portfolioData, setPortfolioData] = useState<any | null>(null);

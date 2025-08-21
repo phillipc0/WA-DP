@@ -26,6 +26,23 @@ interface SkillsFormProps {
   onDragEnd: (e: React.DragEvent) => void;
 }
 
+/**
+ * Form component for managing skills with drag-and-drop reordering
+ * @param props - Component props
+ * @param props.portfolioData - Portfolio data containing existing skills
+ * @param props.newSkill - New skill being created
+ * @param props.onAddSkill - Function to add new skill
+ * @param props.onRemoveSkill - Function to remove skill by index
+ * @param props.onSkillChange - Function to handle new skill input changes
+ * @param props.onSkillLevelChange - Function to handle skill level changes
+ * @param props.onSkillNameChange - Function to handle skill name changes
+ * @param props.onDragStart - Function to handle drag start for reordering
+ * @param props.onDragOver - Function to handle drag over for reordering
+ * @param props.onDragLeave - Function to handle drag leave for reordering
+ * @param props.onDrop - Function to handle drop for reordering
+ * @param props.onDragEnd - Function to handle drag end for reordering
+ * @returns JSX element containing skills management form
+ */
 export function SkillsForm(props: SkillsFormProps) {
   const {
     portfolioData,
@@ -48,7 +65,6 @@ export function SkillsForm(props: SkillsFormProps) {
   const isMediumScreen = useIsSmallScreen(650);
   const levelToIndex = (lvl: SkillLevel) => SKILL_LEVELS.indexOf(lvl);
   const indexToLevel = (i: number) => SKILL_LEVELS[i] as SkillLevel;
-
   return (
     <Card className="mt-4">
       <CardHeader>

@@ -9,6 +9,12 @@ interface CVProps {
   refreshTrigger?: number;
 }
 
+/**
+ * CV component that renders a timeline view of work experience and education
+ * @param props - Component props
+ * @param props.refreshTrigger - Optional trigger to refresh the portfolio data
+ * @returns CV timeline component
+ */
 export function CV({ refreshTrigger }: CVProps) {
   const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
 
