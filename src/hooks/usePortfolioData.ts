@@ -18,6 +18,7 @@ export function usePortfolioData(refreshTrigger?: number) {
           const draftData = loadDraftFromCookies();
           if (draftData) {
             setPortfolioData(draftData);
+            setIsLoading(false);
             return;
           }
         }
