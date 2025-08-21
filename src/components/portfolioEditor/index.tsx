@@ -9,7 +9,6 @@ import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
 import { ImportExportControls } from "./import-export-controls";
 import { ContributorForm } from "./contributor-form";
-import { ApiKeyManager } from "./api-key-manager";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
@@ -171,10 +170,6 @@ export function PortfolioEditor() {
             newEducation={newEducation}
             portfolioData={portfolioData}
           />
-        </Tab>
-
-        <Tab key="api-config" title="API Configuration">
-          <ApiKeyManager />
         </Tab>
 
         {isContributor(portfolioData?.social?.github) && (

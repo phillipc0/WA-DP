@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Spinner } from "@heroui/spinner";
 
+import { ApiSettingsModal } from "./api-settings-modal";
+
 import { getAuthHeaders } from "@/lib/auth";
+import { SettingsIcon } from "@/components/icons";
+
 
 interface AIBioGeneratorProps {
   name: string;
@@ -19,6 +23,7 @@ export function AIBioGenerator({
 }: AIBioGeneratorProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const generateBio = async () => {
     setIsLoading(true);
@@ -59,26 +64,41 @@ export function AIBioGenerator({
 
   return (
     <div className="flex flex-col gap-2">
-      <Button
-        className="w-fit"
-        color="primary"
-        disabled={isLoading || !name || !title || skills.length === 0}
-        variant="flat"
-        onPress={generateBio}
-      >
-        {isLoading ? (
-          <>
-            <Spinner className="mr-2" size="sm" />
-            Generating...
-          </>
-        ) : (
-          "Generate AI Bio"
-        )}
-      </Button>
-      {error && <p className="text-sm text-danger-500 mt-1">Error: {error}</p>}
-      <p className="text-xs text-default-500 mt-1">
+      <p className="text-xs text-default-500">
         Generates a professional bio based on your name, title, and skills
       </p>
+      <div className="flex gap-2">
+        <Button
+          className="flex-1"
+          color="primary"
+          disabled={isLoading || !name || !title || skills.length === 0}
+          variant="flat"
+          onPress={generateBio}
+        >
+          {isLoading ? (
+            <>
+              <Spinner className="mr-2" size="sm" />
+              Generating...
+            </>
+          ) : (
+            "Generate AI Bio"
+          )}
+        </Button>
+        <Button
+          isIconOnly
+          color="default"
+          variant="flat"
+          onPress={() => setIsSettingsOpen(true)}
+        >
+          <SettingsIcon size={16} />
+        </Button>
+      </div>
+      {error && <p className="text-sm text-danger-500 mt-1">Error: {error}</p>}
+
+      <ApiSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 }
