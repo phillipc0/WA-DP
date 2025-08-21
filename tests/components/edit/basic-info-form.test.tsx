@@ -91,8 +91,8 @@ describe("BasicInfoForm", () => {
     );
   });
 
-  it("shows URL input when useUrlForAvatar is true", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
+  it("shows URL input is true", () => {
+    render(<BasicInfoForm {...defaultProps} />);
 
     expect(
       screen.getByPlaceholderText("URL to your profile picture"),
@@ -100,75 +100,13 @@ describe("BasicInfoForm", () => {
     expect(screen.queryByText("Select Image")).not.toBeInTheDocument();
   });
 
-  it("shows file upload button when useUrlForAvatar is false", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={false} />);
-
-    expect(screen.getByText("Select Image")).toBeInTheDocument();
-    expect(
-      screen.queryByPlaceholderText("URL to your profile picture"),
-    ).not.toBeInTheDocument();
-  });
-
-  it("calls onToggleAvatarMode when switch is toggled", () => {
-    const onToggleAvatarMode = vi.fn();
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        onToggleAvatarMode={onToggleAvatarMode}
-      />,
-    );
-
-    const switchElement = screen.getByRole("switch");
-    fireEvent.click(switchElement);
-
-    expect(onToggleAvatarMode).toHaveBeenCalledOnce();
-  });
-
-  it("shows empty avatar URL input when isUploadedImage is true", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
-
-    const avatarInput = screen.getByPlaceholderText(
-      "URL to your profile picture",
-    );
-    expect(avatarInput).toHaveValue("");
-  });
-
-  it("shows actual avatar URL when isUploadedImage is false", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
+  it("shows actual avatar URL, when one was entered", () => {
+    render(<BasicInfoForm {...defaultProps} />);
 
     const avatarInput = screen.getByPlaceholderText(
       "URL to your profile picture",
     );
     expect(avatarInput).toHaveValue("https://example.com/avatar.jpg");
-  });
-
-  it("calls onFileSelect when file is selected", () => {
-    const onFileSelect = vi.fn();
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={false} />);
-
-    // Create a mock file
-    const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
-
-    // Get the hidden file input
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    const fileInput = fileInputs[0] as HTMLInputElement;
-
-    // Create a mock event
-    Object.defineProperty(fileInput, "files", {
-      value: [file],
-      writable: false,
-    });
-
-    fireEvent.change(fileInput);
-
-    expect(onFileSelect).toHaveBeenCalledOnce();
-  });
-
-  it("renders switch component", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
-
-    const switchElement = screen.getByRole("switch");
-    expect(switchElement).toBeInTheDocument();
   });
 
   it("has proper form field types", () => {
