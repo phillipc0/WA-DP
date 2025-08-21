@@ -14,8 +14,6 @@ describe("BasicInfoForm", () => {
 
   const defaultProps = {
     portfolioData: mockPortfolioData,
-    useUrlForAvatar: true,
-    isUploadedImage: false,
     onBasicInfoChange: vi.fn(),
     onFileSelect: vi.fn(),
     onToggleAvatarMode: vi.fn(),
@@ -89,6 +87,26 @@ describe("BasicInfoForm", () => {
       "src",
       "https://example.com/avatar.jpg",
     );
+  });
+
+  it("renders fallback avatar SVG when avatar URL is empty", () => {
+    const props = {
+      ...defaultProps,
+      portfolioData: { ...defaultProps.portfolioData, avatar: "" },
+    };
+
+    render(<BasicInfoForm {...props} />);
+
+    // No <img> with alt when empty
+    expect(
+      screen.queryByAltText("John Doe profile preview"),
+    ).not.toBeInTheDocument();
+
+    // Fallback uses role img and aria-label
+    const fallback = screen.getByRole("img", {
+      name: "John Doe profile preview",
+    });
+    expect(fallback).toBeInTheDocument();
   });
 
   it("shows URL input is true", () => {

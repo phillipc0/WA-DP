@@ -67,6 +67,45 @@ describe("PersonalInfo", () => {
     expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
   });
 
+  it("renders fallback avatar SVG when avatar URL is empty", async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+
+    // Override for this test case only
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        name: "John Doe",
+        title: "Software Engineer",
+        location: "San Francisco, CA",
+        email: "john@example.com",
+        bio: "Passionate software engineer with 5 years of experience.",
+        avatar: "", // empty avatar triggers fallback
+        social: {
+          github: "johndoe",
+          twitter: "johndoe",
+          twitterPlatform: "twitter",
+          linkedin: "johndoe",
+          discord: "johndoe#1234",
+          reddit: "johndoe",
+          youtube: "johndoe",
+        },
+        contributor: {
+          enableContributorStatus: false,
+          showGoldenBoxShadow: false,
+        },
+      },
+      isLoading: false,
+    });
+
+    render(<PersonalInfo />);
+
+    // Should not find <img> by alt when no avatar URL
+    expect(screen.queryByAltText("John Doe avatar")).not.toBeInTheDocument();
+
+    // Fallback is rendered with role img and proper aria-label
+    const fallback = screen.getByRole("img", { name: "John Doe avatar" });
+    expect(fallback).toBeInTheDocument();
+  });
+
   it("renders all social media links", () => {
     render(<PersonalInfo />);
 

@@ -2,6 +2,8 @@ import React from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 
+import { AvatarPlaceholderIcon } from "@/components/icons";
+
 interface BasicInfoFormProps {
   portfolioData: any;
   onBasicInfoChange: (
@@ -67,11 +69,21 @@ export function BasicInfoForm({
           </div>
 
           <div className="flex gap-4 items-start">
-            <img
-              alt={`${portfolioData.name || "User"} profile preview`}
-              className="w-20 h-20 rounded-full bg-zinc-800"
-              src={portfolioData.avatar}
-            />
+            {portfolioData.avatar && portfolioData.avatar.trim() !== "" ? (
+              <img
+                alt={`${portfolioData.name || "User"} profile preview`}
+                className="w-20 h-20 rounded-full bg-zinc-800 object-cover"
+                src={portfolioData.avatar}
+              />
+            ) : (
+              <div
+                aria-label={`${portfolioData.name || "User"} profile preview`}
+                className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
+                role="img"
+              >
+                <AvatarPlaceholderIcon className="w-10 h-10" />
+              </div>
+            )}
 
             <Input
               className="flex-1"
