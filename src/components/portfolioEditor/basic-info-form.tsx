@@ -15,11 +15,7 @@ interface BasicInfoFormProps {
  * Form component for editing basic portfolio information
  * @param props - Component props
  * @param props.portfolioData - Current portfolio data
- * @param props.useUrlForAvatar - Whether to use URL for avatar
- * @param props.isUploadedImage - Whether image is uploaded
  * @param props.onBasicInfoChange - Handler for basic info changes
- * @param props.onFileSelect - Handler for file selection
- * @param props.onToggleAvatarMode - Handler for avatar mode toggle
  * @returns Basic info form component
  */
 export function BasicInfoForm({

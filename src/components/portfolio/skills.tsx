@@ -69,6 +69,7 @@ interface SkillCardProps {
  * @param props - Component props
  * @param props.skill - Skill object with name and level
  * @param props.index - Index of the skill for color assignment
+ * @param props.isSmallScreen - Whether screen size is small
  * @returns Skill card with progress bar
  */
 function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {

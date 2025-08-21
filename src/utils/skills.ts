@@ -10,6 +10,11 @@ export const SKILL_LEVELS: SkillLevel[] = [
   "Master",
 ];
 
+/**
+ * Custom hook to detect small screen sizes
+ * @param pixels - The pixel threshold for small screen detection (default: 500)
+ * @returns Boolean indicating if screen is smaller than threshold
+ */
 export function useIsSmallScreen(pixels: number = 500) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -30,6 +35,12 @@ export function useIsSmallScreen(pixels: number = 500) {
   return isSmallScreen;
 }
 
+/**
+ * Generates slider marks for skill level display
+ * @param selectedSkill - The currently selected skill level
+ * @param isSmallScreen - Whether screen size is small
+ * @returns Array of slider marks with labels
+ */
 export function getSliderMarks(
   selectedSkill: SkillLevel,
   isSmallScreen: boolean,
