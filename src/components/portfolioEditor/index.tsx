@@ -14,6 +14,10 @@ import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
 import { isContributor } from "@/utils/contributor";
 
+/**
+ * Main portfolio editor component with tabbed interface for editing portfolio data
+ * @returns JSX element containing the complete portfolio editor interface
+ */
 export function PortfolioEditor() {
   const {
     portfolioData,

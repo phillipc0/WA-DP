@@ -3,6 +3,9 @@ const COOKIE_EXPIRY_DAYS = 7;
 
 /**
  * Set a cookie with the given name, value, and expiry days
+ * @param name - Cookie name
+ * @param value - Cookie value
+ * @param days - Number of days until expiry
  */
 function setCookie(name: string, value: string, days: number): void {
   const expires = new Date();
@@ -12,6 +15,8 @@ function setCookie(name: string, value: string, days: number): void {
 
 /**
  * Get a cookie value by name
+ * @param name - Cookie name to retrieve
+ * @returns Cookie value or null if not found
  */
 function getCookie(name: string): string | null {
   const nameEQ = name + "=";
@@ -28,6 +33,7 @@ function getCookie(name: string): string | null {
 
 /**
  * Delete a cookie by name
+ * @param name - Cookie name to delete
  */
 function deleteCookie(name: string): void {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
@@ -35,6 +41,7 @@ function deleteCookie(name: string): void {
 
 /**
  * Save portfolio data draft to cookies
+ * @param data - Portfolio data to save
  */
 export function saveDraftToCookies(data: any): void {
   try {
@@ -51,6 +58,7 @@ export function saveDraftToCookies(data: any): void {
 
 /**
  * Load portfolio data draft from cookies
+ * @returns Portfolio data from cookies or null if not found
  */
 export function loadDraftFromCookies(): any | null {
   try {
@@ -74,6 +82,9 @@ export function clearDraftFromCookies(): void {
 
 /**
  * Compare two portfolio data objects to check if they're different
+ * @param draft - Draft portfolio data
+ * @param saved - Saved portfolio data
+ * @returns True if data is different, false otherwise
  */
 export function hasChangesComparedToSaved(draft: any, saved: any): boolean {
   try {

@@ -24,6 +24,25 @@ interface WorkExperienceFormProps {
   handleExperienceDragEnd: (e: React.DragEvent) => void;
 }
 
+/**
+ * Form component for managing work experience entries with technology selection
+ * @param props - Component props
+ * @param props.newExperience - New work experience entry being created
+ * @param props.selectedSkills - Set of selected skills/technologies for the current experience
+ * @param props.setSelectedSkills - Function to update selected skills set
+ * @param props.portfolioData - Portfolio data containing existing experiences and skills
+ * @param props.handleAddExperience - Function to add new work experience entry
+ * @param props.handleRemoveExperience - Function to remove experience entry by index
+ * @param props.handleEditExperience - Function to edit experience entry by index
+ * @param props.handleExperienceChange - Function to handle experience input changes
+ * @param props.handleRemoveSelectedSkill - Function to remove a selected skill from current experience
+ * @param props.handleExperienceDragStart - Function to handle drag start for reordering
+ * @param props.handleExperienceDragOver - Function to handle drag over for reordering
+ * @param props.handleExperienceDragLeave - Function to handle drag leave for reordering
+ * @param props.handleExperienceDrop - Function to handle drop for reordering
+ * @param props.handleExperienceDragEnd - Function to handle drag end for reordering
+ * @returns JSX element containing work experience form
+ */
 export default function WorkExperienceForm({
   newExperience,
   selectedSkills,

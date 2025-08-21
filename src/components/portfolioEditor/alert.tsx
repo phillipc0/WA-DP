@@ -18,6 +18,19 @@ interface AlertProps {
   onConfirm?: () => void;
 }
 
+/**
+ * Alert modal component for displaying notifications and confirmations
+ * @param props - Component props
+ * @param props.isOpen - Whether the alert modal is open
+ * @param props.onClose - Callback when the modal is closed
+ * @param props.title - Alert title
+ * @param props.message - Alert message
+ * @param props.type - Alert type for styling
+ * @param props.confirmLabel - Label for confirm button
+ * @param props.cancelLabel - Label for cancel button
+ * @param props.onConfirm - Optional callback when confirm is pressed
+ * @returns Alert modal component
+ */
 export function Alert({
   isOpen,
   onClose,

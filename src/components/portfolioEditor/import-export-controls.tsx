@@ -21,6 +21,13 @@ interface ImportExportControlsProps {
   onImport: (data: any) => void;
 }
 
+/**
+ * Component for importing and exporting portfolio data
+ * @param props - Component props
+ * @param props.portfolioData - Current portfolio data to export
+ * @param props.onImport - Callback function to handle imported data
+ * @returns JSX element containing import/export controls
+ */
 export function ImportExportControls({
   portfolioData,
   onImport,

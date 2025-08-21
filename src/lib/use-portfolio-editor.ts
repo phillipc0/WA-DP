@@ -13,6 +13,10 @@ import { Education, Experience } from "@/types";
 
 type Skill = { name: string; level: number };
 
+/**
+ * Custom hook for managing portfolio editor state and operations
+ * @returns Object containing portfolio editor state and handler functions
+ */
 export function usePortfolioEditor() {
   const navigate = useNavigate();
   const [portfolioData, setPortfolioData] = useState<any | null>(null);

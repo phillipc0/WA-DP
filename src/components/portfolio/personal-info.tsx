@@ -23,6 +23,12 @@ interface PersonalInfoProps {
   refreshTrigger?: number;
 }
 
+/**
+ * Personal information component that displays user profile data and social links
+ * @param props - Component props
+ * @param props.refreshTrigger - Optional trigger to refresh the portfolio data
+ * @returns Personal info card with avatar, bio, and social links
+ */
 export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
   const { portfolioData } = usePortfolioData(refreshTrigger);
 
