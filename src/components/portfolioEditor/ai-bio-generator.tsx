@@ -1,3 +1,5 @@
+import type { Skill } from "@/types";
+
 import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Spinner } from "@heroui/spinner";
@@ -7,10 +9,11 @@ import { ApiSettingsModal } from "./api-settings-modal";
 import { getAuthHeaders } from "@/lib/auth";
 import { SettingsIcon } from "@/components/icons";
 
+
 interface AIBioGeneratorProps {
   name: string;
   title: string;
-  skills: { name: string }[];
+  skills: Skill[];
   onBioGenerated: (bio: string) => void;
 }
 
@@ -19,7 +22,7 @@ interface AIBioGeneratorProps {
  * @param props - Component props
  * @param props.name - User's full name
  * @param props.title - User's professional title
- * @param props.skills - Array of user's skills
+ * @param props.skills - Array of user's skills with names and proficiency levels
  * @param props.onBioGenerated - Callback function called when bio is successfully generated
  * @returns AI bio generator component with settings modal
  */
@@ -47,7 +50,10 @@ export function AIBioGenerator({
         body: JSON.stringify({
           name,
           title,
-          skills: skills.map((skill) => skill.name),
+          skills: skills.map((skill) => ({
+            name: skill.name,
+            level: skill.level,
+          })),
         }),
       });
 

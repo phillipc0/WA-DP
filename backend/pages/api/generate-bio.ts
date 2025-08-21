@@ -44,26 +44,45 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     const GEMINI_API_KEY = getApiKey(req.user.username);
 
     if (!GEMINI_API_KEY) {
-      return res.status(500).json({ error: "API key not configured" });
+      return res.status(400).json({ error: "API key not configured" });
     }
+
+    // Define skill level priority (higher number = higher proficiency)
+    const skillLevelPriority = {
+      "Master": 5,
+      "Expert": 4,
+      "Advanced": 3,
+      "Intermediate": 2,
+      "Beginner": 1,
+    };
 
     // Sanitize inputs
     const sanitizedName = sanitizeInput(name);
     const sanitizedTitle = sanitizeInput(title);
     const sanitizedSkills = skills
-      .filter((skill) => typeof skill === "string")
-      .map((skill) => sanitizeInput(skill))
-      .slice(0, 10); // Limit number of skills
+      .filter((skill) => skill && typeof skill.name === "string" && typeof skill.level === "string")
+      .map((skill) => ({
+        name: sanitizeInput(skill.name),
+        level: sanitizeInput(skill.level),
+      }))
+      .sort((a, b) => {
+        // Sort by proficiency level (highest first), then by name for consistency
+        const levelDiff = (skillLevelPriority[b.level] || 0) - (skillLevelPriority[a.level] || 0);
+        return levelDiff !== 0 ? levelDiff : a.name.localeCompare(b.name);
+      })
+      .slice(0, 10); // Limit to top 10 skills by proficiency
 
-    const skillsList = sanitizedSkills.join(", ");
+    const skillsList = sanitizedSkills
+      .map((skill) => `${skill.name} (${skill.level})`)
+      .join(", ");
 
     // Create the prompt for the AI
     const prompt = `Generate a professional bio for a developer with the following details:
 Name: ${sanitizedName}
 Title: ${sanitizedTitle}
-Skills: ${skillsList}
+Skills with proficiency levels: ${skillsList}
 
-The bio should be concise (2-3 sentences), professional, and highlight the person's expertise based on their skills. Write in first person.`;
+The bio should be concise (2-3 sentences), professional, and highlight the person's expertise based on their skills and proficiency levels. Write in first person without any other context around like "Here is a Bio for...".`;
 
     // Call the Google Gemini API with a supported model
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
