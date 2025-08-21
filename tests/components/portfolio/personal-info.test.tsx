@@ -113,4 +113,32 @@ describe("PersonalInfo", () => {
       expect(link).toHaveAttribute("target", "_blank");
     });
   });
+
+  it("renders skeleton when portfolio is loading", async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+    
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: null,
+      isLoading: true,
+    });
+
+    render(<PersonalInfo />);
+
+    // Should render skeleton component
+    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
+  });
+
+  it("renders skeleton when portfolio data is null", async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+    
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: null,
+      isLoading: false,
+    });
+
+    render(<PersonalInfo />);
+
+    // Should render skeleton component
+    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
+  });
 });

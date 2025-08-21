@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GithubIntegration } from "@/components/portfolio/github-integration";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 // Mock usePortfolioData hook
 vi.mock("@/hooks/usePortfolioData", () => ({
@@ -10,6 +11,7 @@ vi.mock("@/hooks/usePortfolioData", () => ({
         github: "testuser",
       },
     },
+    isLoading: false,
   })),
 }));
 
@@ -452,13 +454,77 @@ describe("GithubIntegration", () => {
 
     await waitFor(() => {
       expect(screen.getByText("1.234")).toBeInTheDocument();
+      expect(screen.getByText("5.678")).toBeInTheDocument();
+    });
+  });
+
+  it("renders skeleton when portfolio is loading", () => {
+    // Mock loading state
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: null,
+      isLoading: true,
     });
 
-    expect(screen.getByText("1.234")).toBeInTheDocument();
-    expect(screen.getByText("5.678")).toBeInTheDocument();
+    render(<GithubIntegration />);
+
+    // Should render skeleton component
+    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
+  });
+
+  it("renders skeleton when portfolio data is null", () => {
+    // Mock null portfolio data
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: null,
+      isLoading: false,
+    });
+
+    render(<GithubIntegration />);
+
+    // Should render skeleton component
+    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
+  });
+
+  it("handles missing social.github gracefully when portfolio data is available", () => {
+    // Mock portfolio data without github username
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        social: {},
+      } as any,
+      isLoading: false,
+    });
+
+    render(<GithubIntegration />);
+
+    // Should not attempt to fetch repositories
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("does not render view all repositories link when github username is missing", () => {
+    // Mock portfolio data without github username
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        social: {},
+      } as any,
+      isLoading: false,
+    });
+
+    render(<GithubIntegration />);
+
+    // Should not render the "View all repositories" link
+    expect(screen.queryByText("View all repositories")).not.toBeInTheDocument();
   });
 
   it("does not render language indicator when language is null", async () => {
+    // Reset the mock to return the default portfolio data first
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        social: {
+          github: "testuser",
+        },
+      },
+      isLoading: false,
+    });
+
     const reposWithoutLanguage = [
       {
         ...mockRepos[0],
@@ -480,6 +546,16 @@ describe("GithubIntegration", () => {
   });
 
   it("handles empty topics array correctly", async () => {
+    // Reset the mock to return the default portfolio data first
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        social: {
+          github: "testuser",
+        },
+      },
+      isLoading: false,
+    });
+
     const reposWithEmptyTopics = [
       {
         ...mockRepos[0],
