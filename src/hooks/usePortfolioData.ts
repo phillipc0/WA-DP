@@ -6,7 +6,7 @@ import { loadDraftFromCookies } from "@/lib/cookie-persistence";
 import { isAuthenticated } from "@/lib/auth";
 
 export function usePortfolioData(refreshTrigger?: number) {
-  const [portfolioData, setPortfolioData] = useState<any>(siteConfig.portfolio);
+  const [portfolioData, setPortfolioData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +25,9 @@ export function usePortfolioData(refreshTrigger?: number) {
         const data = await getPortfolioData();
         if (data) {
           setPortfolioData(data);
+        } else {
+          // Fallback to default data if no real data is available
+          setPortfolioData(siteConfig.portfolio);
         }
       } catch (error) {
         console.error("Error loading portfolio data:", error);
