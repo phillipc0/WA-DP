@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SocialLinksForm } from "@/components/portfolioEditor/social-links-form";
 
@@ -12,6 +12,7 @@ describe("SocialLinksForm", () => {
       discord: "johndoe#1234",
       reddit: "johndoe_reddit",
       youtube: "johndoe_youtube",
+      steam: "76561197984767093",
     },
   };
 
@@ -33,6 +34,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByLabelText("Discord User-ID")).toBeInTheDocument();
     expect(screen.getByLabelText("Reddit Username")).toBeInTheDocument();
     expect(screen.getByLabelText("YouTube Username")).toBeInTheDocument();
+    expect(screen.getByLabelText("Steam ID")).toBeInTheDocument();
   });
 
   it("displays correct values in input fields", () => {
@@ -44,6 +46,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByLabelText("Discord User-ID")).toHaveValue(
       "johndoe#1234",
     );
+    expect(screen.getByLabelText("Steam ID")).toHaveValue("76561197984767093");
   });
 
   it("displays correct URL prefixes", () => {
@@ -55,6 +58,9 @@ describe("SocialLinksForm", () => {
     expect(screen.getByText("discord.com/users/")).toBeInTheDocument();
     expect(screen.getByText("reddit.com/user/")).toBeInTheDocument();
     expect(screen.getByText("youtube.com/@")).toBeInTheDocument();
+    expect(
+      screen.getByText("steamcommunity.com/profiles/"),
+    ).toBeInTheDocument();
   });
 
   it("calls onSocialChange when GitHub input changes", () => {
@@ -164,6 +170,9 @@ describe("SocialLinksForm", () => {
     expect(
       screen.getByPlaceholderText("Your YouTube username"),
     ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("76561197984767093"),
+    ).toBeInTheDocument();
   });
 
   it("handles empty social data gracefully", () => {
@@ -222,6 +231,10 @@ describe("SocialLinksForm", () => {
     const githubInput = screen.getByLabelText("GitHub Username");
     expect(githubInput).toBeInTheDocument();
     expect(githubInput.tagName).toBe("INPUT");
+
+    const steamInput = screen.getByLabelText("Steam ID");
+    expect(steamInput).toBeInTheDocument();
+    expect(steamInput.tagName).toBe("INPUT");
   });
 
   it("calls onSocialChange when YouTube input changes", () => {
@@ -336,5 +349,22 @@ describe("SocialLinksForm", () => {
 
     const youtubeInput = screen.getByLabelText("YouTube Username");
     expect(youtubeInput).toHaveValue("");
+  });
+
+  // Added tests for Steam (moved inside describe to access defaultProps)
+  it("calls onSocialChange when Steam ID input changes", () => {
+    const onSocialChange = vi.fn();
+    render(
+      <SocialLinksForm {...defaultProps} onSocialChange={onSocialChange} />,
+    );
+
+    const steamInput = screen.getByLabelText("Steam ID");
+    fireEvent.change(steamInput, {
+      target: { name: "steam", value: "76561198000000000" },
+    });
+
+    expect(onSocialChange).toHaveBeenCalled();
+    const call = onSocialChange.mock.calls[0][0];
+    expect(call.target.name).toBe("steam");
   });
 });
