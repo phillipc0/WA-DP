@@ -124,12 +124,16 @@ describe("PortfolioEditor", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders all three tabs", () => {
+  it("renders all tabs", () => {
     render(<PortfolioEditor />);
 
-    expect(screen.getByText("Basic Information")).toBeInTheDocument();
-    expect(screen.getByText("Social Links")).toBeInTheDocument();
-    expect(screen.getByText("Skills")).toBeInTheDocument();
+    // Each tab label appears in 2 places: mobile dropdown option and desktop tab
+    // Mobile select shows current value (Basic Information by default)
+    expect(screen.getAllByText("Basic Information")).toHaveLength(3); // 2 tabs + 1 current value
+    expect(screen.getAllByText("Social Links")).toHaveLength(2);
+    expect(screen.getAllByText("Skills")).toHaveLength(2);
+    expect(screen.getAllByText("Work Experience")).toHaveLength(2);
+    expect(screen.getAllByText("Education")).toHaveLength(2);
   });
 
   it("renders action buttons", () => {
@@ -161,6 +165,7 @@ describe("PortfolioEditor", () => {
     render(<PortfolioEditor />);
 
     // Basic Information tab should be active by default
+    // Content appears only once in the shared content area
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
     expect(screen.getByDisplayValue("John Doe")).toBeInTheDocument();
   });
@@ -168,8 +173,11 @@ describe("PortfolioEditor", () => {
   it("renders SocialLinksForm in Social Links tab", () => {
     render(<PortfolioEditor />);
 
-    const socialTab = screen.getByText("Social Links");
-    fireEvent.click(socialTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const socialTab = screen.getAllByText("Social Links").find(tab => tablist.contains(tab));
+    expect(socialTab).toBeDefined();
+    fireEvent.click(socialTab!);
 
     expect(screen.getByText("Social Media Profiles")).toBeInTheDocument();
     expect(screen.getByText("github.com/")).toBeInTheDocument();
@@ -178,8 +186,11 @@ describe("PortfolioEditor", () => {
   it("renders SkillsForm in Skills tab", () => {
     render(<PortfolioEditor />);
 
-    const skillsTab = screen.getByText("Skills");
-    fireEvent.click(skillsTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const skillsTab = screen.getAllByText("Skills").find(tab => tablist.contains(tab));
+    expect(skillsTab).toBeDefined();
+    fireEvent.click(skillsTab!);
 
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
     expect(screen.getByText("Add New Skill")).toBeInTheDocument();
@@ -275,8 +286,11 @@ describe("PortfolioEditor", () => {
   it("passes correct props to SocialLinksForm", () => {
     render(<PortfolioEditor />);
 
-    const socialTab = screen.getByText("Social Links");
-    fireEvent.click(socialTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const socialTab = screen.getAllByText("Social Links").find(tab => tablist.contains(tab));
+    expect(socialTab).toBeDefined();
+    fireEvent.click(socialTab!);
 
     // Verify that social form is rendered with correct data
     expect(screen.getByLabelText("GitHub Username")).toHaveValue("johndoe");
@@ -285,8 +299,11 @@ describe("PortfolioEditor", () => {
   it("passes correct props to SkillsForm", () => {
     render(<PortfolioEditor />);
 
-    const skillsTab = screen.getByText("Skills");
-    fireEvent.click(skillsTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const skillsTab = screen.getAllByText("Skills").find(tab => tablist.contains(tab));
+    expect(skillsTab).toBeDefined();
+    fireEvent.click(skillsTab!);
 
     // Verify that skills form is rendered with correct data
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
@@ -306,19 +323,24 @@ describe("PortfolioEditor", () => {
     // Start with Basic Information tab (default)
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
 
+    const tablist = screen.getByRole("tablist");
+
     // Switch to Social Links tab
-    const socialTab = screen.getByText("Social Links");
-    fireEvent.click(socialTab);
+    const socialTab = screen.getAllByText("Social Links").find(tab => tablist.contains(tab));
+    expect(socialTab).toBeDefined();
+    fireEvent.click(socialTab!);
     expect(screen.getByText("Social Media Profiles")).toBeInTheDocument();
 
     // Switch to Skills tab
-    const skillsTab = screen.getByText("Skills");
-    fireEvent.click(skillsTab);
+    const skillsTab = screen.getAllByText("Skills").find(tab => tablist.contains(tab));
+    expect(skillsTab).toBeDefined();
+    fireEvent.click(skillsTab!);
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
 
     // Switch back to Basic Information
-    const basicTab = screen.getByText("Basic Information");
-    fireEvent.click(basicTab);
+    const basicTab = screen.getAllByText("Basic Information").find(tab => tablist.contains(tab));
+    expect(basicTab).toBeDefined();
+    fireEvent.click(basicTab!);
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
   });
 

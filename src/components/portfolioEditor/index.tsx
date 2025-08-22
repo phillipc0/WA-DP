@@ -225,15 +225,13 @@ export function PortfolioEditor() {
           onSelectionChange={(key) => setActiveTab(key as string)}
         >
           {tabOptions.map((option) => (
-            <Tab key={option.key} title={option.label}>
-              {renderTabContent()}
-            </Tab>
+            <Tab key={option.key} title={option.label} />
           ))}
         </Tabs>
       </div>
 
-      {/* Mobile: Content area */}
-      <div className="mdx:hidden">{renderTabContent()}</div>
+      {/* Content area - shared between mobile and desktop */}
+      <div className="mt-6">{renderTabContent()}</div>
 
       <div className="flex flex-wrap justify-between items-center gap-3 mt-6">
         <div className="flex flex-wrap gap-3">
