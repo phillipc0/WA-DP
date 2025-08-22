@@ -87,7 +87,7 @@ export function SkillsForm(props: SkillsFormProps) {
             className="pb-4 px-5"
             label={`Proficiency: ${newSkill.level}`}
             marks={getSliderMarks(newSkill.level, isSmallScreen)}
-            maxValue={4}
+            maxValue={5}
             minValue={0}
             name="level"
             step={1}
@@ -155,7 +155,7 @@ export function SkillsForm(props: SkillsFormProps) {
                   showSteps
                   className="px-4"
                   marks={getSliderMarks(skill.level, isMediumScreen)}
-                  maxValue={4}
+                  maxValue={5}
                   minValue={0}
                   step={1}
                   value={levelToIndex(skill.level)}

@@ -20,12 +20,12 @@ export const siteConfig = {
       steam: "76561197984767093",
     },
     skills: [
-      { name: "React", level: "Master" },
-      { name: "TypeScript", level: "Expert" },
-      { name: "Node.js", level: "Expert" },
-      { name: "CSS/Tailwind", level: "Advanced" },
-      { name: "UI/UX Design", level: "Intermediate" },
-      { name: "GraphQL", level: "Beginner" },
+      { name: "React", level: "C2" },
+      { name: "TypeScript", level: "C1" },
+      { name: "Node.js", level: "C1" },
+      { name: "CSS/Tailwind", level: "B2" },
+      { name: "UI/UX Design", level: "B1" },
+      { name: "GraphQL", level: "A1" },
     ],
     cv: [
       {

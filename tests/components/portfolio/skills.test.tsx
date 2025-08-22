@@ -8,9 +8,9 @@ vi.mock("@/hooks/usePortfolioData", () => ({
   usePortfolioData: vi.fn(() => ({
     portfolioData: {
       skills: [
-        { name: "UI/UX Design", level: "Intermediate" },
-        { name: "TypeScript", level: "Expert" },
-        { name: "React", level: "Master" },
+        { name: "UI/UX Design", level: "B1" },
+        { name: "TypeScript", level: "C1" },
+        { name: "React", level: "C2" },
       ],
     },
     isLoading: false,
@@ -26,8 +26,8 @@ describe("Skills", () => {
       expect(screen.getByText("UI/UX Design")).toBeInTheDocument();
       expect(screen.getByText("TypeScript")).toBeInTheDocument();
       expect(screen.getByText("React")).toBeInTheDocument();
-      expect(screen.getAllByText("Expert")[0]).toBeInTheDocument();
-      expect(screen.getAllByText("Intermediate")[0]).toBeInTheDocument();
+      expect(screen.getAllByText("C1")[0]).toBeInTheDocument();
+      expect(screen.getAllByText("B1")[0]).toBeInTheDocument();
     });
   });
 

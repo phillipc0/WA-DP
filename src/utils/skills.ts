@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 
 import { SkillLevel } from "@/types";
 
-export const SKILL_LEVELS: SkillLevel[] = [
-  "Beginner",
-  "Intermediate",
-  "Advanced",
-  "Expert",
-  "Master",
-];
+export const SKILL_LEVELS: SkillLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 /**
  * Custom hook to detect small screen sizes

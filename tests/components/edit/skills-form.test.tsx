@@ -6,20 +6,21 @@ import { Skill, SkillLevel } from "@/types";
 describe("SkillsForm", () => {
   const mockPortfolioData: { skills: Skill[] } = {
     skills: [
-      { name: "UI/UX Design", level: "Intermediate" },
-      { name: "TypeScript", level: "Expert" },
-      { name: "React", level: "Master" },
+      { name: "UI/UX Design", level: "B1" },
+      { name: "TypeScript", level: "C1" },
+      { name: "React", level: "C2" },
     ],
   };
 
-  const mockNewSkill: Skill = { name: "Vue.js", level: "Advanced" };
+  const mockNewSkill: Skill = { name: "Vue.js", level: "B2" };
 
   const mockSkillLevels: SkillLevel[] = [
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-    "Expert",
-    "Master",
+    "A1",
+    "A2",
+    "B1",
+    "B2",
+    "C1",
+    "C2",
   ];
 
   const defaultProps = {
@@ -55,7 +56,7 @@ describe("SkillsForm", () => {
     expect(screen.getByText("Add New Skill")).toBeInTheDocument();
     expect(screen.getByLabelText("Skill name")).toBeInTheDocument();
     expect(
-      screen.getAllByLabelText("Proficiency: Advanced")[0],
+      screen.getAllByLabelText("Proficiency: B2")[0],
     ).toBeInTheDocument();
     expect(screen.getByText("Add Skill")).toBeInTheDocument();
   });
@@ -65,7 +66,7 @@ describe("SkillsForm", () => {
 
     expect(screen.getByDisplayValue("Vue.js")).toBeInTheDocument();
     expect(
-      screen.getAllByLabelText("Proficiency: Advanced")[0],
+      screen.getAllByLabelText("Proficiency: B2")[0],
     ).toBeInTheDocument();
   });
 
@@ -106,8 +107,8 @@ describe("SkillsForm", () => {
     expect(screen.getByDisplayValue("UI/UX Design")).toBeInTheDocument();
     expect(screen.getByDisplayValue("TypeScript")).toBeInTheDocument();
     expect(screen.getByDisplayValue("React")).toBeInTheDocument();
-    expect(screen.getAllByText("Expert")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Master")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("C1")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("C2")[0]).toBeInTheDocument();
   });
 
   it("calls onSkillNameChange when existing skill name is changed", () => {
@@ -179,7 +180,7 @@ describe("SkillsForm", () => {
     const levelInput = screen.getAllByRole("slider")[0];
     expect(levelInput).toHaveAttribute("type", "range");
     expect(levelInput).toHaveAttribute("min", "0");
-    expect(levelInput).toHaveAttribute("max", "4");
+    expect(levelInput).toHaveAttribute("max", "5");
   });
 
   it("renders skill name input with correct attributes", () => {
@@ -197,7 +198,7 @@ describe("SkillsForm", () => {
     sliders.forEach((slider) => {
       expect(slider).toHaveAttribute("type", "range");
       expect(slider).toHaveAttribute("min", "0");
-      expect(slider).toHaveAttribute("max", "4");
+      expect(slider).toHaveAttribute("max", "5");
     });
   });
 
