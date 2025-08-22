@@ -29,9 +29,12 @@ export function useIsSmallScreen(pixels: number = 500) {
     const mediaQuery = window.matchMedia("(max-width: " + pixels + "px)");
     const handleChange = (e: any) => setIsSmallScreen(e.matches);
 
+    // Set initial state based on current screen size
+    setIsSmallScreen(mediaQuery.matches);
+
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
+  }, [pixels]);
   return isSmallScreen;
 }
 
