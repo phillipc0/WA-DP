@@ -71,3 +71,23 @@ export const getApiKey = (username: string): string | null => {
     return null;
   }
 };
+
+// Function to delete API key from user data
+export const deleteApiKey = (username: string): void => {
+  try {
+    const users = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
+
+    const userIndex = users.findIndex(
+      (user: any) => user.username === username,
+    );
+    if (userIndex !== -1) {
+      delete users[userIndex].geminiApiKey;
+      fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+    } else {
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    console.error("Error deleting API key:", error);
+    throw new Error("Failed to delete API key");
+  }
+};

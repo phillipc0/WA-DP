@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next";
 
 import { AuthenticatedRequest, authenticateToken } from "../../lib/auth";
-import { saveApiKey, getApiKey } from "../../lib/apiKeyService";
+import { saveApiKey, getApiKey, deleteApiKey } from "../../lib/apiKeyService";
 
 // Handler for GET requests (get API key)
 const handleGet = async (req: AuthenticatedRequest, res: NextApiResponse) => {
@@ -47,11 +47,37 @@ const handlePost = async (req: AuthenticatedRequest, res: NextApiResponse) => {
   }
 };
 
+// Handler for DELETE requests (delete API key)
+const handleDelete = async (
+  req: AuthenticatedRequest,
+  res: NextApiResponse,
+) => {
+  try {
+    if (!req.user?.username) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    deleteApiKey(req.user.username);
+    res.status(200).json({ message: "API key deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting API key:", error);
+    res.status(500).json({ error: "Failed to delete API key" });
+  }
+};
+
+/**
+ * API handler for Gemini API key management operations
+ * @param req - Authenticated request object
+ * @param res - Next.js API response object
+ * @returns Promise that resolves when the request is handled
+ */
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     return handleGet(req, res);
   } else if (req.method === "POST") {
     return handlePost(req, res);
+  } else if (req.method === "DELETE") {
+    return handleDelete(req, res);
   } else {
     res.status(405).json({ error: "Method not allowed" });
   }
