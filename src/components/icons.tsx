@@ -261,17 +261,17 @@ export const AvatarPlaceholderIcon: React.FC<IconSvgProps> = ({
 // Official Steam icon SVG
 export const SteamIcon: React.FC<IconSvgProps> = ({
   size = 24,
-  width,
   height,
+  width,
   ...props
 }) => (
   <svg
-    role="img"
     aria-hidden="true"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
     height={size || height}
+    role="img"
+    viewBox="0 0 24 24"
     width={size || width}
+    xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <path
