@@ -17,6 +17,7 @@ export const siteConfig = {
       discord: "99010890275225600",
       reddit: "johndoe",
       youtube: "johndoe",
+      steam: "76561197984767093",
     },
     skills: [
       { name: "React", level: "Master" },

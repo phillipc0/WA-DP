@@ -117,6 +117,18 @@ export function SocialLinksForm({
           value={portfolioData.social.youtube}
           onChange={onSocialChange}
         />
+        <Input
+          label="Steam ID"
+          name="steam"
+          placeholder="76561197984767093"
+          startContent={
+            <span className="text-default-400 whitespace-nowrap">
+              steamcommunity.com/profiles/
+            </span>
+          }
+          value={portfolioData.social.steam}
+          onChange={onSocialChange}
+        />
       </CardBody>
     </Card>
   );
