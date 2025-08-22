@@ -9,6 +9,7 @@ import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
 import { ImportExportControls } from "./import-export-controls";
 import { ContributorForm } from "./contributor-form";
+import { CustomProjectsForm } from "./custom-projects-form";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
@@ -31,6 +32,7 @@ export function PortfolioEditor() {
     handleBasicInfoChange,
     handleSocialChange,
     handleSocialSelectChange,
+    handleGithubSettingsChange,
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,
@@ -76,6 +78,8 @@ export function PortfolioEditor() {
     handleEducationDragEnd,
     // Contributor functions
     handleContributorChange,
+    // Custom Projects functions
+    handleCustomProjectsChange,
     // Import/Export
     handleImportPortfolioData,
   } = usePortfolioEditor();
@@ -113,6 +117,7 @@ export function PortfolioEditor() {
         <Tab key="social" title="Social Links">
           <SocialLinksForm
             portfolioData={portfolioData}
+            onGithubSettingsChange={handleGithubSettingsChange}
             onSocialChange={handleSocialChange}
             onSocialSelectChange={handleSocialSelectChange}
           />
@@ -169,6 +174,13 @@ export function PortfolioEditor() {
             handleRemoveEducation={handleRemoveEducation}
             newEducation={newEducation}
             portfolioData={portfolioData}
+          />
+        </Tab>
+
+        <Tab key="custom-projects" title="Custom Projects">
+          <CustomProjectsForm
+            portfolioData={portfolioData}
+            onCustomProjectsChange={handleCustomProjectsChange}
           />
         </Tab>
 

@@ -19,10 +19,10 @@ vi.mock("@/components/portfolio/skills", () => ({
   ),
 }));
 
-vi.mock("@/components/portfolio/github-integration", () => ({
-  GithubIntegration: ({ refreshTrigger }: { refreshTrigger: number }) => (
-    <div data-testid="github-integration" data-refresh-trigger={refreshTrigger}>
-      GitHub Integration Component
+vi.mock("@/components/portfolio/projects", () => ({
+  Projects: ({ refreshTrigger }: { refreshTrigger: number }) => (
+    <div data-testid="projects" data-refresh-trigger={refreshTrigger}>
+      Projects Component
     </div>
   ),
 }));
@@ -92,7 +92,7 @@ describe("Portfolio", () => {
 
     expect(screen.getByTestId("personal-info")).toBeInTheDocument();
     expect(screen.getByTestId("skills")).toBeInTheDocument();
-    expect(screen.getByTestId("github-integration")).toBeInTheDocument();
+    expect(screen.getByTestId("projects")).toBeInTheDocument();
   });
 
   it("does not show unsaved changes banner when user is not authenticated", async () => {
@@ -287,7 +287,7 @@ describe("Portfolio", () => {
       "data-refresh-trigger",
       "0",
     );
-    expect(screen.getByTestId("github-integration")).toHaveAttribute(
+    expect(screen.getByTestId("projects")).toHaveAttribute(
       "data-refresh-trigger",
       "0",
     );

@@ -19,6 +19,9 @@ export const siteConfig = {
       youtube: "johndoe",
       steam: "76561197984767093",
     },
+    githubSettings: {
+      reposPerPage: 4,
+    },
     skills: [
       { name: "React", level: "Master" },
       { name: "TypeScript", level: "Expert" },
@@ -61,6 +64,7 @@ export const siteConfig = {
       enableContributorStatus: false,
       showGoldenBoxShadow: false,
     },
+    customProjects: [],
   },
   navItems: [
     {
