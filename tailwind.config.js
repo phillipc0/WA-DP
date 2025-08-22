@@ -13,6 +13,7 @@ export default {
     extend: {
       screens: {
         ml: "900px", // min-width: 900px breakpoint
+        mdx: "700px", // min-width: 700px breakpoint
       },
     },
   },
