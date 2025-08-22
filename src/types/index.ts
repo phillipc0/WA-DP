@@ -39,6 +39,7 @@ export interface CustomProject {
   description: string;
   url?: string;
   topics: string[];
+  language?: string;
 }
 
 //TODO: consider removing or using this

@@ -3,6 +3,7 @@ import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
 
 import { CustomProject } from "@/types";
+import { getLanguageColor } from "@/lib/language-colors";
 
 interface CustomProjectCardProps {
   project: CustomProject;
@@ -98,6 +99,19 @@ export function CustomProjectCard({ project, index }: CustomProjectCardProps) {
                   +{project.topics.length - 6}
                 </Chip>
               )}
+            </div>
+          )}
+          {project.language && (
+            <div className="flex items-center gap-1">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor: getLanguageColor(project.language),
+                }}
+              />
+              <span className="text-sm text-default-600 font-medium">
+                {project.language}
+              </span>
             </div>
           )}
         </div>

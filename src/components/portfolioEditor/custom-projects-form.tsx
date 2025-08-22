@@ -27,6 +27,7 @@ export function CustomProjectsForm({
     description: "",
     url: "",
     topics: [],
+    language: "",
   });
   const [newTopic, setNewTopic] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -52,6 +53,7 @@ export function CustomProjectsForm({
       description: "",
       url: "",
       topics: [],
+      language: "",
     });
   };
 
@@ -72,6 +74,7 @@ export function CustomProjectsForm({
         description: project.description,
         url: project.url || "",
         topics: project.topics,
+        language: project.language || "",
       });
       setEditingId(id);
     }
@@ -99,6 +102,7 @@ export function CustomProjectsForm({
       description: "",
       url: "",
       topics: [],
+      language: "",
     });
     setEditingId(null);
   };
@@ -109,6 +113,7 @@ export function CustomProjectsForm({
       description: "",
       url: "",
       topics: [],
+      language: "",
     });
     setEditingId(null);
   };
@@ -174,6 +179,15 @@ export function CustomProjectsForm({
             value={newProject.url}
             onChange={(e) =>
               setNewProject({ ...newProject, url: e.target.value })
+            }
+          />
+
+          <Input
+            label="Programming Language (optional)"
+            placeholder="e.g., TypeScript, Python, Java"
+            value={newProject.language}
+            onChange={(e) =>
+              setNewProject({ ...newProject, language: e.target.value })
             }
           />
 
@@ -254,6 +268,11 @@ export function CustomProjectsForm({
                         >
                           🔗 {project.url}
                         </a>
+                      )}
+                      {project.language && (
+                        <p className="text-sm text-default-500 mt-1">
+                          📝 {project.language}
+                        </p>
                       )}
                     </div>
                     <div className="flex gap-2">
