@@ -36,17 +36,18 @@ export function useGithubRepositories({
   const fetchReposForSort = async (
     githubUsername: string,
     sort: SortOption,
+    reposPerPage: number = REPO_PER_PAGE,
   ): Promise<Repository[]> => {
     try {
       let response;
 
       if (sort === "stars") {
         response = await fetch(
-          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${REPO_PER_PAGE}`,
+          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${reposPerPage}`,
         );
       } else {
         response = await fetch(
-          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${REPO_PER_PAGE}`,
+          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${reposPerPage}`,
         );
       }
 
@@ -80,7 +81,8 @@ export function useGithubRepositories({
         setLoading(true);
         setError(null);
 
-        const repos = await fetchReposForSort(githubUsername, "updated");
+        const reposPerPage = portfolioData.githubSettings?.reposPerPage || REPO_PER_PAGE;
+        const repos = await fetchReposForSort(githubUsername, "updated", reposPerPage);
 
         setReposCache((prev) => ({
           ...prev,
@@ -96,7 +98,7 @@ export function useGithubRepositories({
     };
 
     initializeRepos().catch(console.error);
-  }, [portfolioData?.social?.github, portfolioLoading]);
+  }, [portfolioData?.social?.github, portfolioData?.githubSettings?.reposPerPage, portfolioLoading]);
 
   useEffect(() => {
     const loadReposForSort = async () => {
@@ -122,7 +124,8 @@ export function useGithubRepositories({
         setLoading(true);
         setError(null);
 
-        const repos = await fetchReposForSort(githubUsername, sortBy);
+        const reposPerPage = portfolioData.githubSettings?.reposPerPage || REPO_PER_PAGE;
+        const repos = await fetchReposForSort(githubUsername, sortBy, reposPerPage);
 
         setReposCache((prev) => ({
           ...prev,
@@ -138,7 +141,7 @@ export function useGithubRepositories({
     };
 
     loadReposForSort().catch(console.error);
-  }, [sortBy, portfolioData?.social?.github]);
+  }, [sortBy, portfolioData?.social?.github, portfolioData?.githubSettings?.reposPerPage]);
 
   return {
     repositories: reposCache[sortBy] || [],

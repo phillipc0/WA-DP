@@ -59,6 +59,9 @@ export interface PortfolioData {
     reddit: string;
     youtube: string;
   };
+  githubSettings: {
+    reposPerPage: number;
+  };
   skills: Skill[];
   cv: Experience[];
   education: Education[];

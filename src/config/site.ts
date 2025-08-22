@@ -18,6 +18,9 @@ export const siteConfig = {
       reddit: "johndoe",
       youtube: "johndoe",
     },
+    githubSettings: {
+      reposPerPage: 4,
+    },
     skills: [
       { name: "React", level: "Master" },
       { name: "TypeScript", level: "Expert" },

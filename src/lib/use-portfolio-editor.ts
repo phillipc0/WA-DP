@@ -216,6 +216,19 @@ export function usePortfolioEditor() {
     });
   };
 
+  const handleGithubSettingsChange = (field: string, value: number) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        githubSettings: {
+          ...prev.githubSettings,
+          [field]: value,
+        },
+      };
+    });
+  };
+
   const handleAddSkill = () => {
     if (newSkill.name.trim() === "") return;
 
@@ -590,6 +603,7 @@ export function usePortfolioEditor() {
     handleFileSelect,
     handleSocialChange,
     handleSocialSelectChange,
+    handleGithubSettingsChange,
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,

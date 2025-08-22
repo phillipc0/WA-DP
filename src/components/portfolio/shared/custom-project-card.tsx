@@ -53,7 +53,7 @@ export function CustomProjectCard({ project, index }: CustomProjectCardProps) {
           </div>
           <div className="ml-4 flex flex-col items-end gap-2">
             <div className="bg-default-100 px-2 py-1 rounded text-xs font-medium text-default-600">
-              Custom
+              Project
             </div>
             {project.url && (
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">

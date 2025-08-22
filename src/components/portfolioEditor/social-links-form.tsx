@@ -7,6 +7,7 @@ interface SocialLinksFormProps {
   portfolioData: any;
   onSocialChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSocialSelectChange?: (field: string, value: string) => void;
+  onGithubSettingsChange?: (field: string, value: number) => void;
 }
 
 /**
@@ -21,6 +22,7 @@ export function SocialLinksForm({
   portfolioData,
   onSocialChange,
   onSocialSelectChange,
+  onGithubSettingsChange,
 }: SocialLinksFormProps) {
   return (
     <Card className="mt-4">
@@ -39,6 +41,18 @@ export function SocialLinksForm({
           }
           value={portfolioData.social.github}
           onChange={onSocialChange}
+        />
+        <Input
+          label="GitHub Repositories to Display"
+          type="number"
+          min="1"
+          max="20"
+          placeholder="4"
+          value={portfolioData.githubSettings?.reposPerPage?.toString() || "4"}
+          onChange={(e) => {
+            const value = parseInt(e.target.value) || 4;
+            onGithubSettingsChange?.("reposPerPage", value);
+          }}
         />
         <div className="flex gap-2">
           <Select

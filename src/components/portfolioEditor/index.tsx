@@ -32,6 +32,7 @@ export function PortfolioEditor() {
     handleBasicInfoChange,
     handleSocialChange,
     handleSocialSelectChange,
+    handleGithubSettingsChange,
     handleAddSkill,
     handleRemoveSkill,
     handleSkillChange,
@@ -118,6 +119,7 @@ export function PortfolioEditor() {
             portfolioData={portfolioData}
             onSocialChange={handleSocialChange}
             onSocialSelectChange={handleSocialSelectChange}
+            onGithubSettingsChange={handleGithubSettingsChange}
           />
         </Tab>
 
