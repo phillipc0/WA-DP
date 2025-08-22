@@ -472,10 +472,10 @@ describe("GithubIntegration", () => {
   });
 
   it("renders skeleton when portfolio data is null", () => {
-    // Mock null portfolio data
+    // Mock null portfolio data with loading state
     vi.mocked(usePortfolioData).mockReturnValue({
       portfolioData: null,
-      isLoading: false,
+      isLoading: true,
     });
 
     render(<GithubIntegration />);
