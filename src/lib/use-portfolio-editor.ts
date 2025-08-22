@@ -9,7 +9,13 @@ import {
   loadDraftFromCookies,
   saveDraftToCookies,
 } from "@/lib/cookie-persistence.ts";
-import { Education, Experience, Skill, SkillLevel } from "@/types";
+import {
+  CustomProject,
+  Education,
+  Experience,
+  Skill,
+  SkillLevel,
+} from "@/types";
 
 /**
  * Custom hook for managing portfolio editor state and operations
@@ -562,6 +568,16 @@ export function usePortfolioEditor() {
     clearDraftFromCookies();
   };
 
+  const handleCustomProjectsChange = (customProjects: CustomProject[]) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        customProjects,
+      };
+    });
+  };
+
   return {
     portfolioData,
     isLoading,
@@ -621,6 +637,8 @@ export function usePortfolioEditor() {
     handleEducationDragEnd,
     // Contributor functions
     handleContributorChange,
+    // Custom Projects functions
+    handleCustomProjectsChange,
     // Import/Export
     handleImportPortfolioData,
   };

@@ -33,6 +33,14 @@ export interface Education {
   description: string;
 }
 
+export interface CustomProject {
+  id: string;
+  title: string;
+  description: string;
+  url?: string;
+  topics: string[];
+}
+
 //TODO: consider removing or using this
 export interface PortfolioData {
   name: string;
@@ -53,4 +61,5 @@ export interface PortfolioData {
   skills: Skill[];
   cv: Experience[];
   education: Education[];
+  customProjects: CustomProject[];
 }

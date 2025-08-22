@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { PersonalInfo } from "./personal-info";
 import { Skills } from "./skills";
-import { GithubIntegration } from "./github-integration";
+import { Projects } from "./projects";
 import { CV } from "./cv";
 import { UnsavedChangesBanner } from "./unsaved-changes-banner";
 
@@ -77,7 +77,7 @@ export function Portfolio() {
           <Skills refreshTrigger={refreshTrigger} />
         </div>
         <div>
-          <GithubIntegration refreshTrigger={refreshTrigger} />
+          <Projects refreshTrigger={refreshTrigger} />
         </div>
         <div className="ml:col-span-2">
           <CV refreshTrigger={refreshTrigger} />
@@ -89,5 +89,6 @@ export function Portfolio() {
 
 export { PersonalInfo } from "./personal-info";
 export { Skills } from "./skills";
+export { Projects } from "./projects";
 export { GithubIntegration } from "./github-integration";
 export { CV } from "./cv";

@@ -60,6 +60,7 @@ export const siteConfig = {
       enableContributorStatus: false,
       showGoldenBoxShadow: false,
     },
+    customProjects: [],
   },
   navItems: [
     {
