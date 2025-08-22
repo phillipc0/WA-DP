@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SocialLinksForm } from "@/components/portfolioEditor/social-links-form";
 
@@ -46,9 +46,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByLabelText("Discord User-ID")).toHaveValue(
       "johndoe#1234",
     );
-    expect(screen.getByLabelText("Steam ID")).toHaveValue(
-      "76561197984767093",
-    );
+    expect(screen.getByLabelText("Steam ID")).toHaveValue("76561197984767093");
   });
 
   it("displays correct URL prefixes", () => {
@@ -61,7 +59,7 @@ describe("SocialLinksForm", () => {
     expect(screen.getByText("reddit.com/user/")).toBeInTheDocument();
     expect(screen.getByText("youtube.com/@")).toBeInTheDocument();
     expect(
-      screen.getByText("steamcommunity.com/profiles/")
+      screen.getByText("steamcommunity.com/profiles/"),
     ).toBeInTheDocument();
   });
 

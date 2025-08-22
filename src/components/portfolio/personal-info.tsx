@@ -11,10 +11,10 @@ import {
   GithubIcon,
   LinkedInIcon,
   RedditIcon,
+  SteamIcon,
   TwitterIcon,
   XIcon,
   YouTubeIcon,
-  SteamIcon,
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { isContributor } from "@/utils/contributor";
