@@ -1,3 +1,5 @@
+import type { SortOption } from "@/hooks/useGithubRepositories";
+
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
@@ -9,71 +11,59 @@ import {
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
 
+import { RepositoryCard, type Repository } from "./repository-card";
+
 import { GithubIcon } from "@/components/icons";
 import { GithubIntegrationSkeleton } from "@/components/ui/skeleton";
-import { CustomProject } from "@/types";
-import { useGithubRepositories } from "@/hooks/useGithubRepositories";
-import {
-  RepositoryCard,
-  type Repository,
-} from "@/components/portfolio/shared/repository-card";
-import { CustomProjectCard } from "@/components/portfolio/shared/custom-project-card";
 
-interface ProjectsProps {
-  refreshTrigger?: number;
-}
-
-interface ProjectCardProps {
-  project: Repository | CustomProject;
-  index: number;
-  isCustom: boolean;
+interface RepositoryContainerProps {
+  title: string;
+  repositories: Repository[];
+  sortBy: SortOption;
+  setSortBy: (sort: SortOption) => void;
+  loading: boolean;
+  error: string | null;
+  portfolioLoading: boolean;
+  hasGithubUsername: boolean;
+  githubUsername?: string;
+  showSorting?: boolean;
+  emptyMessage?: string;
 }
 
 /**
- * Renders a project card for either GitHub repositories or custom projects
+ * Container component for displaying repositories with sorting and loading states
  * @param props - Component props
- * @param props.project - The project data (Repository or CustomProject)
- * @param props.index - Index for animation delay
- * @param props.isCustom - Whether this is a custom project
- * @returns Project card component
+ * @param props.title - The title to display in the header
+ * @param props.repositories - Array of repositories to display
+ * @param props.sortBy - Current sort option
+ * @param props.setSortBy - Function to change sort option
+ * @param props.loading - Loading state
+ * @param props.error - Error message if any
+ * @param props.portfolioLoading - Portfolio loading state
+ * @param props.hasGithubUsername - Whether user has GitHub username
+ * @param props.githubUsername - GitHub username for footer link
+ * @param props.showSorting - Whether to show sorting dropdown
+ * @param props.emptyMessage - Message to show when no repositories found
+ * @returns Repository container component
  */
-function ProjectCard({ project, index, isCustom }: ProjectCardProps) {
-  if (isCustom) {
-    return (
-      <CustomProjectCard index={index} project={project as CustomProject} />
-    );
-  }
-  return <RepositoryCard index={index} repo={project as Repository} />;
-}
-
-/**
- * Combined projects component that displays GitHub repositories and custom projects
- * @param props - Component props
- * @param props.refreshTrigger - Optional trigger to refresh data
- * @returns Combined projects display component
- */
-export function Projects({ refreshTrigger }: ProjectsProps) {
-  const {
-    repositories,
-    sortBy,
-    setSortBy,
-    loading,
-    error,
-    portfolioData,
-    portfolioLoading,
-    hasGithubUsername,
-  } = useGithubRepositories({ refreshTrigger });
-
-  if (portfolioLoading || !portfolioData) {
+export function RepositoryContainer({
+  title,
+  repositories,
+  sortBy,
+  setSortBy,
+  loading,
+  error,
+  portfolioLoading,
+  hasGithubUsername,
+  githubUsername,
+  showSorting = true,
+  emptyMessage = "No repositories found",
+}: RepositoryContainerProps) {
+  if (portfolioLoading) {
     return <GithubIntegrationSkeleton />;
   }
 
-  const customProjects = portfolioData.customProjects || [];
-  const allProjects = [...customProjects, ...repositories];
-  const hasCustomProjects = customProjects.length > 0;
-  const hasAnyProjects = hasGithubUsername || hasCustomProjects;
-
-  if (!hasAnyProjects) {
+  if (!hasGithubUsername) {
     return null;
   }
 
@@ -87,9 +77,9 @@ export function Projects({ refreshTrigger }: ProjectsProps) {
           />
         </div>
         <div className="flex flex-col flex-1">
-          <h2 className="text-xl font-bold text-foreground">Projects</h2>
+          <h2 className="text-xl font-bold text-foreground">{title}</h2>
         </div>
-        {hasGithubUsername && (
+        {showSorting && (
           <div className="flex items-center flex-wrap gap-2 sm:gap-4">
             <Dropdown>
               <DropdownTrigger>
@@ -121,12 +111,9 @@ export function Projects({ refreshTrigger }: ProjectsProps) {
                 onSelectionChange={(keys) => {
                   const keyArray = Array.from(keys);
                   if (keyArray.length > 0) {
-                    const key = keyArray[0] as string;
-                    if (
-                      key !== sortBy &&
-                      (key === "updated" || key === "stars")
-                    ) {
-                      setSortBy(key as "updated" | "stars");
+                    const key = keyArray[0] as SortOption;
+                    if (key !== sortBy) {
+                      setSortBy(key);
                     }
                   }
                 }}
@@ -145,35 +132,22 @@ export function Projects({ refreshTrigger }: ProjectsProps) {
           </div>
         ) : error ? (
           <div className="text-danger">{error}</div>
-        ) : allProjects.length === 0 ? (
-          <div>No projects found</div>
+        ) : repositories.length === 0 ? (
+          <div>{emptyMessage}</div>
         ) : (
           <div className="grid gap-4">
-            {allProjects.map((project, index) => {
-              const isCustom =
-                "id" in project && typeof project.id === "string";
-              return (
-                <ProjectCard
-                  key={
-                    isCustom
-                      ? `custom-${(project as CustomProject).id}`
-                      : `github-${(project as Repository).id}`
-                  }
-                  index={index}
-                  isCustom={isCustom}
-                  project={project}
-                />
-              );
-            })}
+            {repositories.map((repo, index) => (
+              <RepositoryCard key={repo.id} index={index} repo={repo} />
+            ))}
           </div>
         )}
       </CardBody>
       <CardFooter className="border-t border-default-200/50 bg-default-50/50">
-        {portfolioData?.social?.github && (
+        {githubUsername && (
           <Link
             isExternal
             className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-600 transition-colors duration-200"
-            href={`https://github.com/${portfolioData.social.github}`}
+            href={`https://github.com/${githubUsername}`}
           >
             <span>View all repositories</span>
             <svg
