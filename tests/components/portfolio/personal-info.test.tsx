@@ -33,6 +33,7 @@ describe("PersonalInfo", () => {
           discord: "johndoe#1234",
           reddit: "johndoe",
           youtube: "johndoe",
+          steam: "76561197984767093",
         },
         contributor: {
           enableContributorStatus: false,
@@ -87,6 +88,7 @@ describe("PersonalInfo", () => {
           discord: "johndoe#1234",
           reddit: "johndoe",
           youtube: "johndoe",
+          steam: "76561197984767093",
         },
         contributor: {
           enableContributorStatus: false,
@@ -115,6 +117,7 @@ describe("PersonalInfo", () => {
     expect(screen.getByText("Discord")).toBeInTheDocument();
     expect(screen.getByText("Reddit")).toBeInTheDocument();
     expect(screen.getByText("YouTube")).toBeInTheDocument();
+    expect(screen.getByText("Steam")).toBeInTheDocument();
 
     const githubLink = screen.getByRole("link", { name: /github/i });
     expect(githubLink).toHaveAttribute("href", "https://github.com/johndoe");
@@ -142,6 +145,12 @@ describe("PersonalInfo", () => {
 
     const youtubeLink = screen.getByRole("link", { name: /youtube/i });
     expect(youtubeLink).toHaveAttribute("href", "https://youtube.com/@johndoe");
+
+    const steamLink = screen.getByRole("link", { name: /steam/i });
+    expect(steamLink).toHaveAttribute(
+      "href",
+      "https://steamcommunity.com/profiles/76561197984767093",
+    );
   });
 
   it("all social links open in new tab", () => {

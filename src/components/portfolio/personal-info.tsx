@@ -14,6 +14,7 @@ import {
   TwitterIcon,
   XIcon,
   YouTubeIcon,
+  SteamIcon,
 } from "@/components/icons";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { isContributor } from "@/utils/contributor";
@@ -222,6 +223,20 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
               />
 
               <span className="font-medium text-sm">YouTube</span>
+            </Link>
+          )}
+          {portfolioData.social.steam && (
+            <Link
+              isExternal
+              className="group flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 hover:shadow-md bg-gray-50 dark:bg-gray-900/20 hover:bg-gray-100 dark:hover:bg-gray-800/30 text-gray-700 dark:text-gray-300"
+              href={`https://steamcommunity.com/profiles/${portfolioData.social.steam}`}
+            >
+              <SteamIcon
+                className="group-hover:scale-110 transition-transform duration-200"
+                size={20}
+              />
+
+              <span className="font-medium text-sm">Steam</span>
             </Link>
           )}
         </div>
