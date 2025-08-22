@@ -60,21 +60,23 @@ export function BasicInfoForm({
           <label className="text-sm font-medium" htmlFor="bio">
             Bio
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
             <textarea
-              className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary sm:flex-1"
               id="bio"
               name="bio"
               placeholder="Write a short bio about yourself"
               value={portfolioData.bio}
               onChange={onBasicInfoChange}
             />
-            <AIBioGenerator
-              name={portfolioData.name}
-              skills={portfolioData.skills || []}
-              title={portfolioData.title}
-              onBioGenerated={handleBioGenerated}
-            />
+            <div className="w-full sm:w-64 sm:shrink-0">
+              <AIBioGenerator
+                name={portfolioData.name}
+                skills={portfolioData.skills || []}
+                title={portfolioData.title}
+                onBioGenerated={handleBioGenerated}
+              />
+            </div>
           </div>
         </div>
         <Input
