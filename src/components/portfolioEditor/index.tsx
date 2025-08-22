@@ -117,9 +117,9 @@ export function PortfolioEditor() {
         <Tab key="social" title="Social Links">
           <SocialLinksForm
             portfolioData={portfolioData}
+            onGithubSettingsChange={handleGithubSettingsChange}
             onSocialChange={handleSocialChange}
             onSocialSelectChange={handleSocialSelectChange}
-            onGithubSettingsChange={handleGithubSettingsChange}
           />
         </Tab>
 

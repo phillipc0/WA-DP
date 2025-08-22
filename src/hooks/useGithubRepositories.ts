@@ -81,8 +81,13 @@ export function useGithubRepositories({
         setLoading(true);
         setError(null);
 
-        const reposPerPage = portfolioData.githubSettings?.reposPerPage || REPO_PER_PAGE;
-        const repos = await fetchReposForSort(githubUsername, "updated", reposPerPage);
+        const reposPerPage =
+          portfolioData.githubSettings?.reposPerPage || REPO_PER_PAGE;
+        const repos = await fetchReposForSort(
+          githubUsername,
+          "updated",
+          reposPerPage,
+        );
 
         setReposCache((prev) => ({
           ...prev,
@@ -98,7 +103,11 @@ export function useGithubRepositories({
     };
 
     initializeRepos().catch(console.error);
-  }, [portfolioData?.social?.github, portfolioData?.githubSettings?.reposPerPage, portfolioLoading]);
+  }, [
+    portfolioData?.social?.github,
+    portfolioData?.githubSettings?.reposPerPage,
+    portfolioLoading,
+  ]);
 
   useEffect(() => {
     const loadReposForSort = async () => {
@@ -124,8 +133,13 @@ export function useGithubRepositories({
         setLoading(true);
         setError(null);
 
-        const reposPerPage = portfolioData.githubSettings?.reposPerPage || REPO_PER_PAGE;
-        const repos = await fetchReposForSort(githubUsername, sortBy, reposPerPage);
+        const reposPerPage =
+          portfolioData.githubSettings?.reposPerPage || REPO_PER_PAGE;
+        const repos = await fetchReposForSort(
+          githubUsername,
+          sortBy,
+          reposPerPage,
+        );
 
         setReposCache((prev) => ({
           ...prev,
@@ -141,7 +155,11 @@ export function useGithubRepositories({
     };
 
     loadReposForSort().catch(console.error);
-  }, [sortBy, portfolioData?.social?.github, portfolioData?.githubSettings?.reposPerPage]);
+  }, [
+    sortBy,
+    portfolioData?.social?.github,
+    portfolioData?.githubSettings?.reposPerPage,
+  ]);
 
   return {
     repositories: reposCache[sortBy] || [],

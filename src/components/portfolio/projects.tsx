@@ -47,6 +47,39 @@ function ProjectCard({ project, index, isCustom }: ProjectCardProps) {
 }
 
 /**
+ * Intersperses custom projects within a list of repositories.
+ * @param customProjects - The custom projects to intersperse.
+ * @param repositories - The list of repositories.
+ * @returns A combined list of projects.
+ */
+function interleaveProjects(
+  customProjects: CustomProject[],
+  repositories: Repository[],
+): (CustomProject | Repository)[] {
+  const interleavedProjects: (CustomProject | Repository)[] = [];
+  let customProjectIndex = 0;
+  const interleaveInterval = 5;
+
+  for (let i = 0; i < repositories.length; i++) {
+    interleavedProjects.push(repositories[i]);
+    if (
+      (i + 1) % interleaveInterval === 0 &&
+      customProjectIndex < customProjects.length
+    ) {
+      interleavedProjects.push(customProjects[customProjectIndex]);
+      customProjectIndex++;
+    }
+  }
+
+  // Add any remaining custom projects at the end
+  if (customProjectIndex < customProjects.length) {
+    interleavedProjects.push(...customProjects.slice(customProjectIndex));
+  }
+
+  return interleavedProjects;
+}
+
+/**
  * Combined projects component that displays GitHub repositories and custom projects
  * @param props - Component props
  * @param props.refreshTrigger - Optional trigger to refresh data
@@ -69,7 +102,7 @@ export function Projects({ refreshTrigger }: ProjectsProps) {
   }
 
   const customProjects = portfolioData.customProjects || [];
-  const allProjects = [...customProjects, ...repositories];
+  const allProjects = interleaveProjects(customProjects, repositories);
   const hasCustomProjects = customProjects.length > 0;
   const hasAnyProjects = hasGithubUsername || hasCustomProjects;
 

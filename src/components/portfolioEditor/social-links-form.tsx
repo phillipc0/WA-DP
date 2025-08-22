@@ -16,6 +16,7 @@ interface SocialLinksFormProps {
  * @param props.portfolioData - Portfolio data containing social media information
  * @param props.onSocialChange - Function to handle social media input changes
  * @param props.onSocialSelectChange - Optional function to handle social platform selection changes
+ * @param props.onGithubSettingsChange - Optional function to handle github settings changes
  * @returns JSX element containing social media links form
  */
 export function SocialLinksForm({
@@ -30,30 +31,36 @@ export function SocialLinksForm({
         <h2 className="text-xl font-bold">Social Media Profiles</h2>
       </CardHeader>
       <CardBody className="gap-4">
-        <Input
-          label="GitHub Username"
-          name="github"
-          placeholder="Your GitHub username"
-          startContent={
-            <span className="text-default-400 whitespace-nowrap">
-              github.com/
-            </span>
-          }
-          value={portfolioData.social.github}
-          onChange={onSocialChange}
-        />
-        <Input
-          label="GitHub Repositories to Display"
-          type="number"
-          min="1"
-          max="20"
-          placeholder="4"
-          value={portfolioData.githubSettings?.reposPerPage?.toString() || "4"}
-          onChange={(e) => {
-            const value = parseInt(e.target.value) || 4;
-            onGithubSettingsChange?.("reposPerPage", value);
-          }}
-        />
+        <div className="flex gap-4">
+          <Input
+            className="flex-1"
+            label="GitHub Username"
+            name="github"
+            placeholder="Your GitHub username"
+            startContent={
+              <span className="text-default-400 whitespace-nowrap">
+                github.com/
+              </span>
+            }
+            value={portfolioData.social.github}
+            onChange={onSocialChange}
+          />
+          <Input
+            className="w-32"
+            label="Repository Count"
+            max="20"
+            min="1"
+            placeholder="4"
+            type="number"
+            value={
+              portfolioData.githubSettings?.reposPerPage?.toString() || "4"
+            }
+            onChange={(e) => {
+              const value = parseInt(e.target.value) || 4;
+              onGithubSettingsChange?.("reposPerPage", value);
+            }}
+          />
+        </div>
         <div className="flex gap-2">
           <Select
             className="w-32"
