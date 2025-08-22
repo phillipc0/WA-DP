@@ -20,7 +20,12 @@ export function CustomProjectCard({ project, index }: CustomProjectCardProps) {
   return (
     <Card
       key={`custom-${project.id}`}
+      isHoverable
+      as={project.url ? Link : undefined}
       className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30 repo-card-enter"
+      href={project.url}
+      isExternal={!!project.url}
+      isPressable={!!project.url}
       style={{
         animationDelay: `${index * 100}ms`,
       }}
@@ -39,15 +44,33 @@ export function CustomProjectCard({ project, index }: CustomProjectCardProps) {
                 isExternal
                 className="text-sm text-primary hover:text-primary-600 transition-colors duration-200 mt-1 py-0.5 inline-block"
                 href={project.url}
+                onClick={(e) => e.stopPropagation()}
               >
                 🔗 {project.url}
               </Link>
             )}
           </div>
-          <div className="ml-4 flex flex-col items-end">
+          <div className="ml-4 flex flex-col items-end gap-2">
             <div className="bg-default-100 px-2 py-1 rounded text-xs font-medium text-default-600">
               Custom
             </div>
+            {project.url && (
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <svg
+                  className="w-5 h-5 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+              </div>
+            )}
           </div>
         </div>
 
