@@ -175,7 +175,9 @@ describe("PortfolioEditor", () => {
 
     // Click on the desktop tab specifically (inside the tabs container)
     const tablist = screen.getByRole("tablist");
-    const socialTab = screen.getAllByText("Social Links").find(tab => tablist.contains(tab));
+    const socialTab = screen
+      .getAllByText("Social Links")
+      .find((tab) => tablist.contains(tab));
     expect(socialTab).toBeDefined();
     fireEvent.click(socialTab!);
 
@@ -188,7 +190,9 @@ describe("PortfolioEditor", () => {
 
     // Click on the desktop tab specifically (inside the tabs container)
     const tablist = screen.getByRole("tablist");
-    const skillsTab = screen.getAllByText("Skills").find(tab => tablist.contains(tab));
+    const skillsTab = screen
+      .getAllByText("Skills")
+      .find((tab) => tablist.contains(tab));
     expect(skillsTab).toBeDefined();
     fireEvent.click(skillsTab!);
 
@@ -288,7 +292,9 @@ describe("PortfolioEditor", () => {
 
     // Click on the desktop tab specifically (inside the tabs container)
     const tablist = screen.getByRole("tablist");
-    const socialTab = screen.getAllByText("Social Links").find(tab => tablist.contains(tab));
+    const socialTab = screen
+      .getAllByText("Social Links")
+      .find((tab) => tablist.contains(tab));
     expect(socialTab).toBeDefined();
     fireEvent.click(socialTab!);
 
@@ -301,7 +307,9 @@ describe("PortfolioEditor", () => {
 
     // Click on the desktop tab specifically (inside the tabs container)
     const tablist = screen.getByRole("tablist");
-    const skillsTab = screen.getAllByText("Skills").find(tab => tablist.contains(tab));
+    const skillsTab = screen
+      .getAllByText("Skills")
+      .find((tab) => tablist.contains(tab));
     expect(skillsTab).toBeDefined();
     fireEvent.click(skillsTab!);
 
@@ -326,19 +334,25 @@ describe("PortfolioEditor", () => {
     const tablist = screen.getByRole("tablist");
 
     // Switch to Social Links tab
-    const socialTab = screen.getAllByText("Social Links").find(tab => tablist.contains(tab));
+    const socialTab = screen
+      .getAllByText("Social Links")
+      .find((tab) => tablist.contains(tab));
     expect(socialTab).toBeDefined();
     fireEvent.click(socialTab!);
     expect(screen.getByText("Social Media Profiles")).toBeInTheDocument();
 
     // Switch to Skills tab
-    const skillsTab = screen.getAllByText("Skills").find(tab => tablist.contains(tab));
+    const skillsTab = screen
+      .getAllByText("Skills")
+      .find((tab) => tablist.contains(tab));
     expect(skillsTab).toBeDefined();
     fireEvent.click(skillsTab!);
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
 
     // Switch back to Basic Information
-    const basicTab = screen.getAllByText("Basic Information").find(tab => tablist.contains(tab));
+    const basicTab = screen
+      .getAllByText("Basic Information")
+      .find((tab) => tablist.contains(tab));
     expect(basicTab).toBeDefined();
     fireEvent.click(basicTab!);
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
