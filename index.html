@@ -2,6 +2,25 @@
 <html lang="en">
   <head>
     <script>
+      if (!window.__tStart) {
+        window.__tStart = Date.now() % 1000;
+      }
+
+      function oneSecondBucket() {
+        return Math.floor((Date.now() - window.__tStart) / 1000);
+      }
+
+      const l = document.createElement("link");
+      l.rel = "preload";
+      l.as = "fetch";
+      l.href = `/portfolio.json?_t=${oneSecondBucket()}`;
+      l.type = "application/json";
+      l.crossOrigin = "anonymous";
+      document.head.appendChild(l);
+
+      window.getPortfolioUrl = () => `/portfolio.json?_t=${oneSecondBucket()}`;
+    </script>
+    <script>
       (function () {
         try {
           const theme = localStorage.getItem("heroui-theme") || "light";
@@ -14,13 +33,6 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="preload"
-      href="/portfolio.json"
-      as="fetch"
-      type="application/json"
-      crossorigin="anonymous"
-    />
     <link
       rel="preload"
       href="/assets/favicon.svg"
