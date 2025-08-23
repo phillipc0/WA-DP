@@ -11,6 +11,11 @@ const sanitizeInput = (input: string): string => {
     .substring(0, 200); // Limit length
 };
 
+/**
+ * Handles bio generation requests using Gemini AI API
+ * @param req - Authenticated request containing name, title, and skills
+ * @param res - API response object
+ */
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -48,7 +53,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     }
 
     // Define skill level priority (higher number = higher proficiency)
-    const skillLevelPriority = {
+    const skillLevelPriority: Record<string, number> = {
       Master: 5,
       Expert: 4,
       Advanced: 3,
