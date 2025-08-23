@@ -456,20 +456,22 @@ describe("PortfolioEditor", () => {
 
     // Check if the Contributors tab exists for contributors
     const contributorTabs = screen.queryAllByText("Contributor");
-    
+
     if (contributorTabs.length > 0) {
       const tablist = screen.getByRole("tablist");
-      const contributorTab = contributorTabs.find((tab) => tablist.contains(tab));
-      
+      const contributorTab = contributorTabs.find((tab) =>
+        tablist.contains(tab),
+      );
+
       if (contributorTab) {
         // Click the tab - this tests that the contributor switch case executes without error
         expect(() => fireEvent.click(contributorTab)).not.toThrow();
-        
+
         // Verify that contributor tab exists and can be clicked
         expect(contributorTab).toBeInTheDocument();
       }
     } else {
-      // For non-contributors, the tab should not exist  
+      // For non-contributors, the tab should not exist
       expect(contributorTabs).toHaveLength(0);
     }
   });
