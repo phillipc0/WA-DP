@@ -2,6 +2,12 @@ import { authenticatedFetch } from "./auth";
 
 let pendingRequest: Promise<JSON | null> | null = null;
 
+declare global {
+  interface Window {
+    getPortfolioUrl: () => string;
+  }
+}
+
 export const getPortfolioData = async (): Promise<JSON | null> => {
   if (pendingRequest) {
     return pendingRequest;
@@ -9,9 +15,9 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
 
   pendingRequest = (async () => {
     try {
-      // Add cache busting to prevent stale data after server restart
-      const cacheBuster = new Date().getTime();
-      const response = await fetch(`/portfolio.json?_t=${cacheBuster}`, {
+      // Add cache busting to prevent stale data after portfolio changes
+      // The cache only gets used if the file is requested again within 1 second
+      const response = await fetch(window.getPortfolioUrl(), {
         method: "GET",
       });
 
