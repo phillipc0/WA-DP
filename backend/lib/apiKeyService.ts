@@ -3,8 +3,47 @@ import path from "path";
 import crypto from "crypto";
 
 const USERS_FILE = path.join(process.cwd(), "users.json");
-const ENCRYPTION_KEY =
-  process.env.ENCRYPTION_KEY || "fallback-key-change-in-production";
+const ENV_FILE = path.join(process.cwd(), ".env.local");
+
+// Generate a secure random encryption key
+const generateEncryptionKey = (): string => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+// Initialize or load encryption key
+const initializeEncryptionKey = (): string => {
+  // Check if ENCRYPTION_KEY is already set in environment
+  if (process.env.ENCRYPTION_KEY) {
+    return process.env.ENCRYPTION_KEY;
+  }
+
+  // Check if .env.local exists and has ENCRYPTION_KEY
+  if (fs.existsSync(ENV_FILE)) {
+    const envContent = fs.readFileSync(ENV_FILE, "utf8");
+    const keyMatch = envContent.match(/^ENCRYPTION_KEY=(.+)$/m);
+    if (keyMatch && keyMatch[1]) {
+      // Set it in process.env for this session
+      process.env.ENCRYPTION_KEY = keyMatch[1];
+      return keyMatch[1];
+    }
+  }
+
+  // Generate new key and save to .env.local
+  const newKey = generateEncryptionKey();
+  const envContent = fs.existsSync(ENV_FILE)
+    ? fs.readFileSync(ENV_FILE, "utf8") + "\n"
+    : "# Auto-generated environment variables\n";
+
+  const newEnvContent = envContent + `ENCRYPTION_KEY=${newKey}\n`;
+  fs.writeFileSync(ENV_FILE, newEnvContent);
+
+  // Set it in process.env for this session
+  process.env.ENCRYPTION_KEY = newKey;
+
+  return newKey;
+};
+
+const ENCRYPTION_KEY = initializeEncryptionKey();
 
 // Encrypt API key
 export const encryptApiKey = (apiKey: string): string => {

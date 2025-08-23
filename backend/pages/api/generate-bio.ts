@@ -97,11 +97,12 @@ Skills with proficiency levels: ${skillsList}
 The bio should be concise (2-3 sentences), professional, and highlight the person's expertise based on their skills and proficiency levels. Write in first person without any other context around like "Here is a Bio for...".`;
 
     // Call the Google Gemini API with a supported model
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent`;
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_API_KEY,
       },
       body: JSON.stringify({
         contents: [
