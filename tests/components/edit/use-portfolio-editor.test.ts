@@ -260,7 +260,7 @@ describe("usePortfolioEditor", () => {
 
     act(() => {
       result.current.handleSkillChange({
-        target: { name: "level", value: "85" },
+        target: { name: "level", value: "1" },
       } as React.ChangeEvent<HTMLInputElement>);
     });
 
@@ -272,9 +272,12 @@ describe("usePortfolioEditor", () => {
     expect(result.current.portfolioData.skills).toHaveLength(1);
     expect(result.current.portfolioData.skills[0]).toEqual({
       name: "React",
-      level: 85,
+      level: 1,
     });
-    expect(result.current.newSkill).toEqual({ name: "", level: 50 });
+    expect(result.current.newSkill).toEqual({
+      name: "",
+      level: "Intermediate",
+    });
   });
 
   it("handles removing skill", async () => {
@@ -309,10 +312,10 @@ describe("usePortfolioEditor", () => {
 
     // Change skill level
     act(() => {
-      result.current.handleSkillLevelChange(0, 95);
+      result.current.handleSkillLevelChange(0, "Master");
     });
 
-    expect(result.current.portfolioData.skills[0].level).toBe(95);
+    expect(result.current.portfolioData.skills[0].level).toBe("Master");
   });
 
   it("handles skill name change", async () => {
@@ -468,22 +471,6 @@ describe("usePortfolioEditor", () => {
     });
 
     expect(result.current.portfolioData.skills).toHaveLength(0);
-  });
-
-  it("handles avatar URL change by setting isUploadedImage to false", async () => {
-    const { result } = renderHook(() => usePortfolioEditor());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    act(() => {
-      result.current.handleBasicInfoChange({
-        target: { name: "avatar", value: "new-url.jpg" },
-      } as React.ChangeEvent<HTMLInputElement>);
-    });
-
-    expect(result.current.isUploadedImage).toBe(false);
   });
 
   // Experience/CV Tests
@@ -917,7 +904,7 @@ describe("usePortfolioEditor", () => {
 
     // These should not throw errors when portfolio data is null
     act(() => {
-      result.current.handleSkillLevelChange(0, 50);
+      result.current.handleSkillLevelChange(0, "Intermediate");
     });
 
     act(() => {

@@ -14,8 +14,6 @@ describe("BasicInfoForm", () => {
 
   const defaultProps = {
     portfolioData: mockPortfolioData,
-    useUrlForAvatar: true,
-    isUploadedImage: false,
     onBasicInfoChange: vi.fn(),
     onFileSelect: vi.fn(),
     onToggleAvatarMode: vi.fn(),
@@ -91,8 +89,28 @@ describe("BasicInfoForm", () => {
     );
   });
 
-  it("shows URL input when useUrlForAvatar is true", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
+  it("renders fallback avatar SVG when avatar URL is empty", () => {
+    const props = {
+      ...defaultProps,
+      portfolioData: { ...defaultProps.portfolioData, avatar: "" },
+    };
+
+    render(<BasicInfoForm {...props} />);
+
+    // No <img> with alt when empty
+    expect(
+      screen.queryByAltText("John Doe profile preview"),
+    ).not.toBeInTheDocument();
+
+    // Fallback uses role img and aria-label
+    const fallback = screen.getByRole("img", {
+      name: "John Doe profile preview",
+    });
+    expect(fallback).toBeInTheDocument();
+  });
+
+  it("shows URL input is true", () => {
+    render(<BasicInfoForm {...defaultProps} />);
 
     expect(
       screen.getByPlaceholderText("URL to your profile picture"),
@@ -100,93 +118,13 @@ describe("BasicInfoForm", () => {
     expect(screen.queryByText("Select Image")).not.toBeInTheDocument();
   });
 
-  it("shows file upload button when useUrlForAvatar is false", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={false} />);
-
-    expect(screen.getByText("Select Image")).toBeInTheDocument();
-    expect(
-      screen.queryByPlaceholderText("URL to your profile picture"),
-    ).not.toBeInTheDocument();
-  });
-
-  it("calls onToggleAvatarMode when switch is toggled", () => {
-    const onToggleAvatarMode = vi.fn();
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        onToggleAvatarMode={onToggleAvatarMode}
-      />,
-    );
-
-    const switchElement = screen.getByRole("switch");
-    fireEvent.click(switchElement);
-
-    expect(onToggleAvatarMode).toHaveBeenCalledOnce();
-  });
-
-  it("shows empty avatar URL input when isUploadedImage is true", () => {
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        useUrlForAvatar={true}
-        isUploadedImage={true}
-      />,
-    );
-
-    const avatarInput = screen.getByPlaceholderText(
-      "URL to your profile picture",
-    );
-    expect(avatarInput).toHaveValue("");
-  });
-
-  it("shows actual avatar URL when isUploadedImage is false", () => {
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        useUrlForAvatar={true}
-        isUploadedImage={false}
-      />,
-    );
+  it("shows actual avatar URL, when one was entered", () => {
+    render(<BasicInfoForm {...defaultProps} />);
 
     const avatarInput = screen.getByPlaceholderText(
       "URL to your profile picture",
     );
     expect(avatarInput).toHaveValue("https://example.com/avatar.jpg");
-  });
-
-  it("calls onFileSelect when file is selected", () => {
-    const onFileSelect = vi.fn();
-    render(
-      <BasicInfoForm
-        {...defaultProps}
-        useUrlForAvatar={false}
-        onFileSelect={onFileSelect}
-      />,
-    );
-
-    // Create a mock file
-    const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
-
-    // Get the hidden file input
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    const fileInput = fileInputs[0] as HTMLInputElement;
-
-    // Create a mock event
-    Object.defineProperty(fileInput, "files", {
-      value: [file],
-      writable: false,
-    });
-
-    fireEvent.change(fileInput);
-
-    expect(onFileSelect).toHaveBeenCalledOnce();
-  });
-
-  it("renders switch component", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={true} />);
-
-    const switchElement = screen.getByRole("switch");
-    expect(switchElement).toBeInTheDocument();
   });
 
   it("has proper form field types", () => {
@@ -200,13 +138,5 @@ describe("BasicInfoForm", () => {
     render(<BasicInfoForm {...defaultProps} />);
 
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
-  });
-
-  it("has proper file input attributes", () => {
-    render(<BasicInfoForm {...defaultProps} useUrlForAvatar={false} />);
-
-    const fileInput = document.querySelector('input[type="file"]');
-    expect(fileInput).toHaveAttribute("accept", "image/*");
-    expect(fileInput).toHaveClass("hidden");
   });
 });

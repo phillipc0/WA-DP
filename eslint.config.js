@@ -6,6 +6,7 @@ import _import from "eslint-plugin-import";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import jsxA11Y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-plugin-prettier";
+import jsdoc from "eslint-plugin-jsdoc";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
@@ -62,6 +63,7 @@ export default defineConfig([
       "@typescript-eslint": typescriptEslint,
       "jsx-a11y": fixupPluginRules(jsxA11Y),
       prettier: fixupPluginRules(prettier),
+      jsdoc: fixupPluginRules(jsdoc),
     },
 
     languageOptions: {
@@ -161,6 +163,50 @@ export default defineConfig([
           reservedFirst: true,
         },
       ],
+
+      // JSDoc rules
+      "jsdoc/check-access": "warn",
+      "jsdoc/check-alignment": "warn",
+      "jsdoc/check-param-names": "warn",
+      "jsdoc/check-property-names": "warn",
+      "jsdoc/check-tag-names": "warn",
+      "jsdoc/check-types": "warn",
+      "jsdoc/check-values": "warn",
+      "jsdoc/empty-tags": "warn",
+      "jsdoc/implements-on-classes": "warn",
+      "jsdoc/multiline-blocks": "warn",
+      "jsdoc/no-multi-asterisks": "warn",
+      "jsdoc/no-undefined-types": "warn",
+      "jsdoc/require-jsdoc": [
+        "warn",
+        {
+          require: {
+            FunctionDeclaration: true,
+            FunctionExpression: false,
+            ArrowFunctionExpression: false,
+            ClassDeclaration: true,
+            MethodDefinition: true,
+          },
+          exemptEmptyFunctions: true,
+          checkConstructors: false,
+        },
+      ],
+      "jsdoc/require-param": "warn",
+      "jsdoc/require-param-description": "warn",
+      "jsdoc/require-param-name": "warn",
+      "jsdoc/require-param-type": "off", // Turn off for TypeScript projects
+      "jsdoc/require-property": "warn",
+      "jsdoc/require-property-description": "warn",
+      "jsdoc/require-property-name": "warn",
+      "jsdoc/require-property-type": "off", // Turn off for TypeScript projects
+      "jsdoc/require-returns": "warn",
+      "jsdoc/require-returns-check": "warn",
+      "jsdoc/require-returns-description": "warn",
+      "jsdoc/require-returns-type": "off", // Turn off for TypeScript projects
+      "jsdoc/require-yields": "warn",
+      "jsdoc/require-yields-check": "warn",
+      "jsdoc/tag-lines": "warn",
+      "jsdoc/valid-types": "warn",
     },
   },
 ]);

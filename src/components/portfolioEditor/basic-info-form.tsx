@@ -1,30 +1,27 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { Switch } from "@heroui/switch";
+
+import { AvatarPlaceholderIcon } from "@/components/icons";
 
 interface BasicInfoFormProps {
   portfolioData: any;
-  useUrlForAvatar: boolean;
-  isUploadedImage: boolean;
   onBasicInfoChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
-  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onToggleAvatarMode: () => void;
 }
 
+/**
+ * Form component for editing basic portfolio information
+ * @param props - Component props
+ * @param props.portfolioData - Current portfolio data
+ * @param props.onBasicInfoChange - Handler for basic info changes
+ * @returns Basic info form component
+ */
 export function BasicInfoForm({
   portfolioData,
-  useUrlForAvatar,
-  isUploadedImage,
   onBasicInfoChange,
-  onFileSelect,
-  onToggleAvatarMode,
 }: BasicInfoFormProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   return (
     <Card className="mt-4">
       <CardHeader>
@@ -76,54 +73,34 @@ export function BasicInfoForm({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Profile Picture</span>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-default-500">URL</span>
-              <Switch
-                checked={!useUrlForAvatar}
-                onChange={onToggleAvatarMode}
-              />
-              <span className="text-sm text-default-500">Upload</span>
-            </div>
           </div>
 
           <div className="flex gap-4 items-start">
-            <img
-              alt={`${portfolioData.name || "User"} profile preview`}
-              className="w-20 h-20 rounded-full bg-zinc-800"
-              src={portfolioData.avatar}
-            />
-
-            {useUrlForAvatar ? (
-              <Input
-                className="flex-1"
-                description="Enter a URL to your profile image"
-                label="Avatar URL"
-                name="avatar"
-                placeholder="URL to your profile picture"
-                value={isUploadedImage ? "" : portfolioData.avatar}
-                onChange={onBasicInfoChange}
+            {portfolioData.avatar && portfolioData.avatar.trim() !== "" ? (
+              <img
+                alt={`${portfolioData.name || "User"} profile preview`}
+                className="w-20 h-20 rounded-full bg-zinc-800 object-cover"
+                src={portfolioData.avatar}
               />
             ) : (
-              <div className="flex-1">
-                <input
-                  ref={fileInputRef}
-                  accept="image/*"
-                  aria-label="Select profile picture image file"
-                  className="hidden"
-                  type="file"
-                  onChange={onFileSelect}
-                />
-                <Button
-                  className="mb-2"
-                  onPress={() => fileInputRef.current?.click()}
-                >
-                  Select Image
-                </Button>
-                <p className="text-sm text-default-500">
-                  Select an image to upload for your profile picture
-                </p>
+              <div
+                aria-label={`${portfolioData.name || "User"} profile preview`}
+                className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
+                role="img"
+              >
+                <AvatarPlaceholderIcon className="w-10 h-10" />
               </div>
             )}
+
+            <Input
+              className="flex-1"
+              description="Enter a URL to your profile image"
+              label="Avatar URL"
+              name="avatar"
+              placeholder="URL to your profile picture"
+              value={portfolioData.avatar}
+              onChange={onBasicInfoChange}
+            />
           </div>
         </div>
       </CardBody>

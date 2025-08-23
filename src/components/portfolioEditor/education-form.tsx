@@ -21,6 +21,22 @@ interface EducationFormProps {
   handleEducationDragEnd: (e: React.DragEvent) => void;
 }
 
+/**
+ * Form component for managing education entries
+ * @param props - Component props
+ * @param props.newEducation - New education entry being created
+ * @param props.portfolioData - Portfolio data containing existing education entries
+ * @param props.handleAddEducation - Function to add new education entry
+ * @param props.handleRemoveEducation - Function to remove education entry by index
+ * @param props.handleEditEducation - Function to edit education entry by index
+ * @param props.handleEducationChange - Function to handle education input changes
+ * @param props.handleEducationDragStart - Function to handle drag start for reordering
+ * @param props.handleEducationDragOver - Function to handle drag over for reordering
+ * @param props.handleEducationDragLeave - Function to handle drag leave for reordering
+ * @param props.handleEducationDrop - Function to handle drop for reordering
+ * @param props.handleEducationDragEnd - Function to handle drag end for reordering
+ * @returns JSX element containing education form
+ */
 export default function EducationForm({
   newEducation,
   portfolioData,

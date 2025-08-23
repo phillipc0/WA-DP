@@ -97,7 +97,7 @@ When(
 );
 
 When(
-  "I add a new skill {string} with level {int}",
+  "I add a new skill {string} with level {int} of 4",
   (skillName: string, level: number) => {
     // Click on Skills tab
     cy.get('[data-key="skills"]').click();
@@ -107,7 +107,7 @@ When(
 
     // Add new skill
     cy.get('input[name="name"]').last().type(skillName);
-    cy.get('input[name="level"]').clear().type(level.toString());
+    cy.get('input[name="level"]').type(level.toString(), { force: true });
     cy.contains("Add Skill").click();
   },
 );
