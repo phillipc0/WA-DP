@@ -92,7 +92,7 @@
     "jsdom": "^26.1.0",
     "madge": "^8.0.0",
     "postcss": "8.5.6",
-    "prettier": "3.5.3",
+    "prettier": "3.6.2",
     "sonar-scanner": "^3.1.0",
     "ts-loader": "^9.5.2",
     "typescript": "5.9.2",
