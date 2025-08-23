@@ -32,25 +32,3 @@ export interface Education {
   location: string;
   description: string;
 }
-
-//TODO: consider removing or using this
-export interface PortfolioData {
-  name: string;
-  title: string;
-  bio: string;
-  location: string;
-  email: string;
-  avatar: string;
-  social: {
-    github: string;
-    twitter: string;
-    twitterPlatform: "twitter" | "x";
-    linkedin: string;
-    discord: string;
-    reddit: string;
-    youtube: string;
-  };
-  skills: Skill[];
-  cv: Experience[];
-  education: Education[];
-}
