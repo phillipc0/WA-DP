@@ -1,3 +1,5 @@
+import { SKILL_LEVELS } from "@/utils/skills.ts";
+
 /**
  * Downloads JSON data as a file
  * @param data - Data to download as JSON
@@ -93,12 +95,11 @@ export function validatePortfolioData(data: any): {
         }
         if (skill.level !== undefined && skill.level !== null) {
           if (
-            typeof skill.level !== "number" ||
-            skill.level < 0 ||
-            skill.level > 100
+            typeof skill.level !== "string" ||
+            !SKILL_LEVELS.includes(skill.level)
           ) {
             errors.push(
-              `Skill ${index + 1}: level must be a number between 0 and 100`,
+              `Skill ${index + 1}: level must be a valid level, such as "Beginner"`,
             );
           }
         }
