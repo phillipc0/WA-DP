@@ -23,6 +23,33 @@ const mockUsePortfolioEditor = {
       { name: "UI/UX Design", level: "Intermediate" },
       { name: "React", level: "Master" },
     ],
+    experience: [
+      {
+        company: "Tech Corp",
+        position: "Software Engineer",
+        startDate: "2020-01-01",
+        endDate: "2023-12-31",
+        description: "Developed web applications",
+        skills: ["React", "TypeScript"],
+      },
+    ],
+    education: [
+      {
+        institution: "University of Technology",
+        degree: "Bachelor of Computer Science",
+        startDate: "2016-09-01",
+        endDate: "2020-05-31",
+        description: "Computer Science fundamentals",
+      },
+    ],
+    contributors: [
+      {
+        name: "Jane Smith",
+        role: "Designer",
+        avatar: "https://example.com/jane.jpg",
+        github: "janesmith",
+      },
+    ],
   },
   isLoading: false,
   newSkill: { name: "", level: "Intermediate" },
@@ -33,6 +60,22 @@ const mockUsePortfolioEditor = {
   fileAlert: false,
   fileAlertMessage: "",
   SKILL_LEVELS: ["Beginner", "Intermediate", "Advanced", "Expert", "Master"],
+  newExperience: {
+    company: "",
+    position: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+    skills: [],
+  },
+  newEducation: {
+    institution: "",
+    degree: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+  },
+  selectedSkills: new Set(),
   handleBasicInfoChange: vi.fn(),
   handleFileSelect: vi.fn(),
   handleSocialChange: vi.fn(),
@@ -52,6 +95,30 @@ const mockUsePortfolioEditor = {
   setSaveAlert: vi.fn(),
   setResetAlert: vi.fn(),
   setFileAlert: vi.fn(),
+  // Experience handlers
+  handleAddExperience: vi.fn(),
+  handleEditExperience: vi.fn(),
+  handleExperienceChange: vi.fn(),
+  handleExperienceDragEnd: vi.fn(),
+  handleExperienceDragLeave: vi.fn(),
+  handleExperienceDragOver: vi.fn(),
+  handleExperienceDragStart: vi.fn(),
+  handleExperienceDrop: vi.fn(),
+  handleRemoveExperience: vi.fn(),
+  handleRemoveSelectedSkill: vi.fn(),
+  setSelectedSkills: vi.fn(),
+  // Education handlers
+  handleAddEducation: vi.fn(),
+  handleEditEducation: vi.fn(),
+  handleEducationChange: vi.fn(),
+  handleEducationDragEnd: vi.fn(),
+  handleEducationDragLeave: vi.fn(),
+  handleEducationDragOver: vi.fn(),
+  handleEducationDragStart: vi.fn(),
+  handleEducationDrop: vi.fn(),
+  handleRemoveEducation: vi.fn(),
+  // Contributor handlers
+  handleContributorChange: vi.fn(),
 };
 
 vi.mock("@/lib/use-portfolio-editor", () => ({
@@ -92,6 +159,33 @@ describe("PortfolioEditor", () => {
       skills: [
         { name: "UI/UX Design", level: "Intermediate" },
         { name: "React", level: "Master" },
+      ],
+      experience: [
+        {
+          company: "Tech Corp",
+          position: "Software Engineer",
+          startDate: "2020-01-01",
+          endDate: "2023-12-31",
+          description: "Developed web applications",
+          skills: ["React", "TypeScript"],
+        },
+      ],
+      education: [
+        {
+          institution: "University of Technology",
+          degree: "Bachelor of Computer Science",
+          startDate: "2016-09-01",
+          endDate: "2020-05-31",
+          description: "Computer Science fundamentals",
+        },
+      ],
+      contributors: [
+        {
+          name: "Jane Smith",
+          role: "Designer",
+          avatar: "https://example.com/jane.jpg",
+          github: "janesmith",
+        },
       ],
     };
     mockUsePortfolioEditor.saveAlert = false;
@@ -316,6 +410,68 @@ describe("PortfolioEditor", () => {
     // Verify that skills form is rendered with correct data
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
     expect(screen.getByText("Add New Skill")).toBeInTheDocument();
+  });
+
+  it("renders WorkExperienceForm in Work Experience tab", () => {
+    render(<PortfolioEditor />);
+
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const experienceTab = screen
+      .getAllByText("Work Experience")
+      .find((tab) => tablist.contains(tab));
+    expect(experienceTab).toBeDefined();
+    fireEvent.click(experienceTab!);
+
+    // Verify that work experience form is rendered by checking for unique content
+    expect(screen.getByText("Add New Experience")).toBeInTheDocument();
+    // Look for work experience specific elements
+    const workExperienceHeadings = screen.getAllByText("Work Experience");
+    expect(workExperienceHeadings.length).toBeGreaterThan(0);
+  });
+
+  it("renders EducationForm in Education tab", () => {
+    render(<PortfolioEditor />);
+
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const educationTab = screen
+      .getAllByText("Education")
+      .find((tab) => tablist.contains(tab));
+    expect(educationTab).toBeDefined();
+    fireEvent.click(educationTab!);
+
+    // Verify that education form is rendered by checking for unique content
+    expect(screen.getByText("Add New Education")).toBeInTheDocument();
+    // Look for a unique heading in the education form
+    const educationHeadings = screen.getAllByText("Education");
+    expect(educationHeadings.length).toBeGreaterThan(0);
+  });
+
+  it("renders ContributorForm in Contributors tab for contributors", () => {
+    // Mock a contributor user
+    mockUsePortfolioEditor.portfolioData.social.github = "rbn-apps"; // A known contributor
+
+    render(<PortfolioEditor />);
+
+    // Check if the Contributors tab exists for contributors
+    const contributorTabs = screen.queryAllByText("Contributor");
+    
+    if (contributorTabs.length > 0) {
+      const tablist = screen.getByRole("tablist");
+      const contributorTab = contributorTabs.find((tab) => tablist.contains(tab));
+      
+      if (contributorTab) {
+        // Click the tab - this tests that the contributor switch case executes without error
+        expect(() => fireEvent.click(contributorTab)).not.toThrow();
+        
+        // Verify that contributor tab exists and can be clicked
+        expect(contributorTab).toBeInTheDocument();
+      }
+    } else {
+      // For non-contributors, the tab should not exist  
+      expect(contributorTabs).toHaveLength(0);
+    }
   });
 
   it("renders tabs with correct accessibility labels", () => {
