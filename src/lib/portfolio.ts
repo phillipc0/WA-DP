@@ -21,7 +21,6 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
 
   pendingRequest = (async () => {
     try {
-      //none
       const response = await fetch("/portfolio.json", {
         method: "GET",
       });
