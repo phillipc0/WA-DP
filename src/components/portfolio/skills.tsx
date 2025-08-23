@@ -43,7 +43,7 @@ export function Skills({ refreshTrigger }: SkillsProps) {
         </div>
       </CardHeader>
       <CardBody className="p-4">
-        <div className="grid gap-4">
+        <div className="grid gap-4 overflow-hidden">
           {portfolioData.skills.map((skill: any, index: number) => (
             <SkillCard
               key={`${skill.name}-${index}`}
@@ -76,7 +76,10 @@ function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
   return (
     <Card
       isHoverable
-      className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30"
+      className="group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-default-200/50 hover:border-primary/30 skill-card-enter"
+      style={{
+        animationDelay: `${index * 100}ms`,
+      }}
     >
       <CardBody className="py-2.5 px-3">
         <div className="flex items-center justify-between mb-3">

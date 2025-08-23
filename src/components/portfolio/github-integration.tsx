@@ -237,7 +237,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
         ) : reposCache[sortBy].length === 0 ? (
           <div>No repositories found</div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-4 overflow-hidden">
             {reposCache[sortBy].map((repo, index) => (
               <Card
                 key={repo.id}
