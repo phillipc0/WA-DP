@@ -227,7 +227,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
           </Dropdown>
         </div>
       </CardHeader>
-      <CardBody>
+      <CardBody className="overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-8">
             <Spinner size="lg" />
@@ -237,7 +237,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
         ) : reposCache[sortBy].length === 0 ? (
           <div>No repositories found</div>
         ) : (
-          <div className="grid gap-4 overflow-visible">
+          <div className="grid gap-4 p-1">
             {reposCache[sortBy].map((repo, index) => (
               <Card
                 key={repo.id}

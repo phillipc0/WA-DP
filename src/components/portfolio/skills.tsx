@@ -42,8 +42,8 @@ export function Skills({ refreshTrigger }: SkillsProps) {
           <h2 className="text-xl font-bold text-foreground">Skills</h2>
         </div>
       </CardHeader>
-      <CardBody className="p-4">
-        <div className="grid gap-4 overflow-visible">
+      <CardBody className="p-4 overflow-hidden">
+        <div className="grid gap-4 p-1">
           {portfolioData.skills.map((skill: any, index: number) => (
             <SkillCard
               key={`${skill.name}-${index}`}
