@@ -2,6 +2,8 @@ import React from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 
+import { AIBioGenerator } from "./ai-bio-generator";
+
 import { AvatarPlaceholderIcon } from "@/components/icons";
 
 interface BasicInfoFormProps {
@@ -22,6 +24,18 @@ export function BasicInfoForm({
   portfolioData,
   onBasicInfoChange,
 }: BasicInfoFormProps) {
+  const handleBioGenerated = (bio: string) => {
+    // Create a synthetic event to update the bio field
+    const event = {
+      target: {
+        name: "bio",
+        value: bio,
+      },
+    } as React.ChangeEvent<HTMLTextAreaElement>;
+
+    onBasicInfoChange(event);
+  };
+
   return (
     <Card className="mt-4">
       <CardHeader>
@@ -46,14 +60,24 @@ export function BasicInfoForm({
           <label className="text-sm font-medium" htmlFor="bio">
             Bio
           </label>
-          <textarea
-            className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary"
-            id="bio"
-            name="bio"
-            placeholder="Write a short bio about yourself"
-            value={portfolioData.bio}
-            onChange={onBasicInfoChange}
-          />
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+            <textarea
+              className="w-full min-h-[80px] px-3 py-2 rounded-md border border-default-200 bg-default-100 focus:outline-none focus:ring-2 focus:ring-primary sm:flex-1"
+              id="bio"
+              name="bio"
+              placeholder="Write a short bio about yourself"
+              value={portfolioData.bio}
+              onChange={onBasicInfoChange}
+            />
+            <div className="w-full sm:w-64 sm:shrink-0">
+              <AIBioGenerator
+                name={portfolioData.name}
+                skills={portfolioData.skills || []}
+                title={portfolioData.title}
+                onBioGenerated={handleBioGenerated}
+              />
+            </div>
+          </div>
         </div>
         <Input
           label="Location"
