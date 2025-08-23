@@ -107,7 +107,7 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
           <Tooltip
             closeDelay={125}
             color="warning"
-            content={`${portfolioData.name} (${portfolioData.social.github}) is a contributor to this WA-DP project on GitHub`}
+            content={"This person is a contributor to the WA-DP GitHub project"}
             showArrow={true}
           >
             <Button
