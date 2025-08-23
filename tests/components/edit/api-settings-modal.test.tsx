@@ -20,7 +20,7 @@ const defaultProps = {
 describe("ApiSettingsModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset fetch mock to a default empty implementation
     mockFetch.mockResolvedValue({
       ok: true,
@@ -34,9 +34,13 @@ describe("ApiSettingsModal", () => {
 
   it("renders the modal with title and description", () => {
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     expect(screen.getByText("Gemini API Configuration")).toBeInTheDocument();
-    expect(screen.getByText("Configure your Gemini API key to enable AI-powered bio generation.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Configure your Gemini API key to enable AI-powered bio generation.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("fetches and displays existing API key when modal opens", async () => {
@@ -47,7 +51,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       expect(screen.getByDisplayValue(existingApiKey)).toBeInTheDocument();
     });
@@ -65,9 +69,11 @@ describe("ApiSettingsModal", () => {
     mockFetch.mockRejectedValueOnce(new Error("Failed to fetch"));
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
-      expect(screen.getByText("Error: Failed to load API key")).toBeInTheDocument();
+      expect(
+        screen.getByText("Error: Failed to load API key"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -78,15 +84,17 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
-      expect(screen.getByText("Error: Failed to load API key")).toBeInTheDocument();
+      expect(
+        screen.getByText("Error: Failed to load API key"),
+      ).toBeInTheDocument();
     });
   });
 
   it("does not fetch API key when modal is closed", () => {
     render(<ApiSettingsModal {...defaultProps} isOpen={false} />);
-    
+
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
@@ -97,7 +105,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       expect(input).toBeInTheDocument();
@@ -105,7 +113,7 @@ describe("ApiSettingsModal", () => {
 
     const input = screen.getByLabelText("Gemini API Key");
     fireEvent.change(input, { target: { value: "AIzaNewKey123" } });
-    
+
     expect(input).toHaveValue("AIzaNewKey123");
   });
 
@@ -116,7 +124,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       expect(input).toHaveAttribute("type", "password");
@@ -124,10 +132,10 @@ describe("ApiSettingsModal", () => {
 
     const toggleButton = screen.getByRole("button", { name: "" }); // Eye icon button
     fireEvent.click(toggleButton);
-    
+
     const input = screen.getByLabelText("Gemini API Key");
     expect(input).toHaveAttribute("type", "text");
-    
+
     fireEvent.click(toggleButton);
     expect(input).toHaveAttribute("type", "password");
   });
@@ -140,7 +148,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       expect(input).toBeInTheDocument();
@@ -157,9 +165,11 @@ describe("ApiSettingsModal", () => {
 
     const saveButton = screen.getByRole("button", { name: "Save API Key" });
     fireEvent.click(saveButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByText("API key saved successfully!")).toBeInTheDocument();
+      expect(
+        screen.getByText("API key saved successfully!"),
+      ).toBeInTheDocument();
     });
 
     expect(mockFetch).toHaveBeenCalledWith("/api/gemini-key", {
@@ -179,17 +189,19 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       fireEvent.change(input, { target: { value: "AIzaValidKey123" } });
     });
 
-    mockFetch.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+    mockFetch.mockImplementation(
+      () => new Promise((resolve) => setTimeout(resolve, 100)),
+    );
 
     const saveButton = screen.getByRole("button", { name: "Save API Key" });
     fireEvent.click(saveButton);
-    
+
     expect(screen.getByText("Saving...")).toBeInTheDocument();
     expect(saveButton).toBeDisabled();
   });
@@ -201,7 +213,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       fireEvent.change(input, { target: { value: "AIzaValidKey123" } });
@@ -214,9 +226,11 @@ describe("ApiSettingsModal", () => {
 
     const saveButton = screen.getByRole("button", { name: "Save API Key" });
     fireEvent.click(saveButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByText("Error: Invalid API key format")).toBeInTheDocument();
+      expect(
+        screen.getByText("Error: Invalid API key format"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -227,7 +241,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       fireEvent.change(input, { target: { value: "AIzaValidKey123" } });
@@ -237,7 +251,7 @@ describe("ApiSettingsModal", () => {
 
     const saveButton = screen.getByRole("button", { name: "Save API Key" });
     fireEvent.click(saveButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Error: Network error")).toBeInTheDocument();
     });
@@ -250,7 +264,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const saveButton = screen.getByRole("button", { name: "Save API Key" });
       expect(saveButton).toBeDisabled();
@@ -264,7 +278,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       expect(screen.getByTitle("Delete API Key")).toBeInTheDocument();
     });
@@ -277,7 +291,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       expect(screen.queryByTitle("Delete API Key")).not.toBeInTheDocument();
     });
@@ -290,7 +304,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       expect(screen.getByTitle("Delete API Key")).toBeInTheDocument();
     });
@@ -302,9 +316,11 @@ describe("ApiSettingsModal", () => {
 
     const deleteButton = screen.getByTitle("Delete API Key");
     fireEvent.click(deleteButton);
-    
+
     await waitFor(() => {
-      expect(screen.getByText("API key deleted successfully!")).toBeInTheDocument();
+      expect(
+        screen.getByText("API key deleted successfully!"),
+      ).toBeInTheDocument();
     });
 
     expect(mockFetch).toHaveBeenCalledWith("/api/gemini-key", {
@@ -327,7 +343,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       expect(screen.getByTitle("Delete API Key")).toBeInTheDocument();
     });
@@ -339,7 +355,7 @@ describe("ApiSettingsModal", () => {
 
     const deleteButton = screen.getByTitle("Delete API Key");
     fireEvent.click(deleteButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Error: Failed to delete")).toBeInTheDocument();
     });
@@ -347,17 +363,17 @@ describe("ApiSettingsModal", () => {
 
   it("calls onClose when cancel button is clicked", () => {
     const onClose = vi.fn();
-    
+
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ apiKey: "" }),
     });
 
     render(<ApiSettingsModal {...defaultProps} onClose={onClose} />);
-    
+
     const cancelButton = screen.getByRole("button", { name: "Cancel" });
     fireEvent.click(cancelButton);
-    
+
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -368,9 +384,13 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
-      expect(screen.getByText("Note: You can get a free Gemini API key from", { exact: false })).toBeInTheDocument();
+      expect(
+        screen.getByText("Note: You can get a free Gemini API key from", {
+          exact: false,
+        }),
+      ).toBeInTheDocument();
     });
 
     const link = screen.getByRole("link", { name: "Google AI Studio" });
@@ -386,7 +406,7 @@ describe("ApiSettingsModal", () => {
     });
 
     render(<ApiSettingsModal {...defaultProps} />);
-    
+
     await waitFor(() => {
       const input = screen.getByLabelText("Gemini API Key");
       expect(input).toBeInTheDocument();
@@ -400,7 +420,7 @@ describe("ApiSettingsModal", () => {
 
     const saveButton = screen.getByRole("button", { name: "Save API Key" });
     fireEvent.click(saveButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("Error: Test error")).toBeInTheDocument();
     });
@@ -412,7 +432,7 @@ describe("ApiSettingsModal", () => {
     });
 
     fireEvent.click(saveButton);
-    
+
     // Error should be cleared immediately when starting new action
     expect(screen.queryByText("Error: Test error")).not.toBeInTheDocument();
   });

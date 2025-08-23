@@ -42,19 +42,19 @@ describe("/api/generate-bio", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock console.error to suppress expected error logs
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
     jsonSpy = vi.fn();
     statusSpy = vi.fn(() => ({ json: jsonSpy }));
-    
+
     mockReq = {
       method: "POST",
       user: { username: "testuser" },
       body: validRequestBody,
     };
-    
+
     mockRes = {
       status: statusSpy,
       json: jsonSpy,
@@ -64,8 +64,9 @@ describe("/api/generate-bio", () => {
   describe("successful bio generation", () => {
     it("generates bio successfully with valid input", async () => {
       const testApiKey = "AIzaTestKey123";
-      const generatedBio = "I am a skilled Frontend Developer with expertise in React, TypeScript, and Node.js.";
-      
+      const generatedBio =
+        "I am a skilled Frontend Developer with expertise in React, TypeScript, and Node.js.";
+
       mockApiKeyService.getApiKey.mockReturnValue(testApiKey);
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -89,7 +90,7 @@ describe("/api/generate-bio", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: expect.stringContaining("Frontend Developer"),
-        })
+        }),
       );
       expect(statusSpy).toHaveBeenCalledWith(200);
       expect(jsonSpy).toHaveBeenCalledWith({ bio: generatedBio });
@@ -122,9 +123,11 @@ describe("/api/generate-bio", () => {
 
       const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
       const promptText = fetchCallBody.contents[0].parts[0].text;
-      
+
       // Should have Vue (Master) first, then React (Expert), then JavaScript (Advanced), etc.
-      expect(promptText).toContain("Vue (Master), React (Expert), JavaScript (Advanced), CSS (Intermediate), HTML (Beginner)");
+      expect(promptText).toContain(
+        "Vue (Master), React (Expert), JavaScript (Advanced), CSS (Intermediate), HTML (Beginner)",
+      );
     });
 
     it("limits skills to top 10 by proficiency", async () => {
@@ -151,7 +154,7 @@ describe("/api/generate-bio", () => {
 
       const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
       const promptText = fetchCallBody.contents[0].parts[0].text;
-      
+
       // Should only contain 10 skills
       const skillMatches = promptText.match(/Skill\d+/g) || [];
       expect(skillMatches.length).toBe(10);
@@ -180,7 +183,7 @@ describe("/api/generate-bio", () => {
 
       const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
       const promptText = fetchCallBody.contents[0].parts[0].text;
-      
+
       // Should have dangerous characters removed from user input (<>"'& are removed)
       expect(promptText).not.toContain("<script>");
       expect(promptText).not.toContain("<img>");
@@ -193,7 +196,7 @@ describe("/api/generate-bio", () => {
     it("limits input length to prevent abuse", async () => {
       const testApiKey = "AIzaTestKey123";
       const longString = "a".repeat(300); // Longer than 200 char limit
-      
+
       mockReq.body = {
         name: longString,
         title: longString,
@@ -212,11 +215,11 @@ describe("/api/generate-bio", () => {
 
       const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
       const promptText = fetchCallBody.contents[0].parts[0].text;
-      
+
       // Should be truncated to 200 characters max
       const nameInPrompt = promptText.match(/Name: ([^\n]+)/)[1];
       const titleInPrompt = promptText.match(/Title: ([^\n]+)/)[1];
-      
+
       expect(nameInPrompt.length).toBeLessThanOrEqual(200);
       expect(titleInPrompt.length).toBeLessThanOrEqual(200);
     });
@@ -261,8 +264,8 @@ describe("/api/generate-bio", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ 
-        error: "Missing required fields: name, title, or skills" 
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Missing required fields: name, title, or skills",
       });
     });
 
@@ -273,8 +276,8 @@ describe("/api/generate-bio", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ 
-        error: "Missing required fields: name, title, or skills" 
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Missing required fields: name, title, or skills",
       });
     });
 
@@ -285,8 +288,8 @@ describe("/api/generate-bio", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ 
-        error: "Missing required fields: name, title, or skills" 
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Missing required fields: name, title, or skills",
       });
     });
 
@@ -317,8 +320,8 @@ describe("/api/generate-bio", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ 
-        error: "Skills must be a non-empty array" 
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Skills must be a non-empty array",
       });
     });
 
@@ -329,8 +332,8 @@ describe("/api/generate-bio", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ 
-        error: "Skills must be a non-empty array" 
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Skills must be a non-empty array",
       });
     });
 
@@ -361,7 +364,7 @@ describe("/api/generate-bio", () => {
 
       const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
       const promptText = fetchCallBody.contents[0].parts[0].text;
-      
+
       // Should only include valid skills
       expect(promptText).toContain("Valid Skill (Expert)");
       expect(promptText).not.toContain("missing name");
@@ -389,7 +392,7 @@ describe("/api/generate-bio", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: expect.stringContaining("Generate a professional bio"),
-        })
+        }),
       );
 
       // Also verify the body contains the expected structure
@@ -470,7 +473,7 @@ describe("/api/generate-bio", () => {
     it("trims whitespace from generated bio", async () => {
       const testApiKey = "AIzaTestKey123";
       const bioWithWhitespace = "  \n\t  Bio text with whitespace  \n\t  ";
-      
+
       mockApiKeyService.getApiKey.mockReturnValue(testApiKey);
       mockFetch.mockResolvedValueOnce({
         ok: true,

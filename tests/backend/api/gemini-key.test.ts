@@ -28,18 +28,18 @@ describe("/api/gemini-key", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock console.error to suppress expected error logs
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
     jsonSpy = vi.fn();
     statusSpy = vi.fn(() => ({ json: jsonSpy }));
-    
+
     mockReq = {
       user: { username: "testuser" },
       body: {},
     };
-    
+
     mockRes = {
       status: statusSpy,
       json: jsonSpy,
@@ -100,7 +100,9 @@ describe("/api/gemini-key", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(500);
-      expect(jsonSpy).toHaveBeenCalledWith({ error: "Failed to retrieve API key" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Failed to retrieve API key",
+      });
     });
   });
 
@@ -116,9 +118,14 @@ describe("/api/gemini-key", () => {
 
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
-      expect(mockApiKeyService.saveApiKey).toHaveBeenCalledWith("testuser", validApiKey);
+      expect(mockApiKeyService.saveApiKey).toHaveBeenCalledWith(
+        "testuser",
+        validApiKey,
+      );
       expect(statusSpy).toHaveBeenCalledWith(200);
-      expect(jsonSpy).toHaveBeenCalledWith({ message: "API key saved successfully" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        message: "API key saved successfully",
+      });
     });
 
     it("accepts valid API key with extra spaces and trims before saving", async () => {
@@ -130,9 +137,14 @@ describe("/api/gemini-key", () => {
 
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
-      expect(mockApiKeyService.saveApiKey).toHaveBeenCalledWith("testuser", trimmedApiKey);
+      expect(mockApiKeyService.saveApiKey).toHaveBeenCalledWith(
+        "testuser",
+        trimmedApiKey,
+      );
       expect(statusSpy).toHaveBeenCalledWith(200);
-      expect(jsonSpy).toHaveBeenCalledWith({ message: "API key saved successfully" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        message: "API key saved successfully",
+      });
     });
 
     it("returns 401 when user is not authenticated", async () => {
@@ -152,7 +164,9 @@ describe("/api/gemini-key", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ error: "Valid API key is required" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Valid API key is required",
+      });
       expect(mockApiKeyService.saveApiKey).not.toHaveBeenCalled();
     });
 
@@ -162,7 +176,9 @@ describe("/api/gemini-key", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ error: "Valid API key is required" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Valid API key is required",
+      });
       expect(mockApiKeyService.saveApiKey).not.toHaveBeenCalled();
     });
 
@@ -172,7 +188,9 @@ describe("/api/gemini-key", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ error: "Valid API key is required" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Valid API key is required",
+      });
       expect(mockApiKeyService.saveApiKey).not.toHaveBeenCalled();
     });
 
@@ -182,7 +200,9 @@ describe("/api/gemini-key", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(400);
-      expect(jsonSpy).toHaveBeenCalledWith({ error: "Valid API key is required" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Valid API key is required",
+      });
       expect(mockApiKeyService.saveApiKey).not.toHaveBeenCalled();
     });
 
@@ -193,7 +213,8 @@ describe("/api/gemini-key", () => {
 
       expect(statusSpy).toHaveBeenCalledWith(400);
       expect(jsonSpy).toHaveBeenCalledWith({
-        error: "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 35 characters long.",
+        error:
+          "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 35 characters long.",
       });
       expect(mockApiKeyService.saveApiKey).not.toHaveBeenCalled();
     });
@@ -205,7 +226,8 @@ describe("/api/gemini-key", () => {
 
       expect(statusSpy).toHaveBeenCalledWith(400);
       expect(jsonSpy).toHaveBeenCalledWith({
-        error: "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 35 characters long.",
+        error:
+          "Invalid API key format. Gemini API keys should start with 'AIza' and be at least 35 characters long.",
       });
       expect(mockApiKeyService.saveApiKey).not.toHaveBeenCalled();
     });
@@ -235,7 +257,9 @@ describe("/api/gemini-key", () => {
 
       expect(mockApiKeyService.deleteApiKey).toHaveBeenCalledWith("testuser");
       expect(statusSpy).toHaveBeenCalledWith(200);
-      expect(jsonSpy).toHaveBeenCalledWith({ message: "API key deleted successfully" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        message: "API key deleted successfully",
+      });
     });
 
     it("returns 401 when user is not authenticated", async () => {
@@ -256,7 +280,9 @@ describe("/api/gemini-key", () => {
       await handler(mockReq as AuthenticatedRequest, mockRes as any);
 
       expect(statusSpy).toHaveBeenCalledWith(500);
-      expect(jsonSpy).toHaveBeenCalledWith({ error: "Failed to delete API key" });
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: "Failed to delete API key",
+      });
     });
   });
 
