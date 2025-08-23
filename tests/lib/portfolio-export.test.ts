@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   downloadJSON,
-  validatePortfolioData,
   parseJSONFile,
+  validatePortfolioData,
 } from "@/lib/portfolio-export";
 
 // Mock DOM APIs
@@ -82,8 +82,8 @@ describe("portfolio-export utilities", () => {
       const complexData = {
         personal: { name: "John", location: "NYC" },
         skills: [
-          { name: "React", level: 90 },
-          { name: "Node.js", level: 85 },
+          { name: "React", level: "Master" },
+          { name: "Node.js", level: "Expert" },
         ],
         social: { github: "johndoe", linkedin: "john-doe" },
       };
@@ -101,8 +101,8 @@ describe("portfolio-export utilities", () => {
       location: "New York",
       email: "john@example.com",
       skills: [
-        { name: "React", level: 90 },
-        { name: "TypeScript", level: 85 },
+        { name: "React", level: "Master" },
+        { name: "TypeScript", level: "Expert" },
       ],
       social: {
         github: "johndoe",
@@ -172,7 +172,7 @@ describe("portfolio-export utilities", () => {
     it("allows skills with missing name (optional)", () => {
       const dataWithMissingSkillName = {
         ...validPortfolioData,
-        skills: [{ level: 90 }], // missing name is allowed
+        skills: [{ level: "Expert" }], // missing name is allowed
       };
       const result = validatePortfolioData(dataWithMissingSkillName);
 
@@ -183,7 +183,7 @@ describe("portfolio-export utilities", () => {
     it("validates skill name type when present", () => {
       const invalidData = {
         ...validPortfolioData,
-        skills: [{ name: 123, level: 90 }], // name should be string
+        skills: [{ name: 123, level: "Expert" }], // name should be string
       };
       const result = validatePortfolioData(invalidData);
 
@@ -202,29 +202,29 @@ describe("portfolio-export utilities", () => {
       expect(result.errors).toEqual([]);
     });
 
-    it("validates skill level is a number", () => {
+    it("validates skill level is a string", () => {
       const invalidData = {
         ...validPortfolioData,
-        skills: [{ name: "React", level: "high" }], // level should be number
+        skills: [{ name: "React", level: 1 }], // level should be string
       };
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Skill 1: level must be a number between 0 and 100",
+        'Skill 1: level must be a valid level, such as "Beginner"',
       );
     });
 
     it("validates skill level range", () => {
       const invalidData = {
         ...validPortfolioData,
-        skills: [{ name: "React", level: 150 }], // level too high
+        skills: [{ name: "React", level: "Godlike" }], // level too high
       };
       const result = validatePortfolioData(invalidData);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Skill 1: level must be a number between 0 and 100",
+        'Skill 1: level must be a valid level, such as "Beginner"',
       );
     });
 
