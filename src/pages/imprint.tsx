@@ -1,3 +1,7 @@
+import { Alert } from "@heroui/alert";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Divider } from "@heroui/divider";
+
 import DefaultLayout from "@/layouts/default";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
@@ -13,8 +17,15 @@ export default function ImprintPage() {
       <DefaultLayout>
         <section className="py-8 md:py-10">
           <div className="max-w-4xl mx-auto px-4">
-            <h1 className="text-4xl font-bold mb-8">Imprint / Impressum</h1>
-            <p>Loading...</p>
+            <Card className="w-full border border-default-200/50 shadow-sm">
+              <CardHeader>
+                <h1 className="text-3xl font-bold">Imprint / Impressum</h1>
+              </CardHeader>
+              <Divider />
+              <CardBody>
+                <p className="text-default-500">Loading…</p>
+              </CardBody>
+            </Card>
           </div>
         </section>
       </DefaultLayout>
@@ -51,106 +62,126 @@ export default function ImprintPage() {
     <DefaultLayout>
       <section className="py-8 md:py-10">
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-8">Imprint / Impressum</h1>
-
           {!hasRequiredFields && (
-            <div className="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-xl p-6 mb-8">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-warning-500 flex items-center justify-center text-white text-sm font-bold">
-                  !
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-warning-800 dark:text-warning-200 mb-2">
-                    Template Notice
-                  </h3>
-                  <p className="text-warning-700 dark:text-warning-300">
-                    Please replace the placeholder information below with your
-                    actual contact details before using this website publicly.
-                    Configure this in the editor under &quot;Legal Info&quot;.
-                  </p>
-                </div>
-              </div>
+            <div className="mb-6">
+              <Alert
+                color="warning"
+                description={`Please replace the placeholder information below with your actual contact details before using this website publicly. Configure this in the editor under "Legal Info".`}
+                title="Template Notice"
+                variant="faded"
+              />
             </div>
           )}
 
-          <div className="prose prose-lg max-w-none dark:prose-invert">
-            <h2>Information according to § 5 TMG</h2>
+          <Card className="w-full border border-default-200/50 shadow-sm">
+            <CardHeader>
+              <h1 className="text-3xl font-bold">Imprint / Impressum</h1>
+            </CardHeader>
+            <Divider />
+            <CardBody className="p-6 space-y-8 text-foreground leading-relaxed">
+              <section className="space-y-4">
+                <h2 className="text-2xl font-semibold">
+                  Information according to § 5 TMG
+                </h2>
 
-            <h3>Contact Information</h3>
-            <p>
-              <strong>{displayName}</strong>
-              <br />
-              {displayStreetAddress}
-              <br />
-              {displayZipCity}
-              <br />
-              {displayCountry}
-            </p>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">Contact Information</h3>
+                  <p>
+                    <strong>{displayName}</strong>
+                    <br />
+                    {displayStreetAddress}
+                    <br />
+                    {displayZipCity}
+                    <br />
+                    {displayCountry}
+                  </p>
+                </div>
 
-            <h3>Contact</h3>
-            <p>
-              {legal.phone && (
-                <>
-                  <strong>Phone:</strong> {displayPhone}
-                  <br />
-                </>
-              )}
-              <strong>Email:</strong> {displayEmail}
-            </p>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">Contact</h3>
+                  <p>
+                    {legal.phone && (
+                      <>
+                        <strong>Phone:</strong> {displayPhone}
+                        <br />
+                      </>
+                    )}
+                    <strong>Email:</strong> {displayEmail}
+                  </p>
+                </div>
 
-            {(legal.vatId || !hasRequiredFields) && (
-              <>
-                <h3>VAT ID</h3>
-                <p>
-                  Sales tax identification number according to § 27a of the
-                  Sales Tax Law:
-                  <br />
-                  {displayVatId}
-                </p>
-              </>
-            )}
+                {(legal.vatId || !hasRequiredFields) && (
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">VAT ID</h3>
+                    <p>
+                      Sales tax identification number according to § 27a of the
+                      Sales Tax Law:
+                      <br />
+                      {displayVatId}
+                    </p>
+                  </div>
+                )}
 
-            <h3>Responsible for the content according to § 55 Abs. 2 RStV</h3>
-            <p>
-              {displayResponsiblePerson}
-              <br />
-              {displayResponsibleAddress}
-            </p>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">
+                    Responsible for the content according to § 55 Abs. 2 RStV
+                  </h3>
+                  <p>
+                    {displayResponsiblePerson}
+                    <br />
+                    {displayResponsibleAddress}
+                  </p>
+                </div>
+              </section>
 
-            <h2>Disclaimer</h2>
+              <section className="space-y-4">
+                <h2 className="text-2xl font-semibold">Disclaimer</h2>
 
-            <h3>Accountability for content</h3>
-            <p>
-              The contents of our pages have been created with the utmost care.
-              However, we cannot guarantee the contents&apos; accuracy,
-              completeness or topicality. According to statutory provisions, we
-              are furthermore responsible for our own content on these web
-              pages. In this context, please note that we are accordingly not
-              under obligation to monitor merely the transmitted or saved
-              information of third parties, or investigate circumstances
-              pointing to illegal activity.
-            </p>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">
+                    Accountability for content
+                  </h3>
+                  <p>
+                    The contents of our pages have been created with the utmost
+                    care. However, we cannot guarantee the contents&apos;
+                    accuracy, completeness or topicality. According to statutory
+                    provisions, we are furthermore responsible for our own
+                    content on these web pages. In this context, please note
+                    that we are accordingly not under obligation to monitor
+                    merely the transmitted or saved information of third
+                    parties, or investigate circumstances pointing to illegal
+                    activity.
+                  </p>
+                </div>
 
-            <h3>Accountability for links</h3>
-            <p>
-              Responsibility for the content of external links (to web pages of
-              third parties) lies solely with the operators of the linked pages.
-              No violations were evident to us at the time of linking. Should
-              any legal infringement become known to us, we will remove the
-              respective link immediately.
-            </p>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">
+                    Accountability for links
+                  </h3>
+                  <p>
+                    Responsibility for the content of external links (to web
+                    pages of third parties) lies solely with the operators of
+                    the linked pages. No violations were evident to us at the
+                    time of linking. Should any legal infringement become known
+                    to us, we will remove the respective link immediately.
+                  </p>
+                </div>
 
-            <h3>Copyright</h3>
-            <p>
-              Our web pages and their contents are subject to German copyright
-              law. Unless expressly permitted by law (§ 44a et seq. of the
-              copyright law), every form of utilizing, reproducing or processing
-              works subject to copyright protection on our web pages requires
-              the prior consent of the respective owner of the rights.
-            </p>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">Copyright</h3>
+                  <p>
+                    Our web pages and their contents are subject to German
+                    copyright law. Unless expressly permitted by law (§ 44a et
+                    seq. of the copyright law), every form of utilizing,
+                    reproducing or processing works subject to copyright
+                    protection on our web pages requires the prior consent of
+                    the respective owner of the rights.
+                  </p>
+                </div>
+              </section>
 
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-8 pt-4 border-t">
-              <p>
+              <Divider className="my-2" />
+              <p className="text-sm text-default-500">
                 Last updated:{" "}
                 {new Date().toLocaleDateString("en-US", {
                   year: "numeric",
@@ -158,8 +189,8 @@ export default function ImprintPage() {
                   day: "numeric",
                 })}
               </p>
-            </div>
-          </div>
+            </CardBody>
+          </Card>
         </div>
       </section>
     </DefaultLayout>
