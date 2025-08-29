@@ -61,6 +61,18 @@ export const siteConfig = {
       enableContributorStatus: false,
       showGoldenBoxShadow: false,
     },
+    legal: {
+      fullName: "",
+      streetAddress: "",
+      zipCode: "",
+      city: "",
+      country: "",
+      phone: "",
+      email: "",
+      vatId: "",
+      responsiblePerson: "",
+      responsibleAddress: "",
+    },
   },
   navItems: [
     {

@@ -10,6 +10,7 @@ import {
   saveDraftToCookies,
 } from "@/lib/cookie-persistence.ts";
 import { Education, Experience, Skill, SkillLevel } from "@/types";
+import { LegalInfo } from "@/components/portfolioEditor/legal-info-form";
 
 /**
  * Custom hook for managing portfolio editor state and operations
@@ -557,6 +558,16 @@ export function usePortfolioEditor() {
     });
   };
 
+  const handleLegalInfoChange = (legalInfo: LegalInfo) => {
+    setPortfolioData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        legal: legalInfo,
+      };
+    });
+  };
+
   const handleImportPortfolioData = (data: any) => {
     setPortfolioData(data);
     clearDraftFromCookies();
@@ -621,6 +632,8 @@ export function usePortfolioEditor() {
     handleEducationDragEnd,
     // Contributor functions
     handleContributorChange,
+    // Legal info functions
+    handleLegalInfoChange,
     // Import/Export
     handleImportPortfolioData,
   };
