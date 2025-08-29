@@ -83,23 +83,28 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
             <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
             <p className="text-default-500">{portfolioData.title}</p>
             <div className="flex gap-2 mt-2">
-              <Chip
-                className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-default"
-                color="primary"
-                size="sm"
-              >
-                {portfolioData.location}
-              </Chip>
-              <Chip
-                className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
-                color="secondary"
-                size="sm"
-                onClick={() =>
-                  (window.location.href = `mailto:${portfolioData.email}`)
-                }
-              >
-                {portfolioData.email}
-              </Chip>
+              {portfolioData.location &&
+                portfolioData.location.trim() !== "" && (
+                  <Chip
+                    className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-default"
+                    color="primary"
+                    size="sm"
+                  >
+                    {portfolioData.location}
+                  </Chip>
+                )}
+              {portfolioData.email && portfolioData.email.trim() !== "" && (
+                <Chip
+                  className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
+                  color="secondary"
+                  size="sm"
+                  onClick={() =>
+                    (window.location.href = `mailto:${portfolioData.email}`)
+                  }
+                >
+                  {portfolioData.email}
+                </Chip>
+              )}
             </div>
           </div>
         </div>
