@@ -64,13 +64,22 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
         const localResponse = await fetch("/github-repos.json");
         if (localResponse.ok) {
           const localData = await localResponse.json();
-          // Check if cached data is for the requested user
+          // Check if cached data is for the requested user and not stale
           if (
             localData.metadata?.username === githubUsername &&
             localData[sort] &&
-            localData[sort].length > 0
+            localData[sort].length > 0 &&
+            localData.lastUpdated &&
+            localData.fetchConfig?.intervalHours
           ) {
-            return localData[sort];
+            const lastUpdateTime = new Date(localData.lastUpdated).getTime();
+            const now = Date.now();
+            const intervalMs = localData.fetchConfig.intervalHours * 60 * 60 * 1000;
+            const isStale = now - lastUpdateTime >= intervalMs;
+            
+            if (!isStale) {
+              return localData[sort];
+            }
           }
         }
       } catch {

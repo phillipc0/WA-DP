@@ -32,7 +32,6 @@ type GitHubReposData = {
   metadata: {
     version: string;
     description: string;
-    updated_at: string | null;
     username: string;
   };
   fetchConfig: {
@@ -89,7 +88,6 @@ function ensureReposFileExists(): GitHubReposData {
       metadata: {
         version: "1.0.0",
         description: "GitHub repositories data cache for EU compliance",
-        updated_at: null,
         username: "",
       },
       fetchConfig: {
@@ -120,7 +118,6 @@ function ensureReposFileExists(): GitHubReposData {
       metadata: {
         version: "1.0.0",
         description: "GitHub repositories data cache for EU compliance",
-        updated_at: null,
         username: "",
       },
       fetchConfig: {
@@ -152,7 +149,6 @@ async function updateReposForUser(githubUsername: string): Promise<void> {
       metadata: {
         version: "1.0.0",
         description: "GitHub repositories data cache for EU compliance",
-        updated_at: now,
         username: githubUsername,
       },
       fetchConfig: {
