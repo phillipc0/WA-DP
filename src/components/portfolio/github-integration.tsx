@@ -58,44 +58,60 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     githubUsername: string,
     sort: SortOption,
   ) => {
+    let cachedData = null;
+
     try {
-      // First try to read from local JSON file (fastest)
+      // First try to read from local JSON file
       try {
         const localResponse = await fetch("/github-repos.json");
         if (localResponse.ok) {
           const localData = await localResponse.json();
-          // Check if cached data is for the requested user and not stale
+          // Check if cached data is for the requested user
           if (
             localData.metadata?.username === githubUsername &&
             localData[sort] &&
-            localData[sort].length > 0 &&
-            localData.lastUpdated &&
-            localData.fetchConfig?.intervalHours
+            localData[sort].length > 0
           ) {
-            const lastUpdateTime = new Date(localData.lastUpdated).getTime();
-            const now = Date.now();
-            const intervalMs = localData.fetchConfig.intervalHours * 60 * 60 * 1000;
-            const isStale = now - lastUpdateTime >= intervalMs;
-            
-            if (!isStale) {
-              return localData[sort];
+            cachedData = localData;
+
+            // If cache is fresh, use it immediately
+            if (localData.lastUpdated && localData.fetchConfig?.intervalHours) {
+              const lastUpdateTime = new Date(localData.lastUpdated).getTime();
+              const now = Date.now();
+              const intervalMs =
+                localData.fetchConfig.intervalHours * 60 * 60 * 1000;
+              const isStale = now - lastUpdateTime >= intervalMs;
+
+              if (!isStale) {
+                return localData[sort];
+              }
             }
           }
         }
       } catch {
-        // Silently continue to backend API fallback
+        // Continue to backend API attempt
       }
 
-      // If no cached data, try backend API to fetch and cache
-      const response = await fetch(
-        `/api/github-repos?username=${githubUsername}&sort=${sort}`,
-      );
-      if (response.ok) {
-        const data = await response.json();
-        return data.repos || [];
-      } else {
-        throw new Error("Failed to fetch repositories from backend API");
+      // If cache is stale or missing, try backend API to fetch fresh data
+      try {
+        const response = await fetch(
+          `/api/github-repos?username=${githubUsername}&sort=${sort}`,
+        );
+        if (response.ok) {
+          const data = await response.json();
+          return data.repos || [];
+        }
+      } catch {
+        // Backend is unavailable, fall back to cached data if available
       }
+
+      // Fallback to stale cached data if backend is unavailable
+      if (cachedData && cachedData[sort]) {
+        return cachedData[sort];
+      }
+
+      // No data available at all
+      throw new Error("No repository data available");
     } catch (err) {
       console.error(`Error fetching ${sort} repos:`, err);
       throw err;
