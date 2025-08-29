@@ -16,8 +16,6 @@ import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { getLanguageColor } from "@/lib/language-colors";
 import { GithubIntegrationSkeleton } from "@/components/ui/skeleton";
 
-const REPO_PER_PAGE = 4;
-
 type Repository = {
   id: number;
   name: string;
@@ -61,26 +59,34 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     sort: SortOption,
   ) => {
     try {
-      let response;
+      // First try to read from local JSON file (fastest)
+      try {
+        const localResponse = await fetch("/github-repos.json");
+        if (localResponse.ok) {
+          const localData = await localResponse.json();
+          // Check if cached data is for the requested user
+          if (
+            localData.metadata?.username === githubUsername &&
+            localData[sort] &&
+            localData[sort].length > 0
+          ) {
+            return localData[sort];
+          }
+        }
+      } catch {
+        // Silently continue to backend API fallback
+      }
 
-      if (sort === "stars") {
-        // The users API does not support sorting by stars
-        response = await fetch(
-          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${REPO_PER_PAGE}`,
-        );
+      // If no cached data, try backend API to fetch and cache
+      const response = await fetch(
+        `/api/github-repos?username=${githubUsername}&sort=${sort}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        return data.repos || [];
       } else {
-        response = await fetch(
-          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${REPO_PER_PAGE}`,
-        );
+        throw new Error("Failed to fetch repositories from backend API");
       }
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch repositories");
-      }
-
-      const data = await response.json();
-
-      return sort === "stars" ? data.items : data;
     } catch (err) {
       console.error(`Error fetching ${sort} repos:`, err);
       throw err;
