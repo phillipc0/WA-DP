@@ -192,7 +192,7 @@ export function usePortfolioEditor() {
         ...prev,
         social: {
           ...prev.social,
-          [name]: value,
+          [name]: name === "githubReposCount" ? parseInt(value) || 4 : value,
         },
       };
     });

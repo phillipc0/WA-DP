@@ -28,18 +28,32 @@ export function SocialLinksForm({
         <h2 className="text-xl font-bold">Social Media Profiles</h2>
       </CardHeader>
       <CardBody className="gap-4">
-        <Input
-          label="GitHub Username"
-          name="github"
-          placeholder="Your GitHub username"
-          startContent={
-            <span className="text-default-400 whitespace-nowrap">
-              github.com/
-            </span>
-          }
-          value={portfolioData.social.github}
-          onChange={onSocialChange}
-        />
+        <div className="flex gap-2">
+          <Input
+            className="flex-1"
+            label="GitHub Username"
+            name="github"
+            placeholder="Your GitHub username"
+            startContent={
+              <span className="text-default-400 whitespace-nowrap">
+                github.com/
+              </span>
+            }
+            value={portfolioData.social.github}
+            onChange={onSocialChange}
+          />
+          <Input
+            className="w-32"
+            label="Repos Count"
+            max="20"
+            min="1"
+            name="githubReposCount"
+            placeholder="4"
+            type="number"
+            value={portfolioData.social.githubReposCount?.toString() || "4"}
+            onChange={onSocialChange}
+          />
+        </div>
         <div className="flex gap-2">
           <Select
             className="w-32"

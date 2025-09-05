@@ -11,6 +11,7 @@ export const siteConfig = {
     avatar: "",
     social: {
       github: "johndoe",
+      githubReposCount: 4,
       twitter: "johndoe",
       twitterPlatform: "twitter" as "twitter" | "x",
       linkedin: "johndoe",

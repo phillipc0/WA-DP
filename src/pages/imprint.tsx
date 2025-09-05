@@ -70,52 +70,79 @@ export default function ImprintPage() {
         noticeTitle: "Hinweis Vorlage",
         noticeDesc:
           'Bitte ersetzen Sie die Platzhalter unten durch Ihre tatsächlichen Kontaktdaten, bevor Sie diese Website öffentlich verwenden. Konfigurieren Sie dies im Editor unter "Legal Info".',
-        tmgTitle: "Angaben gemäß § 5 TMG",
-        contactInfo: "Anschrift",
-        contact: "Kontakt",
-        phone: "Telefon:",
-        email: "E-Mail:",
+        intro:
+          "Gemäß § 5 des deutschen Telemediengesetzes (Telemediengesetz) und anderen anwendbaren Gesetzen ist im Folgenden die rechtlich erforderliche Anbieterkennung für diese Website aufgeführt. Diese Website ist ein persönliches Portfolio, das von einer Einzelperson betrieben wird.",
+        ownerTitle: "Name des Website-Eigentümers",
+        addressTitle: "Anschrift",
+        contactEmailTitle: "Kontakt-E-Mail",
+        telephoneTitle: "Telefon",
+        telephoneNote:
+          "*(Für einen privaten Website-Eigentümer ist eine Telefonnummer optional, solange eine E-Mail-Adresse für schnellen Kontakt bereitgestellt wird.)",
         vatTitle: "USt-IdNr.",
-        vatLine: "Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG:",
-        responsibleTitle: "Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV",
-        disclaimerTitle: "Haftungsausschluss",
-        contentAccountabilityTitle: "Haftung für Inhalte",
-        contentAccountabilityText:
-          "Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Nach den gesetzlichen Bestimmungen sind wir für eigene Inhalte auf diesen Seiten verantwortlich. In diesem Zusammenhang weisen wir darauf hin, dass wir nicht verpflichtet sind, übermittelte oder gespeicherte fremde Informationen zu überwachen oder Umstände zu erforschen, die auf eine rechtswidrige Tätigkeit hinweisen.",
-        linkAccountabilityTitle: "Haftung für Links",
-        linkAccountabilityText:
-          "Für Inhalte externer Links (zu Webseiten Dritter) ist ausschließlich der jeweilige Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren Rechtsverstöße für uns nicht erkennbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.",
+        vatNote:
+          "(Als Privatperson, die nicht in der umsatzsteuerpflichtigen gewerblichen Tätigkeit engagiert ist, haben Sie möglicherweise keine USt-IdNr. Wenn keine vorhanden, kann diese Zeile weggelassen werden.)",
+        responsibleTitle:
+          "Verantwortlich für den Inhalt (gem. § 18 Abs. 2 MStV)",
+        responsibleNote:
+          "(Dies ist normalerweise dieselbe Person wie oben, die zur Einhaltung des deutschen Medienrechts für die redaktionelle Inhaltsverantwortung erneut aufgeführt wird.)",
+        purposeTitle: "Zweck der Website",
+        purposeText:
+          "Dies ist eine persönliche Entwickler-Portfolio-Website. Ihr Zweck ist es, die Fähigkeiten, Projekte und Erfahrungen des Website-Eigentümers zu präsentieren. Sie wird nicht für direkte kommerzielle Transaktionen oder E-Commerce verwendet.",
+        disclaimerTitle: "Rechtlicher Haftungsausschluss",
+        contentLiabilityTitle: "Inhaltshaftung",
+        contentLiabilityText:
+          "Als Website-Betreiber bemühe ich mich, alle Informationen auf dieser Website aktuell und korrekt zu halten. Ich kann jedoch nicht die Genauigkeit, Vollständigkeit oder Aktualität der Inhalte garantieren. Nach §§ 8–10 des Telemediengesetzes bin ich als Diensteanbieter nicht verpflichtet, übermittelte oder gespeicherte Informationen Dritter zu überwachen oder Umstände zu untersuchen, die auf rechtswidrige Aktivitäten hinweisen. Nach Benachrichtigung über spezifische Rechtsverletzungen werde ich die betroffenen Inhalte unverzüglich entfernen oder korrigieren. Bis zu einer solchen Benachrichtigung wird jede Haftung für solche Inhalte abgelehnt.",
+        externalLinksTitle: "Externe Links",
+        externalLinksText:
+          "Diese Website enthält Links zu externen Websites Dritter (zum Beispiel Projekt-Repositories oder Social-Media-Profile). Ich habe keinen Einfluss auf den Inhalt dieser externen Websites. Daher kann ich keine Verantwortung für deren Inhalt übernehmen. Die jeweiligen Anbieter oder Betreiber der verlinkten Websites sind allein für deren Inhalt verantwortlich. Ich habe die verlinkten Seiten zum Zeitpunkt der Verlinkung auf mögliche Rechtsverletzungen überprüft, und rechtswidrige Inhalte waren zu diesem Zeitpunkt nicht erkennbar. Eine permanente Überwachung externer Links ohne konkrete Hinweise auf Rechtsverstöße ist jedoch nicht zumutbar. Wenn ich von Rechtsverletzungen auf verlinkten Websites erfahre, werde ich solche Links unverzüglich entfernen.",
         copyrightTitle: "Urheberrecht",
         copyrightText:
-          "Diese Webseiten und deren Inhalte unterliegen dem deutschen Urheberrecht. Soweit nicht gesetzlich ausdrücklich erlaubt (§§ 44a ff. UrhG), bedarf jede Verwertung, Vervielfältigung oder Verarbeitung urheberrechtlich geschützter Werke auf unseren Seiten der vorherigen Zustimmung des jeweiligen Rechteinhabers.",
+          "Alle Inhalte und Werke auf dieser Website, die vom Website-Eigentümer erstellt wurden (Text, Bilder, Grafiken usw.), unterliegen dem Urheberrecht. Vervielfältigung, Bearbeitung, Verteilung oder jede Form der Kommerzialisierung solcher Materialien über das, was das Urheberrecht erlaubt, hinaus erfordert die vorherige schriftliche Zustimmung des Website-Eigentümers. Soweit Inhalte auf dieser Website nicht vom Betreiber erstellt wurden, werden die geistigen Eigentumsrechte Dritter respektiert, und solche Inhalte werden gekennzeichnet (z. B. bleiben Logos oder Markennamen Dritter Eigentum ihrer jeweiligen Inhaber). Wenn Sie eine Urheberrechtsverletzung bemerken, teilen Sie mir dies bitte mit, und ich werde sie umgehend beheben.",
+        noWarningTitle: "Keine Abmahnung ohne vorherigen Kontakt",
+        noWarningText:
+          "Sollten Inhalte oder Gestaltungsaspekte dieser Website die Rechte Dritter oder gesetzliche Bestimmungen verletzen, bitte ich um einen entsprechenden Hinweis ohne Kostennote. Ich garantiere, dass die zu Recht beanstandeten Passagen unverzüglich entfernt oder korrigiert werden, ohne dass die Einschaltung eines Rechtsbeistandes erforderlich ist. Dennoch von Ihnen ohne vorherige Kontaktaufnahme ausgelöste Kosten werden vollständig zurückgewiesen und gegebenenfalls werde ich Gegenklage wegen Verletzung vorgenannter Bestimmungen einreichen.",
+        phone: "Telefon:",
+        email: "E-Mail:",
         lastUpdated: "Zuletzt aktualisiert:",
       } as const;
     }
     return {
-      displayTitle: "Imprint / Impressum",
+      displayTitle: "Imprint",
       noticeTitle: "Template Notice",
       noticeDesc:
         'Please replace the placeholder information below with your actual contact details before using this website publicly. Configure this in the editor under "Legal Info".',
-      tmgTitle: "Information according to § 5 TMG",
-      contactInfo: "Contact Information",
-      contact: "Contact",
-      phone: "Phone:",
-      email: "Email:",
+      intro:
+        "In accordance with § 5 of the German Telemedia Act (Telemediengesetz) and other applicable laws, the following is the legally required provider identification for this website. This website is a personal portfolio operated by an individual.",
+      ownerTitle: "Name of Website Owner",
+      addressTitle: "Address",
+      contactEmailTitle: "Contact Email",
+      telephoneTitle: "Telephone",
+      telephoneNote:
+        "*(For a private individual website owner, a telephone number is optional as long as an email address is provided for quick contact.)",
       vatTitle: "VAT ID",
-      vatLine:
-        "Sales tax identification number according to § 27a of the Sales Tax Law:",
-      responsibleTitle:
-        "Responsible for the content according to § 55 Abs. 2 RStV",
-      disclaimerTitle: "Disclaimer",
-      contentAccountabilityTitle: "Accountability for content",
-      contentAccountabilityText:
-        "The contents of our pages have been created with the utmost care. However, we cannot guarantee the contents' accuracy, completeness or topicality. According to statutory provisions, we are furthermore responsible for our own content on these web pages. In this context, please note that we are accordingly not under obligation to monitor merely the transmitted or saved information of third parties, or investigate circumstances pointing to illegal activity.",
-      linkAccountabilityTitle: "Accountability for links",
-      linkAccountabilityText:
-        "Responsibility for the content of external links (to web pages of third parties) lies solely with the operators of the linked pages. No violations were evident to us at the time of linking. Should any legal infringement become known to us, we will remove the respective link immediately.",
+      vatNote:
+        "(As a private individual not engaged in VAT-taxable commercial activity, you may not have a VAT ID. If none, this line can be omitted.)",
+      responsibleTitle: "Responsible for Content (gem. § 18 Abs. 2 MStV)",
+      responsibleNote:
+        "(This is typically the same person as above, listed again to comply with German media law for editorial content responsibility.)",
+      purposeTitle: "Purpose of Website",
+      purposeText:
+        "This is a personal developer portfolio website. Its purpose is to showcase the skills, projects, and experiences of the site owner. It is not used for direct commercial transactions or e-commerce.",
+      disclaimerTitle: "Legal Disclaimer",
+      contentLiabilityTitle: "Content Liability",
+      contentLiabilityText:
+        "As the website operator, I strive to keep all information on this site up to date and correct. However, I cannot guarantee the accuracy, completeness, or timeliness of content. According to §§ 8–10 of the Telemediengesetz, I, as a service provider, am not obligated to monitor third-party information transmitted or stored on this site, nor to investigate circumstances indicating illegal activity. Upon notification of specific legal violations, I will promptly remove or correct the affected content. Until such notification, any liability for such content is disclaimed.",
+      externalLinksTitle: "External Links",
+      externalLinksText:
+        "This website contains links to external websites of third parties (for example, project repositories or social media profiles). I have no influence over the content of these external sites. Therefore, I cannot accept any responsibility for their content. The respective providers or operators of linked sites are solely responsible for their content. I checked the linked pages for possible legal violations at the time of linking and no unlawful content was apparent at that time. However, continuous monitoring of external links without concrete evidence of wrongdoing is not feasible. If I become aware of any legal infringements on linked sites, I will remove such links immediately.",
       copyrightTitle: "Copyright",
       copyrightText:
-        "Our web pages and their contents are subject to German copyright law. Unless expressly permitted by law (§ 44a et seq. of the copyright law), every form of utilizing, reproducing or processing works subject to copyright protection on our web pages requires the prior consent of the respective owner of the rights.",
+        "All content and works on this website created by the site owner (text, images, graphics, etc.) are subject to copyright. Duplication, processing, distribution, or any form of commercialization of such material beyond what is permitted by copyright law requires prior written consent of the site owner. Where content on this site is not created by the operator, the intellectual property rights of third parties are respected and such content is indicated (e.g., third-party logos or brand names remain the property of their respective owners). If you notice any copyright infringement, please inform me and I will address it promptly.",
+      noWarningTitle: "No Warning without Prior Contact",
+      noWarningText:
+        "Should any content or design aspects of this website infringe upon the rights of third parties or legal provisions, I ask for an appropriate notice without a fee. I guarantee that the rightly objected portions will be removed or corrected promptly, without the need for legal assistance. Nonetheless, any costs incurred without prior contact will be fully rejected, and if necessary, I will file a counter-claim for violation of the aforementioned provisions.",
+      phone: "Phone:",
+      email: "Email:",
       lastUpdated: "Last updated:",
     } as const;
   }, [lang]);
@@ -178,13 +205,20 @@ export default function ImprintPage() {
             <Divider />
             <CardBody className="p-6 space-y-8 text-foreground leading-relaxed">
               <section className="space-y-4">
-                <h2 className="text-2xl font-semibold">{t.tmgTitle}</h2>
+                <p className="text-lg">{t.intro}</p>
+              </section>
 
+              <section className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">{t.contactInfo}</h3>
+                  <h3 className="text-xl font-semibold">{t.ownerTitle}</h3>
                   <p>
                     <strong>{displayName}</strong>
-                    <br />
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">{t.addressTitle}</h3>
+                  <p>
                     {displayStreetAddress}
                     <br />
                     {displayZipCity}
@@ -194,25 +228,38 @@ export default function ImprintPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">{t.contact}</h3>
+                  <h3 className="text-xl font-semibold">
+                    {t.contactEmailTitle}
+                  </h3>
                   <p>
-                    {legal.phone && (
-                      <>
-                        <strong>{t.phone}</strong> {displayPhone}
-                        <br />
-                      </>
-                    )}
                     <strong>{t.email}</strong> {displayEmail}
                   </p>
                 </div>
 
+                {(legal.phone || !hasRequiredFields) && (
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">
+                      {t.telephoneTitle}
+                    </h3>
+                    {legal.phone ? (
+                      <p>
+                        <strong>{t.phone}</strong> {displayPhone}
+                      </p>
+                    ) : (
+                      <p>{displayPhone}</p>
+                    )}
+                    <p className="text-sm text-default-500 italic">
+                      {t.telephoneNote}
+                    </p>
+                  </div>
+                )}
+
                 {(legal.vatId || !hasRequiredFields) && (
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold">{t.vatTitle}</h3>
-                    <p>
-                      {t.vatLine}
-                      <br />
-                      {displayVatId}
+                    <p>{displayVatId}</p>
+                    <p className="text-sm text-default-500 italic">
+                      {t.vatNote}
                     </p>
                   </div>
                 )}
@@ -227,28 +274,44 @@ export default function ImprintPage() {
                     {displayResponsibleAddress}
                   </p>
                 </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">{t.purposeTitle}</h3>
+                  <p>{t.purposeText}</p>
+                </div>
               </section>
 
               <section className="space-y-4">
                 <h2 className="text-2xl font-semibold">{t.disclaimerTitle}</h2>
 
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">
-                    {t.contentAccountabilityTitle}
-                  </h3>
-                  <p>{t.contentAccountabilityText}</p>
-                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">
+                      {t.contentLiabilityTitle}
+                    </h3>
+                    <p>{t.contentLiabilityText}</p>
+                  </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">
-                    {t.linkAccountabilityTitle}
-                  </h3>
-                  <p>{t.linkAccountabilityText}</p>
-                </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">
+                      {t.externalLinksTitle}
+                    </h3>
+                    <p>{t.externalLinksText}</p>
+                  </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">{t.copyrightTitle}</h3>
-                  <p>{t.copyrightText}</p>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">
+                      {t.copyrightTitle}
+                    </h3>
+                    <p>{t.copyrightText}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">
+                      {t.noWarningTitle}
+                    </h3>
+                    <p>{t.noWarningText}</p>
+                  </div>
                 </div>
               </section>
 

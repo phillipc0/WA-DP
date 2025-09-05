@@ -58,6 +58,8 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     githubUsername: string,
     sort: SortOption,
   ) => {
+    // Get the current repos count from portfolio data (including draft changes)
+    const currentReposCount = portfolioData?.social?.githubReposCount || 4;
     let cachedData = null;
 
     try {
@@ -74,7 +76,7 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
           ) {
             cachedData = localData;
 
-            // If cache is fresh, use it immediately
+            // If cache is fresh and configuration matches, use it immediately
             if (localData.lastUpdated && localData.fetchConfig?.intervalHours) {
               const lastUpdateTime = new Date(localData.lastUpdated).getTime();
               const now = Date.now();
@@ -82,7 +84,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
                 localData.fetchConfig.intervalHours * 60 * 60 * 1000;
               const isStale = now - lastUpdateTime >= intervalMs;
 
-              if (!isStale) {
+              // Check if repos count configuration has changed
+              const cachedReposCount = localData.fetchConfig?.reposPerPage || 4;
+              const configChanged = currentReposCount !== cachedReposCount;
+
+              if (!isStale && !configChanged) {
                 return localData[sort];
               }
             }
@@ -92,10 +98,10 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
         // Continue to backend API attempt
       }
 
-      // If cache is stale or missing, try backend API to fetch fresh data
+      // If cache is stale, missing, or config changed, try backend API to fetch fresh data
       try {
         const response = await fetch(
-          `/api/github-repos?username=${githubUsername}&sort=${sort}`,
+          `/api/github-repos?username=${githubUsername}&sort=${sort}&reposCount=${currentReposCount}`,
         );
         if (response.ok) {
           const data = await response.json();
@@ -152,7 +158,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     };
 
     initializeRepos().catch(console.error);
-  }, [portfolioData?.social?.github, portfolioLoading]);
+  }, [
+    portfolioData?.social?.github,
+    portfolioData?.social?.githubReposCount,
+    portfolioLoading,
+  ]);
 
   useEffect(() => {
     const loadReposForSort = async () => {
@@ -194,7 +204,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     };
 
     loadReposForSort().catch(console.error);
-  }, [sortBy, portfolioData?.social?.github]);
+  }, [
+    sortBy,
+    portfolioData?.social?.github,
+    portfolioData?.social?.githubReposCount,
+  ]);
 
   if (portfolioLoading || !portfolioData) {
     return <GithubIntegrationSkeleton />;

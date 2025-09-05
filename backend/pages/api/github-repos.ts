@@ -8,7 +8,8 @@ const GITHUB_REPOS_FILE = path.join(
   "frontend",
   "github-repos.json",
 );
-const REPO_PER_PAGE = 4;
+const PORTFOLIO_FILE = path.join(process.cwd(), "frontend", "portfolio.json");
+const DEFAULT_REPO_PER_PAGE = 4;
 
 type Repository = {
   id: number;
@@ -24,6 +25,26 @@ type Repository = {
 };
 
 type SortOption = "updated" | "stars";
+
+/**
+ * Gets the user's configured GitHub repos count from portfolio data
+ * @returns The number of repos to fetch per request
+ */
+function getReposCount(): number {
+  try {
+    if (!fs.existsSync(PORTFOLIO_FILE)) {
+      return DEFAULT_REPO_PER_PAGE;
+    }
+
+    const portfolioContent = fs.readFileSync(PORTFOLIO_FILE, "utf8");
+    const portfolioData = JSON.parse(portfolioContent);
+
+    return portfolioData?.social?.githubReposCount || DEFAULT_REPO_PER_PAGE;
+  } catch (error) {
+    console.error("Error reading portfolio configuration:", error);
+    return DEFAULT_REPO_PER_PAGE;
+  }
+}
 
 type GitHubReposData = {
   updated: Repository[];
@@ -44,22 +65,24 @@ type GitHubReposData = {
  * Fetches GitHub repositories for a given user and sort option
  * @param githubUsername - The GitHub username
  * @param sort - The sort option (updated or stars)
+ * @param reposCount - Number of repositories to fetch
  * @returns Promise resolving to array of repositories
  */
 async function fetchReposForSort(
   githubUsername: string,
   sort: SortOption,
+  reposCount: number,
 ): Promise<Repository[]> {
   try {
     let response;
 
     if (sort === "stars") {
       response = await fetch(
-        `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${REPO_PER_PAGE}`,
+        `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${reposCount}`,
       );
     } else {
       response = await fetch(
-        `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${REPO_PER_PAGE}`,
+        `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${reposCount}`,
       );
     }
 
@@ -92,7 +115,7 @@ function ensureReposFileExists(): GitHubReposData {
       },
       fetchConfig: {
         intervalHours: 1,
-        reposPerPage: REPO_PER_PAGE,
+        reposPerPage: DEFAULT_REPO_PER_PAGE,
       },
     };
 
@@ -122,7 +145,7 @@ function ensureReposFileExists(): GitHubReposData {
       },
       fetchConfig: {
         intervalHours: 1,
-        reposPerPage: REPO_PER_PAGE,
+        reposPerPage: DEFAULT_REPO_PER_PAGE,
       },
     };
   }
@@ -131,14 +154,21 @@ function ensureReposFileExists(): GitHubReposData {
 /**
  * Updates GitHub repositories for a specific user
  * @param githubUsername - The GitHub username to update repositories for
+ * @param reposCount - Optional specific repos count to use
  * @returns Promise that resolves when update is complete
  */
-async function updateReposForUser(githubUsername: string): Promise<void> {
+async function updateReposForUser(
+  githubUsername: string,
+  reposCount?: number,
+): Promise<void> {
   try {
+    // Get the configured repos count (use provided count or read from portfolio)
+    const actualReposCount = reposCount || getReposCount();
+
     // Fetch both updated and starred repos
     const [updatedRepos, starredRepos] = await Promise.all([
-      fetchReposForSort(githubUsername, "updated"),
-      fetchReposForSort(githubUsername, "stars"),
+      fetchReposForSort(githubUsername, "updated", actualReposCount),
+      fetchReposForSort(githubUsername, "stars", actualReposCount),
     ]);
 
     const now = new Date().toISOString();
@@ -153,7 +183,7 @@ async function updateReposForUser(githubUsername: string): Promise<void> {
       },
       fetchConfig: {
         intervalHours: 1,
-        reposPerPage: REPO_PER_PAGE,
+        reposPerPage: actualReposCount,
       },
     };
 
@@ -193,6 +223,7 @@ function shouldUpdateRepos(
  * Next.js API handler for GitHub repositories management
  * @param req - The API request object
  * @param res - The API response object
+ * @returns Promise resolving to void
  */
 export default async function handler(
   req: NextApiRequest,
@@ -200,7 +231,12 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      const { username, sort = "updated", force = "false" } = req.query;
+      const {
+        username,
+        sort = "updated",
+        force = "false",
+        reposCount,
+      } = req.query;
 
       if (!username || typeof username !== "string") {
         return res.status(400).json({ error: "GitHub username is required" });
@@ -218,15 +254,22 @@ export default async function handler(
           reposData.fetchConfig.intervalHours,
         );
 
-      // Check if we need to update (forced, stale data, or different user)
+      // Get current repos count configuration from parameter or portfolio file
+      const requestedReposCount = reposCount
+        ? parseInt(reposCount as string)
+        : null;
+      const currentReposCount = requestedReposCount || getReposCount();
+
+      // Check if we need to update (forced, stale data, different user, or repos count changed)
       const needsUpdate =
         shouldUpdate ||
         reposData.metadata.username !== username ||
-        reposData[sortOption].length === 0;
+        reposData[sortOption].length === 0 ||
+        reposData.fetchConfig.reposPerPage !== currentReposCount;
 
       if (needsUpdate) {
         try {
-          await updateReposForUser(username);
+          await updateReposForUser(username, currentReposCount);
           // Re-read the updated data
           const updatedData = ensureReposFileExists();
           return res.status(200).json({
