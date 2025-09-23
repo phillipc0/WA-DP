@@ -45,4 +45,3 @@ describe("/api/validate handler", () => {
     expect(res._getJson()).toEqual({ error: "Method not allowed" });
   });
 });
-
