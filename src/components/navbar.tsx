@@ -30,6 +30,7 @@ export const Navbar = () => {
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,7 +48,33 @@ export const Navbar = () => {
     checkAuth();
   }, []);
 
+  // check backend health so the frontend can disable login when backend is down
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+
+    const checkBackend = async () => {
+      try {
+        const res = await fetch("/api/validate", { signal: controller.signal });
+        if (!mounted) return;
+        setBackendAvailable(res.ok);
+      } catch (e) {
+        console.error("Error checking backend health:", e);
+        if (!mounted) return;
+        setBackendAvailable(false);
+      }
+    };
+
+    checkBackend();
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, []);
+
   const handleLoginClick = () => {
+    // if backend isn't available, prevent login attempts
+    if (!backendAvailable) return;
     if (isAdmin) {
       logout();
       setIsAdmin(false);
@@ -125,8 +152,12 @@ export const Navbar = () => {
           </NavbarItem>
           <NavbarItem className="hidden sm:flex">
             <Button
+              className={
+                !backendAvailable ? "opacity-50 cursor-not-allowed" : undefined
+              }
               color={isAdmin ? "danger" : "primary"}
               data-testid={isAdmin ? "logout-button" : "login-button"}
+              disabled={!backendAvailable}
               onPress={handleLoginClick}
             >
               {isAdmin ? "Logout" : "Login"}
@@ -155,8 +186,14 @@ export const Navbar = () => {
                 return (
                   <NavbarMenuItem key={`${item.label}-${index}`}>
                     <Button
-                      className="w-full justify-start"
+                      className={
+                        "w-full justify-start " +
+                        (!backendAvailable
+                          ? "opacity-50 cursor-not-allowed"
+                          : "")
+                      }
                       color={isAdmin ? "danger" : "primary"}
+                      disabled={!backendAvailable}
                       size="lg"
                       variant="light"
                       onPress={handleLoginClick}
