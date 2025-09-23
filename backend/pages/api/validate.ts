@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 /**
  * GET /api/validate
- * Health-check endpoint for the backend used by the frontend to detect
+ * health check endpoint for the backend used by the frontend to detect
  * whether the API server is reachable.
  *
  * Responses:
@@ -12,9 +12,8 @@ import { NextApiRequest, NextApiResponse } from "next";
  *
  * Notes:
  * - Public endpoint; no authentication required.
- *
- * @param {import('next').NextApiRequest} req - Incoming Next.js API request
- * @param {import('next').NextApiResponse} res - Outgoing Next.js API response
+ * @param req {import('next').NextApiRequest} - Incoming Next.js API request
+ * @param res {import('next').NextApiResponse} - Outgoing Next.js API response
  * @returns {void}
  */
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
