@@ -87,6 +87,11 @@ export const Navbar = () => {
               return null;
             }
 
+            // hide Home link for non-authenticated users
+            if (item.href === "/" && !isAdmin) {
+              return null;
+            }
+
             return (
               <NavbarItem
                 key={item.href}
@@ -139,6 +144,10 @@ export const Navbar = () => {
             {siteConfig.navMenuItems.map((item, index) => {
               if (item.href === "/edit" && !isAdmin) {
                 // don't show "Edit" unless admin
+                return null;
+              }
+              // hide Home link in mobile menu for non-authenticated users
+              if (item.href === "/" && !isAdmin) {
                 return null;
               }
               if (item.href === "/logout") {
