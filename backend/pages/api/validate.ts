@@ -12,8 +12,8 @@ import { NextApiRequest, NextApiResponse } from "next";
  *
  * Notes:
  * - Public endpoint; no authentication required.
- * @param req {import('next').NextApiRequest} - Incoming Next.js API request
- * @param res {import('next').NextApiResponse} - Outgoing Next.js API response
+ * @param req {NextApiRequest} - Incoming Next.js API request
+ * @param res {NextApiResponse} - Outgoing Next.js API response
  * @returns {void}
  */
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
