@@ -54,8 +54,11 @@ export const Navbar = () => {
     const controller = new AbortController();
 
     const checkBackend = async () => {
-      // Skip network check when running under Vitest to avoid undici URL errors
-      if ((globalThis as any).__vitest) {
+      // Skip network check in test environments to avoid undici/JSDOM URL issues and set Backend available to true to be able to test login modal
+      if (
+        typeof process !== "undefined" &&
+        (process.env.NODE_ENV === "test" || process.env.VITEST)
+      ) {
         setBackendAvailable(true);
         return;
       }
