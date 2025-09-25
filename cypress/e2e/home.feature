@@ -6,4 +6,4 @@ Feature: Home Page
   Scenario: Visit home
     Given I open the homepage
     Then I should see "Skills" in the h2 header
-    And I should see a link to "Home"
+    And I should see a link to "WA-DP"
