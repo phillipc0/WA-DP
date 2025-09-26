@@ -16,8 +16,6 @@ import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { getLanguageColor } from "@/lib/language-colors";
 import { GithubIntegrationSkeleton } from "@/components/ui/skeleton";
 
-const REPO_PER_PAGE = 4;
-
 type Repository = {
   id: number;
   name: string;
@@ -60,27 +58,66 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     githubUsername: string,
     sort: SortOption,
   ) => {
+    // Get the current repos count from portfolio data (including draft changes)
+    const currentReposCount = portfolioData?.social?.githubReposCount || 4;
+    let cachedData = null;
+
     try {
-      let response;
+      // First try to read from local JSON file
+      try {
+        const localResponse = await fetch("/github-repos.json");
+        if (localResponse.ok) {
+          const localData = await localResponse.json();
+          // Check if cached data is for the requested user
+          if (
+            localData.metadata?.username === githubUsername &&
+            localData[sort] &&
+            localData[sort].length > 0
+          ) {
+            cachedData = localData;
 
-      if (sort === "stars") {
-        // The users API does not support sorting by stars
-        response = await fetch(
-          `https://api.github.com/search/repositories?q=user:${githubUsername}&sort=stars&order=desc&per_page=${REPO_PER_PAGE}`,
-        );
-      } else {
-        response = await fetch(
-          `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=${REPO_PER_PAGE}`,
-        );
+            // If cache is fresh and configuration matches, use it immediately
+            if (localData.lastUpdated && localData.fetchConfig?.intervalHours) {
+              const lastUpdateTime = new Date(localData.lastUpdated).getTime();
+              const now = Date.now();
+              const intervalMs =
+                localData.fetchConfig.intervalHours * 60 * 60 * 1000;
+              const isStale = now - lastUpdateTime >= intervalMs;
+
+              // Check if repos count configuration has changed
+              const cachedReposCount = localData.fetchConfig?.reposPerPage || 4;
+              const configChanged = currentReposCount !== cachedReposCount;
+
+              if (!isStale && !configChanged) {
+                return localData[sort];
+              }
+            }
+          }
+        }
+      } catch {
+        // Continue to backend API attempt
       }
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch repositories");
+      // If cache is stale, missing, or config changed, try backend API to fetch fresh data
+      try {
+        const response = await fetch(
+          `/api/github-repos?username=${githubUsername}&sort=${sort}&reposCount=${currentReposCount}`,
+        );
+        if (response.ok) {
+          const data = await response.json();
+          return data.repos || [];
+        }
+      } catch {
+        // Backend is unavailable, fall back to cached data if available
       }
 
-      const data = await response.json();
+      // Fallback to stale cached data if backend is unavailable
+      if (cachedData && cachedData[sort]) {
+        return cachedData[sort];
+      }
 
-      return sort === "stars" ? data.items : data;
+      // No data available at all
+      throw new Error("No repository data available");
     } catch (err) {
       console.error(`Error fetching ${sort} repos:`, err);
       throw err;
@@ -121,7 +158,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     };
 
     initializeRepos().catch(console.error);
-  }, [portfolioData?.social?.github, portfolioLoading]);
+  }, [
+    portfolioData?.social?.github,
+    portfolioData?.social?.githubReposCount,
+    portfolioLoading,
+  ]);
 
   useEffect(() => {
     const loadReposForSort = async () => {
@@ -163,7 +204,11 @@ export function GithubIntegration({ refreshTrigger }: GithubIntegrationProps) {
     };
 
     loadReposForSort().catch(console.error);
-  }, [sortBy, portfolioData?.social?.github]);
+  }, [
+    sortBy,
+    portfolioData?.social?.github,
+    portfolioData?.social?.githubReposCount,
+  ]);
 
   if (portfolioLoading || !portfolioData) {
     return <GithubIntegrationSkeleton />;

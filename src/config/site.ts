@@ -11,6 +11,7 @@ export const siteConfig = {
     avatar: "",
     social: {
       github: "johndoe",
+      githubReposCount: 4,
       twitter: "johndoe",
       twitterPlatform: "twitter" as "twitter" | "x",
       linkedin: "johndoe",
@@ -60,6 +61,18 @@ export const siteConfig = {
     contributor: {
       enableContributorStatus: false,
       showGoldenBoxShadow: false,
+    },
+    legal: {
+      fullName: "",
+      streetAddress: "",
+      zipCode: "",
+      city: "",
+      country: "",
+      phone: "",
+      email: "",
+      vatId: "",
+      responsiblePerson: "",
+      responsibleAddress: "",
     },
   },
   navItems: [

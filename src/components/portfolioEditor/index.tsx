@@ -11,6 +11,7 @@ import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
 import { ImportExportControls } from "./import-export-controls";
 import { ContributorForm } from "./contributor-form";
+import { LegalInfoForm } from "./legal-info-form";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
@@ -80,6 +81,8 @@ export function PortfolioEditor() {
     handleEducationDragEnd,
     // Contributor functions
     handleContributorChange,
+    // Legal info functions
+    handleLegalInfoChange,
     // Import/Export
     handleImportPortfolioData,
   } = usePortfolioEditor();
@@ -90,6 +93,7 @@ export function PortfolioEditor() {
     { key: "skills", label: "Skills" },
     { key: "experience", label: "Work Experience" },
     { key: "education", label: "Education" },
+    { key: "legal", label: "Legal Info" },
     ...(isContributor(portfolioData?.social?.github)
       ? [{ key: "contributor", label: "Contributor" }]
       : []),
@@ -164,6 +168,26 @@ export function PortfolioEditor() {
             handleRemoveEducation={handleRemoveEducation}
             newEducation={newEducation}
             portfolioData={portfolioData}
+          />
+        );
+      case "legal":
+        return (
+          <LegalInfoForm
+            legalInfo={
+              portfolioData?.legal || {
+                fullName: "",
+                streetAddress: "",
+                zipCode: "",
+                city: "",
+                country: "",
+                phone: "",
+                email: "",
+                vatId: "",
+                responsiblePerson: "",
+                responsibleAddress: "",
+              }
+            }
+            onLegalInfoChange={handleLegalInfoChange}
           />
         );
       case "contributor":
