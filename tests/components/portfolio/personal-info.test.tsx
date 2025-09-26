@@ -189,4 +189,123 @@ describe("PersonalInfo", () => {
     // Should render skeleton component
     expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
   });
+
+  it("does not render location chip when location is empty", async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        name: "John Doe",
+        title: "Software Engineer",
+        location: "", // empty location
+        email: "john@example.com",
+        bio: "Passionate software engineer with 5 years of experience.",
+        avatar: "https://example.com/avatar.jpg",
+        social: {
+          github: "johndoe",
+          twitter: "johndoe",
+          twitterPlatform: "twitter",
+          linkedin: "johndoe",
+          discord: "johndoe#1234",
+          reddit: "johndoe",
+          youtube: "johndoe",
+          steam: "76561197984767093",
+        },
+        contributor: {
+          enableContributorStatus: false,
+          showGoldenBoxShadow: false,
+        },
+      },
+      isLoading: false,
+    });
+
+    render(<PersonalInfo />);
+
+    // Email should be rendered but location chip should not be there
+    expect(screen.getByText("john@example.com")).toBeInTheDocument();
+    // Test by looking for primary colored chips (location chips have primary color)
+    const chips = document.querySelectorAll(".bg-primary");
+    expect(chips).toHaveLength(0);
+  });
+
+  it("does not render email chip when email is empty", async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        name: "John Doe",
+        title: "Software Engineer",
+        location: "San Francisco, CA",
+        email: "", // empty email
+        bio: "Passionate software engineer with 5 years of experience.",
+        avatar: "https://example.com/avatar.jpg",
+        social: {
+          github: "johndoe",
+          twitter: "johndoe",
+          twitterPlatform: "twitter",
+          linkedin: "johndoe",
+          discord: "johndoe#1234",
+          reddit: "johndoe",
+          youtube: "johndoe",
+          steam: "76561197984767093",
+        },
+        contributor: {
+          enableContributorStatus: false,
+          showGoldenBoxShadow: false,
+        },
+      },
+      isLoading: false,
+    });
+
+    render(<PersonalInfo />);
+
+    // Location should be rendered but email chip should not be there
+    expect(screen.getByText("San Francisco, CA")).toBeInTheDocument();
+    // Test by looking for secondary colored chips (email chips have secondary color)
+    const chips = document.querySelectorAll(".bg-secondary");
+    expect(chips).toHaveLength(0);
+  });
+
+  it("does not render location or email chips when both are missing", async () => {
+    const { usePortfolioData } = await import("@/hooks/usePortfolioData");
+
+    vi.mocked(usePortfolioData).mockReturnValue({
+      portfolioData: {
+        name: "John Doe",
+        title: "Software Engineer",
+        location: null, // null location
+        email: undefined, // undefined email
+        bio: "Passionate software engineer with 5 years of experience.",
+        avatar: "https://example.com/avatar.jpg",
+        social: {
+          github: "johndoe",
+          twitter: "johndoe",
+          twitterPlatform: "twitter",
+          linkedin: "johndoe",
+          discord: "johndoe#1234",
+          reddit: "johndoe",
+          youtube: "johndoe",
+          steam: "76561197984767093",
+        },
+        contributor: {
+          enableContributorStatus: false,
+          showGoldenBoxShadow: false,
+        },
+      },
+      isLoading: false,
+    });
+
+    render(<PersonalInfo />);
+
+    // Neither chip type should exist when both values are missing
+    const primaryChips = document.querySelectorAll(".bg-primary");
+    const secondaryChips = document.querySelectorAll(".bg-secondary");
+
+    expect(primaryChips).toHaveLength(0);
+    expect(secondaryChips).toHaveLength(0);
+
+    // Main content should still be there
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
+  });
 });
