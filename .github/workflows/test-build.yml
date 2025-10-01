@@ -427,7 +427,7 @@ jobs:
     name: Build Docker Image and Upload as Artifact
     #    needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    #    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
