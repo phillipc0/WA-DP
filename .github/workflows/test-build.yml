@@ -2,8 +2,6 @@ name: Test, Build and Deploy to Server
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
