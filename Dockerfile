@@ -57,7 +57,6 @@ RUN npm ci --omit=dev
 
 # Kopiert die gebauten Artefakte. Die Zielpfade sind jetzt relativ zum neuen WORKDIR.
 COPY --from=backend-builder /app/backend/.next ./.next
-COPY --from=backend-builder /app/backend/public ./public
 COPY --from=backend-builder /app/backend/next.config.js ./next.config.js
 
 # Kopiert das gebaute Frontend (aus Stufe 1) in das "frontend"-Verzeichnis innerhalb des Backends
