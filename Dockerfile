@@ -42,35 +42,29 @@ RUN cd backend && npm run build
 
 
 # =============================================
-# Stufe 3: Finale Anwendung zusammenstellen (schlankes Production-Image)
+# Stufe 3: Finale Anwendung zusammenstellen (KORRIGIERT)
 # =============================================
 FROM node:20-alpine AS runner
 
-WORKDIR /app
-
-# Setzt die Umgebung auf "production" für bessere Performance
 ENV NODE_ENV=production
 
-# Kopiert nur die package.json des Backends, um NUR Production-Abhängigkeiten zu installieren
-COPY backend/package*.json ./backend/
-RUN cd backend && npm ci --omit=dev
+# --- ÄNDERUNG 1: Arbeitsverzeichnis direkt auf /app/backend setzen ---
+WORKDIR /app/backend
 
-# Kopiert die gebauten Artefakte aus den vorherigen Stufen
-COPY --from=backend-builder /app/backend/.next ./backend/.next
-COPY --from=backend-builder /app/backend/next.config.js ./backend/next.config.js
-# --- FEHLERHAFTE ZEILEN ENTFERNT ---
-# Die folgenden Zeilen wurden entfernt, da backend/public und users.json nicht im Build-Kontext existieren.
-# COPY --from=backend-builder /app/backend/public ./backend/public
-# COPY --from=backend-builder /app/backend/users.json ./backend/users.json
+# Kopiert die package.json des Backends in das neue WORKDIR
+COPY backend/package*.json ./
+RUN npm ci --omit=dev
 
+# Kopiert die gebauten Artefakte. Die Zielpfade sind jetzt relativ zum neuen WORKDIR.
+COPY --from=backend-builder /app/backend/.next ./.next
+COPY --from=backend-builder /app/backend/public ./public
+COPY --from=backend-builder /app/backend/next.config.js ./next.config.js
 
-# WICHTIG: Kopiert das gebaute Frontend (aus Stufe 1) in das Verzeichnis,
-# das der Next.js-Server als 'public' für statische Dateien verwendet.
-COPY --from=frontend-builder /app/dist ./backend/frontend
+# Kopiert das gebaute Frontend (aus Stufe 1) in das "frontend"-Verzeichnis innerhalb des Backends
+COPY --from=frontend-builder /app/dist ./frontend
 
-# Port freigeben, auf dem das Next.js-Backend läuft (Standard: 3000)
+# Port freigeben
 EXPOSE 3000
 
-# Das Kommando zum Starten des Next.js-Servers in der Production-Umgebung
-# Das "--prefix backend" sorgt dafür, dass npm den Befehl im 'backend' Unterverzeichnis ausführt.
-CMD ["npm", "start", "--", "--prefix", "backend"]
+# --- ÄNDERUNG 2: Vereinfachtes Start-Kommando, da wir schon im richtigen Verzeichnis sind ---
+CMD ["npm", "start"]
