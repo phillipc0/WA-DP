@@ -425,8 +425,8 @@ jobs:
           path: cypress/screenshots/
           retention-days: 14
 
-  deploy:
-    name: Build and Deploy
+  build:
+    name: Build Docker Image and Upload as Artifact
     needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -434,66 +434,23 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
         with:
-          node-version: "22.15"
+          context: .
+          push: false
+          tags: wa-dp-image:latest
+          load: true
 
-      - name: Install Frontend Dependencies
-        run: npm ci
+      - name: Save Docker image to a tar file
+        run: docker save wa-dp-image:latest -o wa-dp-image.tar
 
-      - name: Install Backend Dependencies
-        run: cd backend && npm ci
-
-      - name: Build Backend
-        run: cd backend && npm run build
-
-      - name: Build Frontend
-        run: npm run build
-
-      - name: Move Frontend Build to Backend Frontend Directory
-        run: |
-          mkdir -p backend/frontend
-          cp -r dist/* backend/frontend/
-          mv backend/ wa-dp/
-
-      - name: Upload Build to Artifacts
+      - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: wa-dp/*
+          name: docker-image
+          path: wa-dp-image.tar
           retention-days: 14
-
-      - name: Remove Old Files on Server
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
-
-      - name: Transfer Backend with Frontend
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./wa-dp/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
-          rm -f private_key.pem
-
-      - name: Start Backend Server
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            # Kill existing tmux session if it exists
-            tmux kill-session -t WA-DP 2>/dev/null || true
-            # Start new tmux session with backend
-            tmux new-session -d -s WA-DP
-            tmux send-keys -t WA-DP "cd ~/Webserver/WA-DP" C-m
-            tmux send-keys -t WA-DP "clear" C-m
-            tmux send-keys -t WA-DP "npm start" C-m
-            tmux send-keys -t WA-DP "exec bash" C-m
