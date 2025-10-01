@@ -6,7 +6,8 @@ FROM node:20-alpine AS frontend-builder
 # Setzt das Arbeitsverzeichnis im Container
 WORKDIR /app
 
-# Kopiert nur die package.json-Dateien, um den Docker-Cache zu nutzen
+# Kopiert nur die package.json-Dateien, um den Docker-Cache effizient zu nutzen.
+# Wenn sich diese Dateien nicht ändern, wird der 'npm ci'-Schritt übersprungen.
 COPY package*.json ./
 COPY .npmrc ./
 
@@ -56,16 +57,20 @@ RUN cd backend && npm ci --omit=dev
 
 # Kopiert die gebauten Artefakte aus den vorherigen Stufen
 COPY --from=backend-builder /app/backend/.next ./backend/.next
-COPY --from=backend-builder /app/backend/public ./backend/public
 COPY --from=backend-builder /app/backend/next.config.js ./backend/next.config.js
+# --- FEHLERHAFTE ZEILEN ENTFERNT ---
+# Die folgenden Zeilen wurden entfernt, da backend/public und users.json nicht im Build-Kontext existieren.
+# COPY --from=backend-builder /app/backend/public ./backend/public
+# COPY --from=backend-builder /app/backend/users.json ./backend/users.json
+
 
 # WICHTIG: Kopiert das gebaute Frontend (aus Stufe 1) in das Verzeichnis,
 # das der Next.js-Server als 'public' für statische Dateien verwendet.
-# Basierend auf Ihrer vite.config.js und der Ordnerstruktur ist das "backend/frontend".
 COPY --from=frontend-builder /app/dist ./backend/frontend
 
 # Port freigeben, auf dem das Next.js-Backend läuft (Standard: 3000)
 EXPOSE 3000
 
 # Das Kommando zum Starten des Next.js-Servers in der Production-Umgebung
+# Das "--prefix backend" sorgt dafür, dass npm den Befehl im 'backend' Unterverzeichnis ausführt.
 CMD ["npm", "start", "--", "--prefix", "backend"]
