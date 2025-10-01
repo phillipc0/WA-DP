@@ -48,22 +48,23 @@ FROM node:20-alpine AS runner
 
 ENV NODE_ENV=production
 
-# --- ÄNDERUNG 1: Arbeitsverzeichnis direkt auf /app/backend setzen ---
+# Arbeitsverzeichnis direkt auf /app/backend setzen
 WORKDIR /app/backend
 
 # Kopiert die package.json des Backends in das neue WORKDIR
 COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
-# Kopiert die gebauten Artefakte. Die Zielpfade sind jetzt relativ zum neuen WORKDIR.
+# Kopiert die gebauten Artefakte des Backends
 COPY --from=backend-builder /app/backend/.next ./.next
 COPY --from=backend-builder /app/backend/next.config.js ./next.config.js
 
-# Kopiert das gebaute Frontend (aus Stufe 1) in das "frontend"-Verzeichnis innerhalb des Backends
-COPY --from=frontend-builder /app/dist ./frontend
+# === DIE ENTSCHEIDENDE ÄNDERUNG ===
+# Kopiere den Frontend-Build in den "public"-Ordner von Next.js
+COPY --from=frontend-builder /app/dist ./public
 
 # Port freigeben
 EXPOSE 3000
 
-# --- ÄNDERUNG 2: Vereinfachtes Start-Kommando, da wir schon im richtigen Verzeichnis sind ---
+# Start-Kommando
 CMD ["npm", "start"]
