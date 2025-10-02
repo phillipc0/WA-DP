@@ -345,7 +345,7 @@ jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [ lint, format, unit ]
     if: always() && github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout Repository
@@ -480,7 +480,6 @@ jobs:
     name: Generate Dependency Graph
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
