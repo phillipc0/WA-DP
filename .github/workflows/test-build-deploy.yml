@@ -425,46 +425,45 @@ jobs:
           path: cypress/screenshots/
           retention-days: 14
 
+  # currently only builds the project
   deploy:
     name: Build and Deploy
     needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    # currently out of order
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v5
-#
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: "22.15"
-#
-#      - name: Install Frontend Dependencies
-#        run: npm ci
-#
-#      - name: Install Backend Dependencies
-#        run: cd backend && npm ci
-#
-#      - name: Build Backend
-#        run: cd backend && npm run build
-#
-#      - name: Build Frontend
-#        run: npm run build
-#
-#      - name: Move Frontend Build to Backend Frontend Directory
-#        run: |
-#          mkdir -p backend/frontend
-#          cp -r dist/* backend/frontend/
-#          mv backend/ wa-dp/
-#
-#      - name: Upload Build to Artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: build
-#          path: wa-dp/*
-#          retention-days: 14
-#
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Build Frontend
+        run: npm run build
+
+      - name: Move Frontend Build to Backend Frontend Directory
+        run: |
+          mkdir -p backend/frontend
+          cp -r dist/* backend/frontend/
+          mv backend/ wa-dp/
+
+      - name: Upload Build to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: wa-dp/*
+          retention-days: 14
 #      - name: Remove Old Files on Server
 #        uses: appleboy/ssh-action@v1.2.2
 #        with:
