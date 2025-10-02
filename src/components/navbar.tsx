@@ -30,6 +30,7 @@ export const Navbar = () => {
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,7 +48,42 @@ export const Navbar = () => {
     checkAuth();
   }, []);
 
+  // check backend health so the frontend can disable login when backend is down
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+
+    const checkBackend = async () => {
+      // Skip network check in test environments to avoid undici/JSDOM URL issues and set Backend available to true to be able to test login modal
+      if (
+        typeof process !== "undefined" &&
+        (process.env.NODE_ENV === "test" || process.env.VITEST)
+      ) {
+        setBackendAvailable(true);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/validate", { signal: controller.signal });
+        if (!mounted) return;
+        setBackendAvailable(res.ok);
+      } catch (e) {
+        console.error("Error checking backend health:", e);
+        if (!mounted) return;
+        setBackendAvailable(false);
+      }
+    };
+
+    checkBackend();
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, []);
+
   const handleLoginClick = () => {
+    // if backend isn't available, prevent login attempts
+    if (!backendAvailable) return;
     if (isAdmin) {
       logout();
       setIsAdmin(false);
@@ -87,6 +123,11 @@ export const Navbar = () => {
               return null;
             }
 
+            // hide Home link for non-authenticated users
+            if (item.href === "/" && !isAdmin) {
+              return null;
+            }
+
             return (
               <NavbarItem
                 key={item.href}
@@ -119,13 +160,34 @@ export const Navbar = () => {
             <ThemeSwitch />
           </NavbarItem>
           <NavbarItem className="hidden sm:flex">
-            <Button
-              color={isAdmin ? "danger" : "primary"}
-              data-testid={isAdmin ? "logout-button" : "login-button"}
-              onPress={handleLoginClick}
+            <span
+              aria-hidden={backendAvailable}
+              className="inline-block"
+              title={!backendAvailable ? "Backend nicht erreichbar" : undefined}
             >
-              {isAdmin ? "Logout" : "Login"}
-            </Button>
+              {/* Screen-reader accessible description when backend is down */}
+              {!backendAvailable && (
+                <span className="sr-only" id="backend-unavailable">
+                  Backend nicht erreichbar
+                </span>
+              )}
+              <Button
+                aria-describedby={
+                  !backendAvailable ? "backend-unavailable" : undefined
+                }
+                className={
+                  !backendAvailable
+                    ? "opacity-50 cursor-not-allowed"
+                    : undefined
+                }
+                color={isAdmin ? "danger" : "primary"}
+                data-testid={isAdmin ? "logout-button" : "login-button"}
+                disabled={!backendAvailable}
+                onPress={handleLoginClick}
+              >
+                {isAdmin ? "Logout" : "Login"}
+              </Button>
+            </span>
           </NavbarItem>
         </NavbarContent>
 
@@ -141,19 +203,52 @@ export const Navbar = () => {
                 // don't show "Edit" unless admin
                 return null;
               }
+              // hide Home link in mobile menu for non-authenticated users
+              if (item.href === "/" && !isAdmin) {
+                return null;
+              }
               if (item.href === "/logout") {
                 // render Login/Logout button in menu
                 return (
                   <NavbarMenuItem key={`${item.label}-${index}`}>
-                    <Button
-                      className="w-full justify-start"
-                      color={isAdmin ? "danger" : "primary"}
-                      size="lg"
-                      variant="light"
-                      onPress={handleLoginClick}
+                    <span
+                      aria-hidden={backendAvailable}
+                      className="block w-full"
+                      title={
+                        !backendAvailable
+                          ? "Backend nicht erreichbar"
+                          : undefined
+                      }
                     >
-                      {isAdmin ? "Logout" : "Login"}
-                    </Button>
+                      {!backendAvailable && (
+                        <span
+                          className="sr-only"
+                          id="backend-unavailable-mobile"
+                        >
+                          Backend nicht erreichbar
+                        </span>
+                      )}
+                      <Button
+                        aria-describedby={
+                          !backendAvailable
+                            ? "backend-unavailable-mobile"
+                            : undefined
+                        }
+                        className={
+                          "w-full justify-start " +
+                          (!backendAvailable
+                            ? "opacity-50 cursor-not-allowed"
+                            : "")
+                        }
+                        color={isAdmin ? "danger" : "primary"}
+                        disabled={!backendAvailable}
+                        size="lg"
+                        variant="light"
+                        onPress={handleLoginClick}
+                      >
+                        {isAdmin ? "Logout" : "Login"}
+                      </Button>
+                    </span>
                   </NavbarMenuItem>
                 );
               }
