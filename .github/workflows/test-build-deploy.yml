@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch: # manual trigger
 
 jobs:
   lint:
@@ -159,66 +160,6 @@ jobs:
           path: prettier-report.xml
           reporter: java-junit
 
-  loc:
-    name: LOC Statistics
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Count LOC
-        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
-
-      - name: Create LOC Summary
-        run: node tools/loc-summary.mjs
-
-      - name: Add LOC Summary to Job Summary
-        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: loc-summary
-          path: loc-summary.md
-          retention-days: 14
-
-  dependency-graph:
-    name: Generate Dependency Graph
-    runs-on: ubuntu-latest
-    needs: [ lint, format ]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Install Graphviz
-        run: sudo apt-get update && sudo apt-get install -y graphviz
-
-      - name: Run Madge
-        run: npm run deps:madge
-
-      - name: Upload Dependency Graph as Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-graph-svg
-          path: docs/dependency-graph.svg
-          retention-days: 14
-
   lighthouse_summary:
     name: Lighthouse Report
     runs-on: ubuntu-latest
@@ -363,33 +304,6 @@ jobs:
           json-summary-path: ./coverage/coverage-summary.json
           file-coverage-mode: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'all' || 'changes' }}
 
-  sonarcloud:
-    name: SonarCloud Analysis
-    runs-on: ubuntu-latest
-    needs: [ lint, format, unit ]
-    if: always() && github.actor != 'dependabot[bot]'
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Download Coverage Report
-        uses: actions/download-artifact@v5
-        with:
-          name: vitest-coverage-report-html
-          path: coverage
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.3.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: .
-          args: >
-            -Dproject.settings=sonar-project-sonarcloud.properties
-
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -428,10 +342,37 @@ jobs:
           path: cypress/screenshots/
           retention-days: 14
 
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: [ lint, format ]
+    if: always() && github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v5
+        with:
+          name: vitest-coverage-report-html
+          path: coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: .
+          args: >
+            -Dproject.settings=sonar-project-sonarcloud.properties
+
   # currently only builds the project
   deploy:
     name: Build and Deploy
-    #needs: [unit, e2e, lighthouse_summary]
+    needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
@@ -503,3 +444,65 @@ jobs:
 #            tmux send-keys -t WA-DP "clear" C-m
 #            tmux send-keys -t WA-DP "npm start" C-m
 #            tmux send-keys -t WA-DP "exec bash" C-m
+
+  loc:
+    name: LOC Statistics
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Count LOC
+        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
+
+      - name: Create LOC Summary
+        run: node tools/loc-summary.mjs
+
+      - name: Add LOC Summary to Job Summary
+        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: loc-summary
+          path: loc-summary.md
+          retention-days: 14
+
+  dependency-graph:
+    name: Generate Dependency Graph
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    needs: [ lint, format ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.15"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+
+      - name: Run Madge
+        run: npm run deps:madge
+
+      - name: Upload Dependency Graph as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-graph-svg
+          path: docs/dependency-graph.svg
+          retention-days: 14
