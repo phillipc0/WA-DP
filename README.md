@@ -1,6 +1,7 @@
 # Developer Portfolio
 
-A modern full-stack web application to create and customize your personal developer portfolio. Built in TypeScript with React and Next.js.
+A modern full-stack web application to create and customize your personal developer portfolio. Built in TypeScript with
+React and Next.js.
 
 **Contributing:** See [CONTRIBUTING.md](https://github.com/phillipc0/WA-DP/blob/main/CONTRIBUTING.md)
 
@@ -40,11 +41,92 @@ A modern full-stack web application to create and customize your personal develo
 
 ## Installation for Users
 
-1. Visit the [latest Release](https://github.com/phillipc0/WA-DP/releases) and download the build.zip (for the latest version, visit [Deploy Actions](https://github.com/phillipc0/WA-DP/actions/workflows/test-build-deploy.yml?query=branch%3Amain+is%3Asuccess) and download the "build" artifact from the top pipeline)
-2. Unzip it in a new directory
-3. Make the subdirectory /frontend available via a web server e.g. nginx
-4. Run the Backend via `npm start`
-5. The backend is not needed once the data has been configured and can be turned off
+This project is deployed as a Docker container, you will need Docker installed on your server.
+
+1. **Pull the Docker Image**
+
+   ```bash
+   docker pull ghcr.io/phillipc0/wa-dp:latest
+   ```
+
+2. **Run the Docker Container**
+
+   ```bash
+   docker run -d --name wa-dp-container -p 3000:80 --restart always ghcr.io/phillipc0/wa-dp:latest
+   ```
+
+3. **Configure a Reverse Proxy (Nginx)**
+
+   The Docker container opens the application on port `3000`. You need a web-server
+   like Nginx as a reverse proxy. https://nginx.org/en/docs/beginners_guide.html
+
+   **Here is an example Nginx configuration:**
+
+   ```nginx
+   server {
+       listen 443 ssl;
+       server_name wa-dp.you-domain.com;
+
+        # SSL-certificate and keys etc...
+
+       location / {
+           proxy_pass http://127.0.0.1:3000;
+       }
+
+   }
+
+   server {
+       listen 80;
+       server_name wa-dp.you-domain.com;
+       return 301 https://$host$request_uri;
+
+   }
+   ```
+
+### Update the Docker Container
+
+You have two options for managing your portfolio data (`portfolio.json` and `users.json`), to persist manual updates
+to the wa-dp-container:
+
+**Option A: Manual Export/Import**
+
+With this method, you use WA-DP's built-in export feature to back up your data before updating.
+
+- **Before updating the container:**
+  1. Log into WA-DP
+  2. Go to the "Edit" page
+  3. Use the **"Export Portfolio Data"** button to download your `portfolio-data.json`
+- **After updating the container:**
+  1. Log in again (you need to create a new admin user)
+  2. Use the **"Import Portfolio Data"** button to upload your saved `portfolio-data.json`
+
+**Option B: Using Docker Volumes**
+
+This method persists your data on the host machine, throughout container updates automatically
+
+- **First, create a directory on your server to store (`portfolio.json` and `users.json`):**
+
+  ```bash
+  mkdir -p /path/on/your/server/wa-dp
+  ```
+
+- **Next, create the empty files** This is necessary so Docker mounts them as files, not directories
+  ```bash
+  touch /path/on/your/server/wa-dp/portfolio.json
+  touch /path/on/your/server/wa-dp/users.json
+  ```
+- **To run the container with volumes:**
+  Replace `/path/on/your/server/wa-dp-data` with the path you just created.
+  ```bash
+  docker run -d --name wa-dp-container -p 3000:80 --restart always \
+    -v /path/on/your/server/wa-dp/portfolio.json:/app/backend/frontend/portfolio.json \
+    -v /path/on/your/server/wa-dp/users.json:/app/backend/users.json \
+    ghcr.io/phillipc0/wa-dp:latest
+  ```
+
+Now all updates to your portfolio data will be saved in the specified directory on your server as well, so it can
+persist
+container updates.
 
 ## Installation for Developers
 
@@ -148,15 +230,15 @@ This project includes SonarQube integration for code quality analysis and covera
 
 2. **Access SonarQube:**
 
-   - Open http://localhost:9000 in your browser
-   - Login with default credentials: `admin/admin`
-   - Change password when prompted
+- Open http://localhost:9000 in your browser
+- Login with default credentials: `admin/admin`
+- Change password when prompted
 
 3. **Generate Authentication Token:**
 
-   - Go to: User → My Account → Security → Generate Tokens
-   - Enter a name and select "User Token" in the dropdown then click "Generate"
-   - Copy the generated token
+- Go to: User → My Account → Security → Generate Tokens
+- Enter a name and select "User Token" in the dropdown then click "Generate"
+- Copy the generated token
 
 4. **Configure Authentication:**
 

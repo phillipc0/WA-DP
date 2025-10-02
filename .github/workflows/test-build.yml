@@ -423,7 +423,7 @@ jobs:
   #          path: cypress/screenshots/
   #          retention-days: 14
 
-  deploy:
+  build-deploy:
     name: Build and Push Docker Image
     #needs: [ unit, e2e, lighthouse_summary ]
     runs-on: ubuntu-latest
@@ -444,12 +444,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lowercase repository name
-        id: string-utils
-        uses: ASzc/change-string-case-action@v6
-        with:
-          string: ${{ github.event.repository.name }}
-
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v5
@@ -457,5 +451,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ steps.string-utils.outputs.lowercase }}:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/${{ steps.string-utils.outputs.lowercase }}:latest
+            ghcr.io/${{ github.repository_owner }}/wa-dp:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/wa-dp:latest
