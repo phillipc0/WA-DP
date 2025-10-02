@@ -54,6 +54,7 @@
     "clsx": "2.1.1",
     "concurrently": "^9.2.0",
     "framer-motion": "12.23.12",
+    "next": "^15.5.4",
     "nvm": "^0.0.4",
     "react": "19.1.1",
     "react-dom": "19.1.1",

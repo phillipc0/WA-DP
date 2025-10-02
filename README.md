@@ -139,7 +139,7 @@ Now, all updates to your portfolio and user data will be saved in the specified 
    After a few updates, you might have old, unused images. You can clean them up with:
 
    ```bash
-   docker image prune -a
+   docker image prune -a --filter "label=org.opencontainers.image.source=https://github.com/phillipc0/WA-DP"
    ```
 
 ## Installation for Developers
