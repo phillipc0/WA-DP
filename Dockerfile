@@ -1,5 +1,5 @@
 # =============================================
-# Stufe 1: Frontend bauen
+# Stage 1: Build Frontend
 # =============================================
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 # =============================================
-# Stufe 2: Backend bauen
+# Stage 2: Build Backend
 # =============================================
 FROM node:20-alpine AS backend-builder
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY backend/. ./backend/
 RUN cd backend && npm run build
 
 # =============================================
-# Stufe 3: Finale Anwendung zusammenstellen
+# Stage 3: Configure Image
 # =============================================
 FROM node:20-alpine AS runner
 
@@ -28,24 +28,29 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Nginx installieren
+# install Nginx
 RUN apk add --no-cache nginx
 
-# Backend-Abhängigkeiten installieren
+# cpy backend-code and install production-dependencies
 COPY backend/package*.json ./backend/
-RUN cd backend && npm ci --omit=dev
-
-# Build-Artefakte kopieren
+COPY backend/next.config.js ./backend/
 COPY --from=backend-builder /app/backend/.next ./backend/.next
-COPY --from=frontend-builder /app/dist ./backend/frontend
+WORKDIR /app/backend
+RUN npm ci --omit=dev
 
-# Konfigurationsdateien und Skripte aus dem 'docker' Ordner kopieren
+# back to root-directory
+WORKDIR /app
+
+# copy build frontend
+COPY --from=frontend-builder /app/dist ./frontend_build
+
+# copy configuration files
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Nginx Port 80 freigeben
+# expose port 80 for nginx
 EXPOSE 80
 
-# Start-Skript ausführen
+# execute start script
 CMD ["/start.sh"]

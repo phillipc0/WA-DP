@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-const USERS_FILE = path.join(process.cwd(), "users.json");
+const USERS_FILE = path.join(process.cwd(), "data", "users.json");
 const ENV_FILE = path.join(process.cwd(), ".env.local");
 
 // Generate a secure random encryption key

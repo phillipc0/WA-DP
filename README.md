@@ -65,7 +65,7 @@ This project is deployed as a Docker container, you will need Docker installed o
    ```nginx
    server {
        listen 443 ssl;
-       server_name wa-dp.you-domain.com;
+       server_name wa-dp.your-domain.com;
 
         # SSL-certificate and keys etc...
 
@@ -77,7 +77,7 @@ This project is deployed as a Docker container, you will need Docker installed o
 
    server {
        listen 80;
-       server_name wa-dp.you-domain.com;
+       server_name wa-dp.your-domain.com;
        return 301 https://$host$request_uri;
 
    }
@@ -100,36 +100,29 @@ With this method, you use WA-DP's built-in export feature to back up your data b
   1. Log in again (you need to create a new admin user)
   2. Use the **"Import Portfolio Data"** button to upload your saved `portfolio-data.json`
 
-**Option B: Using Docker Volumes**
+**Option B: Using Docker Volumes (Recommended)**
 
 This method persists your data on the host machine, throughout container updates automatically
 
-- **First, create a directory on your server to store (`portfolio.json` and `users.json`):**
+- **First, create a directory on your server to store your data:**
 
   ```bash
-  mkdir -p /path/on/your/server/wa-dp
+  mkdir -p /path/on/your/server/wa-dp-data
   ```
 
-- **Next, create the empty files** This is necessary so Docker mounts them as files, not directories
-  ```bash
-  touch /path/on/your/server/wa-dp/portfolio.json
-  touch /path/on/your/server/wa-dp/users.json
-  ```
-- **To run the container with volumes:**
-  Replace `/path/on/your/server/wa-dp-data` with the path you just created.
+- **Run the container with a volume:**
+  Replace `/path/on/your/server/wa-dp-data` with the actual path you just created.
   ```bash
   docker run -d --name wa-dp-container -p 3000:80 --restart always \
-    -v /path/on/your/server/wa-dp/portfolio.json:/app/backend/frontend/portfolio.json \
-    -v /path/on/your/server/wa-dp/users.json:/app/backend/users.json \
+    -v /path/on/your/server/wa-dp-data:/app/backend/data \
     ghcr.io/phillipc0/wa-dp:latest
   ```
 
-Now all updates to your portfolio data will be saved in the specified directory on your server as well, so it can
-persist container updates.
+Now, all updates to your portfolio and user data will be saved in the specified directory on your server.
 
 ### Performing the Update
 
-1. **Pull the latest image from the registry, stop and remove the old container:**
+1. **Pull the latest image from the registry, then stop and remove the old container:**
 
    ```bash
    docker pull ghcr.io/phillipc0/wa-dp:latest
@@ -193,7 +186,7 @@ Checks for every push on a pull request or the the main branch:
 - E2E tests using Cypress
 - Lighthouse report (>80%)
 - SonarCloud static code analysis (A-Marks)
-- On the main branch: Website is deployed
+- On the main branch: A new Docker image is built and pushed to the GitHub Container Registry
 
 The dependencies between the pipelines are as follows:
 

@@ -9,7 +9,7 @@ import {
   handleError,
 } from "../../lib/auth";
 
-const PORTFOLIO_FILE = path.join(process.cwd(), "/frontend/portfolio.json");
+const PORTFOLIO_FILE = path.join(process.cwd(), "data", "portfolio.json");
 
 const savePortfolioData = (data: JSON): void => {
   try {
@@ -21,6 +21,11 @@ const savePortfolioData = (data: JSON): void => {
   }
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   try {
     if (req.method === "POST" || req.method === "PUT") {
@@ -40,6 +45,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   }
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 export default function protectedHandler(
   req: AuthenticatedRequest,
   res: NextApiResponse,
