@@ -21,7 +21,7 @@ const getPortfolioDataFromFile = (): JSON | null => {
     return null;
   } catch (error) {
     console.error("Error reading portfolio file:", error);
-    return null;
+    throw error;
   }
 };
 
