@@ -33,7 +33,7 @@ docs/dependency-metrics.json
 
 # Backend
 /backend/.next
-/backend/users.json
+/backend/data/
 /backend/node_modules
 /backend/frontend/portfolio*
 /backend/frontend/github-repos*
