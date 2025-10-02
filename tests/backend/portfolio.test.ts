@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs";
 import protectedHandler from "../../backend/pages/api/portfolio";
 import { AuthenticatedRequest } from "../../backend/lib/auth";
@@ -7,7 +7,8 @@ import { NextApiResponse } from "next";
 vi.mock("fs");
 
 vi.mock("../../backend/lib/auth", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../backend/lib/auth")>();
+  const actual =
+    await importOriginal<typeof import("../../backend/lib/auth")>();
   return {
     ...actual,
     authenticateToken: vi.fn((handler) => handler),
@@ -92,7 +93,9 @@ describe("/api/portfolio handler", () => {
   describe("POST", () => {
     it("sollte Portfolio-Daten speichern und eine Erfolgsmeldung zurückgeben", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      const writeFileSyncSpy = vi.spyOn(fs, "writeFileSync");
+      const writeFileSyncSpy = vi
+        .spyOn(fs, "writeFileSync")
+        .mockImplementation(() => {});
 
       const req = {
         method: "POST",
@@ -115,8 +118,12 @@ describe("/api/portfolio handler", () => {
 
     it("sollte das data-Verzeichnis erstellen, wenn es nicht existiert", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
-      const mkdirSyncSpy = vi.spyOn(fs, "mkdirSync");
-      const writeFileSyncSpy = vi.spyOn(fs, "writeFileSync");
+      const mkdirSyncSpy = vi
+        .spyOn(fs, "mkdirSync")
+        .mockImplementation(() => "");
+      const writeFileSyncSpy = vi
+        .spyOn(fs, "writeFileSync")
+        .mockImplementation(() => {});
 
       const req = {
         method: "POST",
