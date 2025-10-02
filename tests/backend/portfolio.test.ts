@@ -7,9 +7,10 @@ import { NextApiResponse } from "next";
 vi.mock("fs");
 
 vi.mock("../../backend/lib/auth", async (importOriginal) => {
-  const val = await importOriginal<typeof import("../../backend/lib/auth")>();
+  const actual =
+    await importOriginal<typeof import("../../backend/lib/auth")>();
   return {
-    ...val,
+    ...actual,
     authenticateToken: vi.fn((handler) => handler),
     handleError: vi.fn((res, _error, message) => {
       res.status(500).json({ error: message || "Internal server error" });

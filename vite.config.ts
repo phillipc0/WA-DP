@@ -29,10 +29,4 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
-  optimizeDeps: {
-    include: ["jsonwebtoken"],
-  },
-  ssr: {
-    noExternal: ["jsonwebtoken"],
-  },
 });
