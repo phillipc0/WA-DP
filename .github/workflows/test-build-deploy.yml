@@ -409,6 +409,9 @@ jobs:
       - name: Install Backend Dependencies
         run: cd backend && npm ci
 
+      - name: Create data directory for tests
+        run: mkdir -p backend/data
+
       - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v6.10.2
         with:
