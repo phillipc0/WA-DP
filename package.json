@@ -57,6 +57,7 @@
     "clsx": "~2.1.1",
     "concurrently": "~9.2.1",
     "framer-motion": "~12.23.22",
+    "jsonwebtoken": "^9.0.2",
     "next": "^15.5.4",
     "nvm": "~0.0.4",
     "react": "~19.2.0",
