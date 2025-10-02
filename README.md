@@ -83,7 +83,7 @@ This project is deployed as a Docker container, you will need Docker installed o
    }
    ```
 
-### Update the Docker Container
+## Update the Docker Container
 
 You have two options for managing your portfolio data (`portfolio.json` and `users.json`), to persist manual updates
 to the wa-dp-container:
@@ -125,8 +125,29 @@ This method persists your data on the host machine, throughout container updates
   ```
 
 Now all updates to your portfolio data will be saved in the specified directory on your server as well, so it can
-persist
-container updates.
+persist container updates.
+
+### Performing the Update
+
+1. **Pull the latest image from the registry, stop and remove the old container:**
+
+   ```bash
+   docker pull ghcr.io/phillipc0/wa-dp:latest
+   docker stop wa-dp-container
+   docker rm wa-dp-container
+   ```
+
+2. **Start the new container:**
+
+   Run the same `docker run` command you used initially, depending on whether you are using volumes or not.
+
+3. **(Optional) Clean up old images:**
+
+   After a few updates, you might have old, unused images. You can clean them up with:
+
+   ```bash
+   docker image prune -a
+   ```
 
 ## Installation for Developers
 
