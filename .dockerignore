@@ -1,45 +1,45 @@
-# Git- und CI/CD-Konfiguration
+# Git and CI/CD configuration
 .git
 .github
 .gitignore
 .gitattributes
 
-# Lokale Entwicklungs- und IDE-Dateien
+# Local development and IDE files
 .idea
 .run
 .vscode
 
-# Node.js Abhängigkeiten (werden im Container installiert)
+# Node.js dependencies (installed in the container)
 node_modules
 backend/node_modules
 
-# Build-Artefakte (werden im Container erstellt)
+# Build artifacts (created in the container)
 dist
 coverage
 backend/.next
 
-# Test- und Skript-Dateien
+# Test and script files
 tests
 cypress
 scripts
 tools
 
-# Dokumentation und Konfigurations-Vorlagen
+# Documentation and configuration templates
 README.md
 CONTRIBUTING.md
 LICENSE
 copilot-instructions.md
 *.template
 
-# Docker- und Sonar-Dateien
+# Docker and Sonar files
 docker-compose.sonar.yml
 sonar-project-*.properties
 Dockerfile
 .dockerignore
 
-# Log- und temporäre Dateien
+# Log and temporary files
 *.log
 npm-debug.log*
 
-# Sonstige
+# Miscellaneous
 vercel.json

@@ -52,7 +52,7 @@ This project is deployed as a Docker container, you will need Docker installed o
 2. **Run the Docker Container**
 
    ```bash
-   docker run -d --name wa-dp-container -p 3000:80 --restart always ghcr.io/phillipc0/wa-dp:latest
+   docker run -d --name wa-dp -p 3000:80 --restart always ghcr.io/phillipc0/wa-dp:latest
    ```
 
 3. **Configure a Reverse Proxy (Nginx)**
@@ -113,7 +113,7 @@ This method persists your data on the host machine, throughout container updates
 - **Run the container with a volume:**
   Replace `/path/on/your/server/wa-dp-data` with the actual path you just created.
   ```bash
-  docker run -d --name wa-dp-container -p 3000:80 --restart always \
+  docker run -d --name wa-dp -p 3000:80 --restart always \
     -v /path/on/your/server/wa-dp-data:/app/backend/data \
     ghcr.io/phillipc0/wa-dp:latest
   ```
