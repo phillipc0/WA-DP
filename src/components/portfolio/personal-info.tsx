@@ -51,6 +51,9 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
     isContributor(portfolioData.social.github) &&
     contributorSettings.showGoldenBoxShadow;
 
+  let locationAvailable =
+    portfolioData.location && portfolioData.location.trim() !== "";
+  let emailAvailable = portfolioData.email && portfolioData.email.trim() !== "";
   return (
     <Card
       className="w-full relative"
@@ -79,12 +82,12 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
               />
             )}
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center">
             <h1 className="text-2xl font-bold">{portfolioData.name}</h1>
             <p className="text-default-500">{portfolioData.title}</p>
-            <div className="flex gap-2 mt-2">
-              {portfolioData.location &&
-                portfolioData.location.trim() !== "" && (
+            {(locationAvailable || emailAvailable) && (
+              <div className="flex gap-2 mt-2">
+                {locationAvailable && (
                   <Chip
                     className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-default"
                     color="primary"
@@ -93,19 +96,20 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
                     {portfolioData.location}
                   </Chip>
                 )}
-              {portfolioData.email && portfolioData.email.trim() !== "" && (
-                <Chip
-                  className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
-                  color="secondary"
-                  size="sm"
-                  onClick={() =>
-                    (window.location.href = `mailto:${portfolioData.email}`)
-                  }
-                >
-                  {portfolioData.email}
-                </Chip>
-              )}
-            </div>
+                {emailAvailable && (
+                  <Chip
+                    className="transition-all duration-200 hover:scale-105 hover:shadow-md cursor-pointer"
+                    color="secondary"
+                    size="sm"
+                    onClick={() =>
+                      (window.location.href = `mailto:${portfolioData.email}`)
+                    }
+                  >
+                    {portfolioData.email}
+                  </Chip>
+                )}
+              </div>
+            )}
           </div>
         </div>
         {shouldShowContributor && (
