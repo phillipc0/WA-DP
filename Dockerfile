@@ -20,11 +20,7 @@ RUN npm run build
 FROM node:20-alpine
 
 # Install Nginx and set up necessary directories and permissions
-RUN apk add --no-cache nginx && \
-    mkdir -p /var/lib/nginx/tmp /var/log/nginx /run/nginx && \
-    chown -R node:node /var/lib/nginx /var/log/nginx /run/nginx && \
-    ln -sf /dev/stdout /var/log/nginx/access.log && \
-    ln -sf /dev/stderr /var/log/nginx/error.log
+RUN apk add --no-cache nginx
 
 WORKDIR /app
 
@@ -47,4 +43,4 @@ USER node
 
 EXPOSE 3000
 
-CMD ["/app/start.sh"]
+CMD ["start.sh"]
