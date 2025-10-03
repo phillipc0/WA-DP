@@ -39,18 +39,12 @@ RUN mkdir -p /app/data
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /app/start.sh
 
-# Make the startup script executable and fix potential line endings
+# Make the startup script executable and change ownership of all app files
 RUN chmod +x /app/start.sh && \
-    sed -i 's/\r$//' /app/start.sh
-
-# Change ownership of all app files to the non-root 'node' user
 RUN chown -R node:node /app
 
-# Switch to the non-root `node` user for security
 USER node
 
-# Expose the port Nginx will listen on
 EXPOSE 3000
 
-# Set the command to run the startup script
 CMD ["/app/start.sh"]
