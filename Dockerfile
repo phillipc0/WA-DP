@@ -20,7 +20,7 @@ COPY backend/. ./backend/
 RUN cd backend && npm run build
 
 # =============================================
-# Stage 3: Configure Image
+# Stage 3: Configure Production Image
 # =============================================
 FROM node:20-alpine AS runner
 
@@ -28,29 +28,27 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# install Nginx
+# Install Nginx
 RUN apk add --no-cache nginx
 
-# cpy backend-code and install production-dependencies
+# Copy backend code and install production dependencies
 COPY backend/package*.json ./backend/
 COPY backend/next.config.js ./backend/
 COPY --from=backend-builder /app/backend/.next ./backend/.next
 WORKDIR /app/backend
 RUN npm ci --omit=dev
 
-# back to root-directory
-WORKDIR /app
+# Set the final working directory for the CMD instruction
+WORKDIR /app/backend
 
-# copy build frontend
-COPY --from=frontend-builder /app/dist ./frontend_build
-
-# copy configuration files
+# Copy built frontend and configurations
+COPY --from=frontend-builder /app/dist /app/frontend_build
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
-# expose port 80 for nginx
+# Expose port 80 for Nginx
 EXPOSE 80
 
-# execute start script
+# Execute the start script
 CMD ["/start.sh"]
