@@ -28,7 +28,6 @@ WORKDIR /app
 # Copy built assets from the builder stage
 COPY --from=builder /app/backend/.next ./.next
 COPY --from=builder /app/dist ./frontend
-COPY --from=builder /app/backend/public ./public
 
 # Create the data directory for volume mounting
 RUN mkdir -p /app/data
