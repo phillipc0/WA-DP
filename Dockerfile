@@ -18,8 +18,6 @@ RUN npm run build
 # Stage 2: Production Image
 FROM node:20-alpine
 
-LABEL maintainer="Gemini"
-
 # Install Nginx and create necessary directories for the 'node' user
 RUN apk add --no-cache nginx && \
     mkdir -p /var/lib/nginx/tmp /run/nginx && \
