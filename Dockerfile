@@ -40,7 +40,7 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /app/start.sh
 
 # Make the startup script executable and change ownership of all app files
-RUN chmod +x /app/start.sh && \
+RUN chmod +x /app/start.sh
 RUN chown -R node:node /app
 
 USER node
