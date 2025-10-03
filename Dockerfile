@@ -4,20 +4,15 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # --- Frontend Build ---
-# Cache and install frontend dependencies
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
-# Copy frontend source and build
 COPY . .
 RUN npm run build
 
 # --- Backend Build ---
-# Cache and install backend dependencies
 WORKDIR /app/backend
 RUN npm ci
-
-# Build backend
 RUN npm run build
 
 
@@ -26,46 +21,33 @@ FROM node:20-alpine
 
 LABEL maintainer="Gemini"
 
-# Install Nginx
-RUN apk add --no-cache nginx
-
-WORKDIR /app
-
-# Create a non-root user (the default 'node' user already exists in the base image)
-# and set up directories for Nginx to run without root
-RUN mkdir -p /var/log/nginx && \
-    chown -R node:node /var/log/nginx && \
-    mkdir -p /run/nginx && \
-    chown -R node:node /run/nginx && \
-    # Forward request and error logs to docker log collector
+# Install Nginx und erstelle die notwendigen Verzeichnisse mit den richtigen Berechtigungen
+RUN apk add --no-cache nginx && \
+    # Erstelle Verzeichnisse für Logs, temporäre Dateien und den PID-File
+    mkdir -p /var/lib/nginx/tmp /var/log/nginx /run/nginx && \
+    # Setze den 'node'-Benutzer als Eigentümer
+    chown -R node:node /var/lib/nginx /var/log/nginx /run/nginx && \
+    # Leite die Nginx-Logs an die Docker-Logs weiter
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
-# Copy built assets from the builder stage
-# Copy backend build output, node_modules, and package files
-COPY --from=builder /app/backend /app
+WORKDIR /app
 
-# Copy the frontend build into the 'frontend' directory
+# Kopiere die Build-Artefakte aus dem Builder-Stage
+COPY --from=builder /app/backend /app
 COPY --from=builder /app/dist /app/frontend
 
-# Create the data directory for volume mounting
+# Erstelle das 'data'-Verzeichnis für das Volume
 RUN mkdir -p /app/data
 
-# Copy Nginx config and startup script
+# Kopiere die Nginx-Konfiguration und das Start-Skript
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /app/start.sh
 
-# Make the startup script executable
+# Mache das Start-Skript ausführbar
 RUN chmod +x /app/start.sh
 
-# Change ownership of all app files to the non-root 'node' user
+# Setze den 'node'-Benutzer als Eigentümer für das gesamte App-Verzeichnis
 RUN chown -R node:node /app
 
-# Switch to the non-root `node` user for security
-USER node
-
-# Expose the port Nginx will listen on
-EXPOSE 3000
-
-# Set the command to run the startup script
-CMD ["/app/start.sh"]
+# Wechsle
