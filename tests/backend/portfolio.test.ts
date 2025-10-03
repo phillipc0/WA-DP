@@ -1,16 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs";
+import { NextApiResponse } from "next";
 import protectedHandler from "../../backend/pages/api/portfolio";
 import { AuthenticatedRequest } from "../../backend/lib/auth";
-import { NextApiResponse } from "next";
 
+// Mock the 'fs' module to control file system operations
 vi.mock("fs");
 
+// Mock the authentication middleware so we can test the handler directly
 vi.mock("../../backend/lib/auth", async (importOriginal) => {
   const actual =
     await importOriginal<typeof import("../../backend/lib/auth")>();
   return {
     ...actual,
+    // We pretend that authentication is always successful
     authenticateToken: vi.fn((handler) => handler),
     handleError: vi.fn((res, _error, message) => {
       res.status(500).json({ error: message || "Internal server error" });
@@ -18,38 +21,31 @@ vi.mock("../../backend/lib/auth", async (importOriginal) => {
   };
 });
 
+// A helper function to create a mock response object that we can inspect
 function createMockRes() {
-  let statusCode: number | null = null;
-  let jsonBody: any = null;
   const res: any = {
-    status(code: number) {
-      statusCode = code;
-      return res;
-    },
-    json(payload: any) {
-      jsonBody = payload;
-      return res;
-    },
-    setHeader: vi.fn(),
-    _getStatus: () => statusCode,
-    _getJson: () => jsonBody,
+    status: vi.fn().mockReturnThis(),
+    json: vi.fn().mockReturnThis(),
+    setHeader: vi.fn().mockReturnThis(),
   };
-  return res;
+  return res as unknown as NextApiResponse;
 }
 
 describe("/api/portfolio handler", () => {
-  const mockPortfolioData = { name: "Test User" };
+  const mockPortfolioData = { name: "Test User", title: "Developer" };
 
   beforeEach(() => {
+    // Resets all mocks before each test
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    // Ensures cleanup after each test
     vi.restoreAllMocks();
   });
 
-  describe("GET", () => {
-    it("sollte Portfolio-Daten zurückgeben, wenn die Datei existiert", async () => {
+  describe("GET /api/portfolio", () => {
+    it("should return 200 and the portfolio data when the file exists", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue(
         JSON.stringify(mockPortfolioData),
@@ -58,55 +54,73 @@ describe("/api/portfolio handler", () => {
       const req = { method: "GET" } as AuthenticatedRequest;
       const res = createMockRes();
 
-      await protectedHandler(req, res as unknown as NextApiResponse);
+      await protectedHandler(req, res);
 
-      expect(res._getStatus()).toBe(200);
-      expect(res._getJson()).toEqual(mockPortfolioData);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(mockPortfolioData);
     });
 
-    it("sollte 404 zurückgeben, wenn die Portfolio-Datei nicht existiert", async () => {
+    it("should return 404 when the portfolio file does not exist", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       const req = { method: "GET" } as AuthenticatedRequest;
       const res = createMockRes();
 
-      await protectedHandler(req, res as unknown as NextApiResponse);
+      await protectedHandler(req, res);
 
-      expect(res._getStatus()).toBe(404);
-      expect(res._getJson()).toEqual({ error: "Portfolio data not found" });
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Portfolio data not found",
+      });
     });
 
-    it("sollte 500 zurückgeben, wenn die Datei korrupt ist (ungültiges JSON)", async () => {
+    it("should return 500 when the file is corrupt (invalid JSON)", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readFileSync).mockReturnValue("invalid json");
+      vi.mocked(fs.readFileSync).mockReturnValue("this is not json");
 
       const req = { method: "GET" } as AuthenticatedRequest;
       const res = createMockRes();
 
-      await protectedHandler(req, res as unknown as NextApiResponse);
+      await protectedHandler(req, res);
 
-      expect(res._getStatus()).toBe(500);
-      expect(res._getJson()).toEqual({ error: "Portfolio operation failed" });
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Portfolio operation failed",
+      });
+    });
+
+    it("should return 500 when reading the file fails", async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockImplementation(() => {
+        throw new Error("Read error");
+      });
+
+      const req = { method: "GET" } as AuthenticatedRequest;
+      const res = createMockRes();
+
+      await protectedHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Portfolio operation failed",
+      });
     });
   });
 
-  describe("POST", () => {
-    it("sollte Portfolio-Daten speichern und eine Erfolgsmeldung zurückgeben", async () => {
+  describe.each(["POST", "PUT"])("%s /api/portfolio", (method) => {
+    it(`should save data and return 200 when the directory exists`, async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       const writeFileSyncSpy = vi
         .spyOn(fs, "writeFileSync")
         .mockImplementation(() => {});
 
-      const req = {
-        method: "POST",
-        body: mockPortfolioData,
-      } as AuthenticatedRequest;
+      const req = { method, body: mockPortfolioData } as AuthenticatedRequest;
       const res = createMockRes();
 
-      await protectedHandler(req, res as unknown as NextApiResponse);
+      await protectedHandler(req, res);
 
-      expect(res._getStatus()).toBe(200);
-      expect(res._getJson()).toEqual({
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
         message: "Portfolio data saved successfully",
         data: mockPortfolioData,
       });
@@ -116,7 +130,7 @@ describe("/api/portfolio handler", () => {
       );
     });
 
-    it("sollte das data-Verzeichnis erstellen, wenn es nicht existiert", async () => {
+    it(`should create the 'data' directory when it does not exist`, async () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
       const mkdirSyncSpy = vi
         .spyOn(fs, "mkdirSync")
@@ -125,31 +139,66 @@ describe("/api/portfolio handler", () => {
         .spyOn(fs, "writeFileSync")
         .mockImplementation(() => {});
 
-      const req = {
-        method: "POST",
-        body: mockPortfolioData,
-      } as AuthenticatedRequest;
+      const req = { method, body: mockPortfolioData } as AuthenticatedRequest;
       const res = createMockRes();
 
-      await protectedHandler(req, res as unknown as NextApiResponse);
+      await protectedHandler(req, res);
 
       expect(mkdirSyncSpy).toHaveBeenCalledWith(
         expect.stringContaining("data"),
         { recursive: true },
       );
       expect(writeFileSyncSpy).toHaveBeenCalled();
-      expect(res._getStatus()).toBe(200);
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it("should return 500 when writing the file fails", async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.writeFileSync).mockImplementation(() => {
+        throw new Error("Write error");
+      });
+
+      const req = { method, body: mockPortfolioData } as AuthenticatedRequest;
+      const res = createMockRes();
+
+      await protectedHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Portfolio operation failed",
+      });
     });
   });
 
-  it("sollte 405 für nicht unterstützte Methoden zurückgeben", async () => {
-    const req = { method: "DELETE" } as AuthenticatedRequest;
-    const res = createMockRes();
+  describe("Unsupported Methods", () => {
+    it("should return 405 for the DELETE method", async () => {
+      const req = { method: "DELETE" } as AuthenticatedRequest;
+      const res = createMockRes();
 
-    await protectedHandler(req, res as unknown as NextApiResponse);
+      await protectedHandler(req, res);
 
-    expect(res._getStatus()).toBe(405);
-    expect(res._getJson()).toEqual({ error: "Method not allowed" });
-    expect(res.setHeader).toHaveBeenCalledWith("Allow", ["GET", "POST", "PUT"]);
+      expect(res.status).toHaveBeenCalledWith(405);
+      expect(res.json).toHaveBeenCalledWith({ error: "Method not allowed" });
+      expect(res.setHeader).toHaveBeenCalledWith("Allow", [
+        "GET",
+        "POST",
+        "PUT",
+      ]);
+    });
+
+    it("should return 405 for the PATCH method", async () => {
+      const req = { method: "PATCH" } as AuthenticatedRequest;
+      const res = createMockRes();
+
+      await protectedHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(405);
+      expect(res.json).toHaveBeenCalledWith({ error: "Method not allowed" });
+      expect(res.setHeader).toHaveBeenCalledWith("Allow", [
+        "GET",
+        "POST",
+        "PUT",
+      ]);
+    });
   });
 });
