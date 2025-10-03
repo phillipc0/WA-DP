@@ -27,10 +27,6 @@ RUN apk add --no-cache nginx && \
 
 WORKDIR /app
 
-# Install only production dependencies for the backend
-COPY --from=builder /app/backend/package.json /app/backend/package-lock.json* ./
-RUN npm ci --omit=dev
-
 # Copy built assets from the builder stage
 COPY --from=builder /app/backend/.next ./.next
 COPY --from=builder /app/dist ./frontend
