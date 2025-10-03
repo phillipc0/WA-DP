@@ -478,7 +478,7 @@ jobs:
       - name: Clean up old image versions
         uses: actions/delete-package-versions@v5
         with:
-          package-name: "wa-dp"
+          package-name: "${{ github.event.repository.name }}"
           package-type: "container"
           min-versions-to-keep: 2
           token: ${{ secrets.GITHUB_TOKEN }}
