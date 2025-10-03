@@ -43,4 +43,4 @@ USER node
 
 EXPOSE 3000
 
-CMD ["start.sh"]
+CMD ["/app/start.sh"]
