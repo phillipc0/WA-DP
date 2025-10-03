@@ -474,6 +474,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/wa-dp:latest
+            ghcr.io/${{ github.repository_owner }}/wa-dp:${{ github.sha }}
 
       #- name: Clean up old image versions
       #  uses: actions/delete-package-versions@v5
