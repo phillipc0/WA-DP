@@ -7,7 +7,6 @@
 .dockerignore
 Dockerfile
 docker-compose.sonar.yml
-docker/
 
 # Node
 node_modules
