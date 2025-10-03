@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.sonar.yml
+docker/
+
+# Node
+node_modules
+/backend/node_modules
+npm-debug.log*
+
+# Build artifacts
+dist
+/backend/.next
+/backend/frontend
+
+# Test and coverage
+coverage
+cypress
+tests
+*.run.xml
+
+# IDE and OS files
+.idea
+.run
+.vscode
+.DS_Store
+
+# Documentation and local configs
+README.md
+CONTRIBUTING.md
+copilot-instructions.md
+docs/
+sonar-project-local.properties
+sonar-project-local.properties.template
