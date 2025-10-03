@@ -60,28 +60,28 @@ jobs:
       - name: Check Prettier Formatting
         run: |
           FILES=$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.css" -o -name "*.scss" -o -name "*.md" | grep -v node_modules | grep -v dist | grep -v build)
-          
+
           TOTAL_FILES=0
           FAILED_FILES=0
           FAILED_FILE_LIST=""
-          
+
           cat > prettier-report.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <testsuites name="Prettier Formatting Check">
             <testsuite name="prettier" tests="0" failures="0" errors="0" time="0">
           EOF
-          
+
           for file in $FILES; do
             TOTAL_FILES=$((TOTAL_FILES + 1))
-          
+
             if ! npx prettier --check "$file" > /dev/null 2>&1; then
               FAILED_FILES=$((FAILED_FILES + 1))
               FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
-          
+
               # Generate diff between current file and prettier formatted version
               PRETTIER_FORMATTED=$(npx prettier "$file" 2>/dev/null || echo "Error formatting file")
               DIFF_OUTPUT=$(diff -u "$file" <(echo "$PRETTIER_FORMATTED") 2>/dev/null | head -20 || echo "Unable to generate diff")
-          
+
               # Create a concise error message with line numbers and changes
               ERROR_MESSAGE="Formatting issues found"
               if [ -n "$DIFF_OUTPUT" ] && [ "$DIFF_OUTPUT" != "Unable to generate diff" ]; then
@@ -109,15 +109,15 @@ jobs:
                     CURRENT_LINE=$((CURRENT_LINE + 1))
                   fi
                 done <<< "$DIFF_OUTPUT"
-          
+
                 if [ -n "$CHANGES" ]; then
                   ERROR_MESSAGE="$CHANGES"
                 fi
               fi
-          
+
               # Escape XML characters in error message
               ESCAPED_MESSAGE=$(echo "$ERROR_MESSAGE" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
-          
+
               cat >> prettier-report.xml << EOF
               <testcase classname="prettier" name="$file" time="0">
                 <failure message="$ESCAPED_MESSAGE" type="formatting">
@@ -131,19 +131,19 @@ jobs:
           EOF
             fi
           done
-          
+
           cat >> prettier-report.xml << 'EOF'
             </testsuite>
           </testsuites>
           EOF
-          
+
           sed -i "s/tests=\"0\"/tests=\"$TOTAL_FILES\"/" prettier-report.xml
           sed -i "s/failures=\"0\"/failures=\"$FAILED_FILES\"/" prettier-report.xml
-          
+
           echo "Prettier Check Results:"
           echo "Total files checked: $TOTAL_FILES"
           echo "Files with formatting issues: $FAILED_FILES"
-          
+
           if [ $FAILED_FILES -gt 0 ]; then
             echo "Files that need formatting:"
             echo -e "$FAILED_FILE_LIST"
@@ -163,7 +163,7 @@ jobs:
   lighthouse_summary:
     name: Lighthouse Report
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [lint, format]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -212,17 +212,17 @@ jobs:
             PERF_TOTAL=$(echo "$PERF_TOTAL + $SCORE" | bc -l)
           done
           PERFORMANCE=$(echo "scale=2; $PERF_TOTAL / $RUNS" | bc -l)
-          
+
           # Use the first run for the other categories (feel free to average these too)
           ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report-1.report.json)
           BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report-1.report.json)
           SEO=$(jq '.categories.seo.score' < ./lighthouse-report-1.report.json)
-          
+
           MIN_SCORE=0.8
-          
+
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Lighthouse Report (average over $RUNS runs)
-          
+
           | Category        | Score |
           | --------------- | ----- |
           | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
@@ -230,11 +230,11 @@ jobs:
           | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
           | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
           EOF
-          
+
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          
+
           failed=false
-          
+
           if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
             echo "❌ PERFORMANCE average score ($PERFORMANCE) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
             failed=true
@@ -251,7 +251,7 @@ jobs:
             echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
             failed=true
           fi
-          
+
           if [ "$failed" = true ]; then
             echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job." >> "$GITHUB_STEP_SUMMARY"
             exit 1
@@ -271,7 +271,7 @@ jobs:
   unit:
     name: Unit Tests & Coverage
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [lint, format]
     permissions:
       pull-requests: write
     steps:
@@ -307,7 +307,7 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
-    needs: [ lint, format ]
+    needs: [lint, format]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -345,7 +345,7 @@ jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    needs: [ lint, format, unit ]
+    needs: [lint, format, unit]
     if: always() && github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout Repository
@@ -372,7 +372,7 @@ jobs:
   # currently only builds the project
   deploy:
     name: Build and Deploy
-    needs: [ unit, e2e, lighthouse_summary ]
+    needs: [unit, e2e, lighthouse_summary]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
@@ -444,7 +444,6 @@ jobs:
   #            tmux send-keys -t WA-DP "clear" C-m
   #            tmux send-keys -t WA-DP "npm start" C-m
   #            tmux send-keys -t WA-DP "exec bash" C-m
-
 
   build-and-push-docker:
     name: Build and Push Docker Image

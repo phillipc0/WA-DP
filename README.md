@@ -104,12 +104,12 @@ to the wa-dp-container:
 With this method, you use WA-DP's built-in export feature to back up your data before updating.
 
 - **Before updating the container:**
-    1. Log into WA-DP
-    2. Go to the "Edit" page
-    3. Use the **"Export Portfolio Data"** button to download your `portfolio-data.json`
+  1. Log into WA-DP
+  2. Go to the "Edit" page
+  3. Use the **"Export Portfolio Data"** button to download your `portfolio-data.json`
 - **After updating the container:**
-    1. Log in again (you need to create a new admin user)
-    2. Use the **"Import Portfolio Data"** button to upload your saved `portfolio-data.json`
+  1. Log in again (you need to create a new admin user)
+  2. Use the **"Import Portfolio Data"** button to upload your saved `portfolio-data.json`
 
 **Option B: Using Docker Volumes (Recommended)**
 
@@ -259,14 +259,14 @@ This project includes SonarQube integration for code quality analysis and covera
    ```
 
 2. **Access SonarQube:**
-    - Open http://localhost:9000 in your browser
-    - Login with default credentials: `admin/admin`
-    - Change password when prompted
+   - Open http://localhost:9000 in your browser
+   - Login with default credentials: `admin/admin`
+   - Change password when prompted
 
 3. **Generate Authentication Token:**
-    - Go to: User → My Account → Security → Generate Tokens
-    - Enter a name and select "User Token" in the dropdown then click "Generate"
-    - Copy the generated token
+   - Go to: User → My Account → Security → Generate Tokens
+   - Enter a name and select "User Token" in the dropdown then click "Generate"
+   - Copy the generated token
 
 4. **Configure Authentication:**
 
