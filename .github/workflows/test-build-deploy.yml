@@ -448,8 +448,8 @@ jobs:
   build-and-push-docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    #needs: [ unit, e2e, lighthouse_summary ]
-    #if: github.ref == 'refs/heads/main'
+    needs: [ unit, e2e, lighthouse_summary ]
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
