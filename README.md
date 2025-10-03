@@ -133,17 +133,17 @@ Now, all updates to your portfolio and user data will be saved in the specified 
 
 ### Performing the Update
 
-1. **Pull the latest image from the registry:**
-
-   ```bash
-   docker pull ghcr.io/phillipc0/wa-dp:latest
-   ```
-
-2. **Stop and remove the old container:**
+1. **Stop and remove the old container:**
 
    ```bash
    docker stop wa-dp-container
    docker rm wa-dp-container
+   ```
+
+2. **Pull the latest image from the registry:**
+
+   ```bash
+   docker pull ghcr.io/phillipc0/wa-dp:latest
    ```
 
 3. **Start the new container:**
