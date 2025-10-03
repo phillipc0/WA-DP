@@ -1,0 +1,65 @@
+# Git-specific files
+.git
+.gitignore
+.gitattributes
+
+# GitHub-specific files
+.github
+
+# Node.js dependencies (will be installed during Docker build)
+node_modules
+backend/node_modules
+
+# Local development and IDE files
+.run
+.idea
+.vscode
+*.run.xml
+
+# Build artifacts
+dist
+backend/.next
+coverage
+
+# Test files and configurations
+tests
+cypress
+cypress.config.ts
+vitest.config.ts
+
+# Documentation, scripts and tools
+README.md
+CONTRIBUTING.md
+LICENSE
+scripts/
+tools/
+docs/
+
+# SonarQube files
+docker-compose.sonar.yml
+sonar-project-*.properties
+sonar-project-*.properties.template
+.scannerwork
+
+# Local environment files
+.env.local
+backend/.env.local
+
+# Log files
+*.log
+npm-debug.log*
+
+# Configuration files for development
+eslint.config.js
+postcss.config.js
+tailwind.config.js
+tsconfig.json
+tsconfig.node.json
+vercel.json
+.npmrc
+
+# Don't copy Docker-related files into themselves
+Dockerfile
+.dockerignore
+nginx.conf
+start.sh
