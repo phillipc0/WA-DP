@@ -21,33 +21,38 @@ FROM node:20-alpine
 
 LABEL maintainer="Gemini"
 
-# Install Nginx und erstelle die notwendigen Verzeichnisse mit den richtigen Berechtigungen
+# Install Nginx and set up necessary directories and permissions
 RUN apk add --no-cache nginx && \
-    # Erstelle Verzeichnisse für Logs, temporäre Dateien und den PID-File
     mkdir -p /var/lib/nginx/tmp /var/log/nginx /run/nginx && \
-    # Setze den 'node'-Benutzer als Eigentümer
     chown -R node:node /var/lib/nginx /var/log/nginx /run/nginx && \
-    # Leite die Nginx-Logs an die Docker-Logs weiter
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
 WORKDIR /app
 
-# Kopiere die Build-Artefakte aus dem Builder-Stage
+# Copy built assets from the builder stage
 COPY --from=builder /app/backend /app
 COPY --from=builder /app/dist /app/frontend
 
-# Erstelle das 'data'-Verzeichnis für das Volume
+# Create the data directory for volume mounting
 RUN mkdir -p /app/data
 
-# Kopiere die Nginx-Konfiguration und das Start-Skript
+# Copy Nginx config and startup script
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /app/start.sh
 
-# Mache das Start-Skript ausführbar
-RUN chmod +x /app/start.sh
+# Make the startup script executable and fix potential line endings
+RUN chmod +x /app/start.sh && \
+    sed -i 's/\r$//' /app/start.sh
 
-# Setze den 'node'-Benutzer als Eigentümer für das gesamte App-Verzeichnis
+# Change ownership of all app files to the non-root 'node' user
 RUN chown -R node:node /app
 
-# Wechsle
+# Switch to the non-root `node` user for security
+USER node
+
+# Expose the port Nginx will listen on
+EXPOSE 3000
+
+# Set the command to run the startup script
+CMD ["/app/start.sh"]

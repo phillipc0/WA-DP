@@ -2,9 +2,10 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Start Nginx in the background
-nginx &
+# Start the Next.js backend server in the background on port 4000
+# (for internal use by Nginx)
+npm start -- -p 4000 &
 
-# Start the Next.js backend server on port 4000 (for internal use by Nginx)
-# The `npm start` command is `next start`, we append `-- -p 4000` to it.
-exec npm start -- -p 4000
+# Start Nginx in the foreground. This will keep the container running.
+# The 'daemon off;' directive prevents Nginx from forking to the background.
+exec nginx -g 'daemon off;'
