@@ -476,13 +476,11 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/wa-dp:${{ github.sha }}
 
       - name: Clean up old image versions
-        uses: smartsquaregmbh/delete-old-packages@v0.8.1
+        uses: actions/delete-package-versions@v5
         with:
-          user: ${{ github.repository_owner }}
-          type: container
-          keep: 2
-          names: "wa-dp"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          package-name: "wa-dp"
+          package-type: "container"
+          min-versions-to-keep: 2
 
   loc:
     name: LOC Statistics
