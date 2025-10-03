@@ -1,65 +1,45 @@
-# Git-specific files
+# Git and CI/CD configuration
 .git
+.github
 .gitignore
 .gitattributes
 
-# GitHub-specific files
-.github
+# Local development and IDE files
+.idea
+.run
+.vscode
 
-# Node.js dependencies (will be installed during Docker build)
+# Node.js dependencies (installed in the container)
 node_modules
 backend/node_modules
 
-# Local development and IDE files
-.run
-.idea
-.vscode
-*.run.xml
-
-# Build artifacts
+# Build artifacts (created in the container)
 dist
-backend/.next
 coverage
+backend/.next
 
-# Test files and configurations
+# Test and script files
 tests
 cypress
-cypress.config.ts
-vitest.config.ts
+scripts
+tools
 
-# Documentation, scripts and tools
+# Documentation and configuration templates
 README.md
 CONTRIBUTING.md
 LICENSE
-scripts/
-tools/
-docs/
+copilot-instructions.md
+*.template
 
-# SonarQube files
+# Docker and Sonar files
 docker-compose.sonar.yml
 sonar-project-*.properties
-sonar-project-*.properties.template
-.scannerwork
+Dockerfile
+.dockerignore
 
-# Local environment files
-.env.local
-backend/.env.local
-
-# Log files
+# Log and temporary files
 *.log
 npm-debug.log*
 
-# Configuration files for development
-eslint.config.js
-postcss.config.js
-tailwind.config.js
-tsconfig.json
-tsconfig.node.json
+# Miscellaneous
 vercel.json
-.npmrc
-
-# Don't copy Docker-related files into themselves
-Dockerfile
-.dockerignore
-nginx.conf
-start.sh
