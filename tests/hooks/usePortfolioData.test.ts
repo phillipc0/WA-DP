@@ -26,51 +26,23 @@ vi.mock("@/lib/auth", () => ({
 }));
 
 describe("usePortfolioData", () => {
-  // Helper function to get mocked dependencies
-  const getMockDependencies = async () => {
-    const { isAuthenticated } = await vi.importMock("@/lib/auth");
-    const { loadDraftFromCookies } = await vi.importMock(
-      "@/lib/cookie-persistence",
-    );
-    const { getPortfolioData } = await vi.importMock("@/lib/portfolio");
+  let mockIsAuthenticated: any,
+    mockLoadDraftFromCookies: any,
+    mockGetPortfolioData: any;
 
-    return {
-      mockIsAuthenticated: isAuthenticated as any,
-      mockLoadDraftFromCookies: loadDraftFromCookies as any,
-      mockGetPortfolioData: getPortfolioData as any,
-    };
-  };
-
-  // Helper to set up authenticated state with draft data and wait for loading to complete
-  const setupAuthenticatedWithDraft = async (
-    draftData: any,
-    serverData: any = null,
-  ) => {
-    const {
-      mockIsAuthenticated,
-      mockLoadDraftFromCookies,
-      mockGetPortfolioData,
-    } = await getMockDependencies();
-
-    mockIsAuthenticated.mockReturnValue(true);
-    mockLoadDraftFromCookies.mockReturnValue(draftData);
-    if (serverData) {
-      mockGetPortfolioData.mockResolvedValue(serverData);
-    }
-
-    const { result } = renderHook(() => usePortfolioData());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    return { result, mockGetPortfolioData };
-  };
-
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     // Suppress console.error for cleaner test output
     vi.spyOn(console, "error").mockImplementation(() => {});
+
+    // Import and assign mocked functions
+    const auth = await vi.importMock("@/lib/auth");
+    const cookie = await vi.importMock("@/lib/cookie-persistence");
+    const portfolio = await vi.importMock("@/lib/portfolio");
+
+    mockIsAuthenticated = auth.isAuthenticated;
+    mockLoadDraftFromCookies = cookie.loadDraftFromCookies;
+    mockGetPortfolioData = portfolio.getPortfolioData;
   });
 
   it("returns default portfolio data and loading state initially", () => {
@@ -85,12 +57,6 @@ describe("usePortfolioData", () => {
   });
 
   it("loads draft data when user is authenticated and draft exists", async () => {
-    const {
-      mockIsAuthenticated,
-      mockLoadDraftFromCookies,
-      mockGetPortfolioData,
-    } = await getMockDependencies();
-
     const draftData = {
       name: "Draft Name",
       title: "Draft Title",
@@ -111,12 +77,6 @@ describe("usePortfolioData", () => {
   });
 
   it("loads portfolio data when user is authenticated but no draft exists", async () => {
-    const {
-      mockIsAuthenticated,
-      mockLoadDraftFromCookies,
-      mockGetPortfolioData,
-    } = await getMockDependencies();
-
     const serverData = {
       name: "Server Name",
       title: "Server Title",
@@ -138,12 +98,6 @@ describe("usePortfolioData", () => {
   });
 
   it("loads portfolio data when user is not authenticated", async () => {
-    const {
-      mockIsAuthenticated,
-      mockLoadDraftFromCookies,
-      mockGetPortfolioData,
-    } = await getMockDependencies();
-
     const serverData = {
       name: "Public Name",
       title: "Public Title",
@@ -165,9 +119,6 @@ describe("usePortfolioData", () => {
   });
 
   it("keeps default data when getPortfolioData returns null", async () => {
-    const { mockIsAuthenticated, mockGetPortfolioData } =
-      await getMockDependencies();
-
     mockIsAuthenticated.mockReturnValue(false);
     mockGetPortfolioData.mockResolvedValue(null);
 
@@ -185,8 +136,6 @@ describe("usePortfolioData", () => {
   });
 
   it("handles errors during data loading", async () => {
-    const { mockIsAuthenticated, mockGetPortfolioData } =
-      await getMockDependencies();
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const error = new Error("Network error");
@@ -213,15 +162,11 @@ describe("usePortfolioData", () => {
   });
 
   it("reloads data when refreshTrigger changes", async () => {
-    const { mockIsAuthenticated, mockGetPortfolioData } =
-      await getMockDependencies();
-
     const firstData = {
       name: "First Name",
       title: "First Title",
       bio: "First bio",
     };
-
     const secondData = {
       name: "Second Name",
       title: "Second Title",
@@ -255,56 +200,6 @@ describe("usePortfolioData", () => {
     expect(mockGetPortfolioData).toHaveBeenCalledTimes(2);
   });
 
-  it("handles authentication state changes with draft data priority", async () => {
-    const draftData = {
-      name: "Draft Name",
-      title: "Draft Title",
-      bio: "Draft bio",
-    };
-
-    const serverData = {
-      name: "Server Name",
-      title: "Server Title",
-      bio: "Server bio",
-    };
-
-    const { result, mockGetPortfolioData } = await setupAuthenticatedWithDraft(
-      draftData,
-      serverData,
-    );
-
-    // Should load draft data, not server data
-    expect(result.current.portfolioData).toEqual(draftData);
-    expect(mockGetPortfolioData).not.toHaveBeenCalled();
-  });
-
-  it("sets loading to true during data fetch and false when complete", async () => {
-    const { mockIsAuthenticated, mockGetPortfolioData } =
-      await getMockDependencies();
-
-    mockIsAuthenticated.mockReturnValue(false);
-
-    // Create a promise that we can control
-    let resolvePromise!: (value: any) => void;
-    const controlledPromise = new Promise((resolve) => {
-      resolvePromise = resolve;
-    });
-
-    mockGetPortfolioData.mockReturnValue(controlledPromise);
-
-    const { result } = renderHook(() => usePortfolioData());
-
-    // Initially loading should be true
-    expect(result.current.isLoading).toBe(true);
-
-    // Resolve the promise
-    resolvePromise({ name: "Test", title: "Test", bio: "Test" });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-  });
-
   it("prioritizes draft data over server data when both exist", async () => {
     const draftData = { name: "Draft", title: "Draft Title", bio: "Draft bio" };
     const serverData = {
@@ -313,10 +208,15 @@ describe("usePortfolioData", () => {
       bio: "Server bio",
     };
 
-    const { result, mockGetPortfolioData } = await setupAuthenticatedWithDraft(
-      draftData,
-      serverData,
-    );
+    mockIsAuthenticated.mockReturnValue(true);
+    mockLoadDraftFromCookies.mockReturnValue(draftData);
+    mockGetPortfolioData.mockResolvedValue(serverData);
+
+    const { result } = renderHook(() => usePortfolioData());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     expect(result.current.portfolioData).toEqual(draftData);
     // getPortfolioData should not be called when draft exists

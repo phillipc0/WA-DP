@@ -62,6 +62,7 @@ export default defineConfig({
           const userFilePath = path.join(
             process.cwd(),
             "backend",
+            "data",
             "users.json",
           );
 
