@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-# start the Next.js backend-server in the background
+# Start the Next.js backend in the background on port 4000
 npm start -- -p 4000 &
 
-# start nginx in the foreground
-exec nginx
+# Start Nginx in the foreground to keep the container running
+exec nginx -g 'daemon off;'

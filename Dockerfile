@@ -3,14 +3,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# --- Frontend Build ---
+# Build Frontend
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci
-
 COPY . .
 RUN npm run build
 
-# --- Backend Build ---
+# Build Backend
 WORKDIR /app/backend
 RUN npm ci
 RUN npm run build
@@ -19,34 +18,39 @@ RUN npm run build
 # Stage 2: Production Image
 FROM node:20-alpine
 
-# Install Nginx and prepare directories for non-root execution
+LABEL maintainer="Gemini"
+
+# Install Nginx and create necessary directories for the 'node' user
 RUN apk add --no-cache nginx && \
-    mkdir -p /var/lib/nginx/tmp /var/log/nginx /run/nginx && \
-    chown -R node:node /var/lib/nginx /var/log/nginx /run/nginx
+    mkdir -p /var/lib/nginx/tmp /run/nginx && \
+    chown -R node:node /var/lib/nginx /run/nginx
 
 WORKDIR /app
 
-# Install backend production dependencies
+# Install only production dependencies for the backend
 COPY --from=builder /app/backend/package.json /app/backend/package-lock.json* ./
 RUN npm ci --omit=dev
 
-# Copy built assets from builder stage
-COPY --from=builder /app/backend /app
-COPY --from=builder /app/dist /app/frontend
+# Copy built assets from the builder stage
+COPY --from=builder /app/backend/.next ./.next
+COPY --from=builder /app/dist ./frontend
+COPY --from=builder /app/backend/public ./public
 
-# Create data directory for volume mounting
+# Create the data directory for volume mounting
 RUN mkdir -p /app/data
 
-# Copy configuration
+# Copy Nginx config and startup script
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/start.sh /app/start.sh
 
 # Set correct permissions
 RUN chmod +x /app/start.sh && chown -R node:node /app
 
-# Switch to non-root user
+# Switch to non-root user for security
 USER node
 
+# Expose the internal port Nginx will listen on
 EXPOSE 80
 
+# Start the application
 CMD ["/app/start.sh"]
