@@ -21,10 +21,14 @@ FROM node:20-alpine
 
 # Install Nginx and prepare directories for non-root execution
 RUN apk add --no-cache nginx && \
-    mkdir -p /run/nginx && \
-    chown -R node:node /run/nginx /var/lib/nginx
+    mkdir -p /var/lib/nginx/tmp /var/log/nginx /run/nginx && \
+    chown -R node:node /var/lib/nginx /var/log/nginx /run/nginx
 
 WORKDIR /app
+
+# Install backend production dependencies
+COPY --from=builder /app/backend/package.json /app/backend/package-lock.json* ./
+RUN npm ci --omit=dev
 
 # Copy built assets from builder stage
 COPY --from=builder /app/backend /app
