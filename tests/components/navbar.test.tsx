@@ -289,9 +289,9 @@ describe("Navbar", () => {
       const menuToggle = screen.getByText(/open navigation menu/i);
       expect(menuToggle).toBeInTheDocument();
 
-      // Home should always be present in navigation
-      const homeLinks = screen.getAllByText("Home");
-      expect(homeLinks.length).toBeGreaterThan(0);
+      // Home should not be present in navigation when unauthenticated
+      const homeLink = screen.queryByText("Home");
+      expect(homeLink).toBeNull();
     });
   });
 

@@ -3,13 +3,24 @@ import { Chip } from "@heroui/chip";
 
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { Education, Experience } from "@/types";
+import { CVSkeleton } from "@/components/ui/skeleton";
 
 interface CVProps {
   refreshTrigger?: number;
 }
 
+/**
+ * CV component that renders a timeline view of work experience and education
+ * @param props - Component props
+ * @param props.refreshTrigger - Optional trigger to refresh the portfolio data
+ * @returns CV timeline component
+ */
 export function CV({ refreshTrigger }: CVProps) {
-  const { portfolioData } = usePortfolioData(refreshTrigger);
+  const { portfolioData, isLoading } = usePortfolioData(refreshTrigger);
+
+  if (isLoading || !portfolioData) {
+    return <CVSkeleton />;
+  }
 
   const experiences: Experience[] = portfolioData.cv || [];
   const education: Education[] = portfolioData.education || [];

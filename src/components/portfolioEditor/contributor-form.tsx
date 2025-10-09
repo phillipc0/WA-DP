@@ -6,6 +6,13 @@ interface ContributorFormProps {
   onContributorChange: (field: string, value: boolean) => void;
 }
 
+/**
+ * Form component for managing contributor settings
+ * @param props - Component props
+ * @param props.portfolioData - Portfolio data containing contributor settings
+ * @param props.onContributorChange - Callback to handle contributor setting changes
+ * @returns JSX element containing contributor settings form
+ */
 export function ContributorForm({
   portfolioData,
   onContributorChange,

@@ -9,6 +9,14 @@ interface SocialLinksFormProps {
   onSocialSelectChange?: (field: string, value: string) => void;
 }
 
+/**
+ * Form component for managing social media profile links
+ * @param props - Component props
+ * @param props.portfolioData - Portfolio data containing social media information
+ * @param props.onSocialChange - Function to handle social media input changes
+ * @param props.onSocialSelectChange - Optional function to handle social platform selection changes
+ * @returns JSX element containing social media links form
+ */
 export function SocialLinksForm({
   portfolioData,
   onSocialChange,
@@ -107,6 +115,18 @@ export function SocialLinksForm({
             </span>
           }
           value={portfolioData.social.youtube}
+          onChange={onSocialChange}
+        />
+        <Input
+          label="Steam ID"
+          name="steam"
+          placeholder="76561197984767093"
+          startContent={
+            <span className="text-default-400 whitespace-nowrap">
+              steamcommunity.com/profiles/
+            </span>
+          }
+          value={portfolioData.social.steam}
           onChange={onSocialChange}
         />
       </CardBody>

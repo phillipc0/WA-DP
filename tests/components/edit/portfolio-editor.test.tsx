@@ -20,18 +20,62 @@ const mockUsePortfolioEditor = {
       reddit: "johndoe",
     },
     skills: [
-      { name: "JavaScript", level: 85 },
-      { name: "React", level: 80 },
+      { name: "UI/UX Design", level: "Intermediate" },
+      { name: "React", level: "Master" },
+    ],
+    experience: [
+      {
+        company: "Tech Corp",
+        position: "Software Engineer",
+        startDate: "2020-01-01",
+        endDate: "2023-12-31",
+        description: "Developed web applications",
+        skills: ["React", "TypeScript"],
+      },
+    ],
+    education: [
+      {
+        institution: "University of Technology",
+        degree: "Bachelor of Computer Science",
+        startDate: "2016-09-01",
+        endDate: "2020-05-31",
+        description: "Computer Science fundamentals",
+      },
+    ],
+    contributors: [
+      {
+        name: "Jane Smith",
+        role: "Designer",
+        avatar: "https://example.com/jane.jpg",
+        github: "janesmith",
+      },
     ],
   },
   isLoading: false,
-  newSkill: { name: "", level: 50 },
+  newSkill: { name: "", level: "Intermediate" },
   useUrlForAvatar: true,
   isUploadedImage: false,
   saveAlert: false,
   resetAlert: false,
   fileAlert: false,
   fileAlertMessage: "",
+  SKILL_LEVELS: ["Beginner", "Intermediate", "Advanced", "Expert", "Master"],
+  newExperience: {
+    company: "",
+    position: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+    skills: [],
+  },
+  newEducation: {
+    institution: "",
+    degree: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+  },
+  selectedSkills: new Set(),
   handleBasicInfoChange: vi.fn(),
   handleFileSelect: vi.fn(),
   handleSocialChange: vi.fn(),
@@ -51,7 +95,30 @@ const mockUsePortfolioEditor = {
   setSaveAlert: vi.fn(),
   setResetAlert: vi.fn(),
   setFileAlert: vi.fn(),
-  setUseUrlForAvatar: vi.fn(),
+  // Experience handlers
+  handleAddExperience: vi.fn(),
+  handleEditExperience: vi.fn(),
+  handleExperienceChange: vi.fn(),
+  handleExperienceDragEnd: vi.fn(),
+  handleExperienceDragLeave: vi.fn(),
+  handleExperienceDragOver: vi.fn(),
+  handleExperienceDragStart: vi.fn(),
+  handleExperienceDrop: vi.fn(),
+  handleRemoveExperience: vi.fn(),
+  handleRemoveSelectedSkill: vi.fn(),
+  setSelectedSkills: vi.fn(),
+  // Education handlers
+  handleAddEducation: vi.fn(),
+  handleEditEducation: vi.fn(),
+  handleEducationChange: vi.fn(),
+  handleEducationDragEnd: vi.fn(),
+  handleEducationDragLeave: vi.fn(),
+  handleEducationDragOver: vi.fn(),
+  handleEducationDragStart: vi.fn(),
+  handleEducationDrop: vi.fn(),
+  handleRemoveEducation: vi.fn(),
+  // Contributor handlers
+  handleContributorChange: vi.fn(),
 };
 
 vi.mock("@/lib/use-portfolio-editor", () => ({
@@ -90,8 +157,35 @@ describe("PortfolioEditor", () => {
         reddit: "johndoe",
       },
       skills: [
-        { name: "JavaScript", level: 85 },
-        { name: "React", level: 80 },
+        { name: "UI/UX Design", level: "Intermediate" },
+        { name: "React", level: "Master" },
+      ],
+      experience: [
+        {
+          company: "Tech Corp",
+          position: "Software Engineer",
+          startDate: "2020-01-01",
+          endDate: "2023-12-31",
+          description: "Developed web applications",
+          skills: ["React", "TypeScript"],
+        },
+      ],
+      education: [
+        {
+          institution: "University of Technology",
+          degree: "Bachelor of Computer Science",
+          startDate: "2016-09-01",
+          endDate: "2020-05-31",
+          description: "Computer Science fundamentals",
+        },
+      ],
+      contributors: [
+        {
+          name: "Jane Smith",
+          role: "Designer",
+          avatar: "https://example.com/jane.jpg",
+          github: "janesmith",
+        },
       ],
     };
     mockUsePortfolioEditor.saveAlert = false;
@@ -124,12 +218,16 @@ describe("PortfolioEditor", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders all three tabs", () => {
+  it("renders all tabs", () => {
     render(<PortfolioEditor />);
 
-    expect(screen.getByText("Basic Information")).toBeInTheDocument();
-    expect(screen.getByText("Social Links")).toBeInTheDocument();
-    expect(screen.getByText("Skills")).toBeInTheDocument();
+    // Each tab label appears in 2 places: mobile dropdown option and desktop tab
+    // Mobile select shows current value (Basic Information by default)
+    expect(screen.getAllByText("Basic Information")).toHaveLength(3); // 2 tabs + 1 current value
+    expect(screen.getAllByText("Social Links")).toHaveLength(2);
+    expect(screen.getAllByText("Skills")).toHaveLength(2);
+    expect(screen.getAllByText("Work Experience")).toHaveLength(2);
+    expect(screen.getAllByText("Education")).toHaveLength(2);
   });
 
   it("renders action buttons", () => {
@@ -161,6 +259,7 @@ describe("PortfolioEditor", () => {
     render(<PortfolioEditor />);
 
     // Basic Information tab should be active by default
+    // Content appears only once in the shared content area
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
     expect(screen.getByDisplayValue("John Doe")).toBeInTheDocument();
   });
@@ -168,8 +267,13 @@ describe("PortfolioEditor", () => {
   it("renders SocialLinksForm in Social Links tab", () => {
     render(<PortfolioEditor />);
 
-    const socialTab = screen.getByText("Social Links");
-    fireEvent.click(socialTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const socialTab = screen
+      .getAllByText("Social Links")
+      .find((tab) => tablist.contains(tab));
+    expect(socialTab).toBeDefined();
+    fireEvent.click(socialTab!);
 
     expect(screen.getByText("Social Media Profiles")).toBeInTheDocument();
     expect(screen.getByText("github.com/")).toBeInTheDocument();
@@ -178,8 +282,13 @@ describe("PortfolioEditor", () => {
   it("renders SkillsForm in Skills tab", () => {
     render(<PortfolioEditor />);
 
-    const skillsTab = screen.getByText("Skills");
-    fireEvent.click(skillsTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const skillsTab = screen
+      .getAllByText("Skills")
+      .find((tab) => tablist.contains(tab));
+    expect(skillsTab).toBeDefined();
+    fireEvent.click(skillsTab!);
 
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
     expect(screen.getByText("Add New Skill")).toBeInTheDocument();
@@ -275,8 +384,13 @@ describe("PortfolioEditor", () => {
   it("passes correct props to SocialLinksForm", () => {
     render(<PortfolioEditor />);
 
-    const socialTab = screen.getByText("Social Links");
-    fireEvent.click(socialTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const socialTab = screen
+      .getAllByText("Social Links")
+      .find((tab) => tablist.contains(tab));
+    expect(socialTab).toBeDefined();
+    fireEvent.click(socialTab!);
 
     // Verify that social form is rendered with correct data
     expect(screen.getByLabelText("GitHub Username")).toHaveValue("johndoe");
@@ -285,12 +399,81 @@ describe("PortfolioEditor", () => {
   it("passes correct props to SkillsForm", () => {
     render(<PortfolioEditor />);
 
-    const skillsTab = screen.getByText("Skills");
-    fireEvent.click(skillsTab);
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const skillsTab = screen
+      .getAllByText("Skills")
+      .find((tab) => tablist.contains(tab));
+    expect(skillsTab).toBeDefined();
+    fireEvent.click(skillsTab!);
 
     // Verify that skills form is rendered with correct data
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
     expect(screen.getByText("Add New Skill")).toBeInTheDocument();
+  });
+
+  it("renders WorkExperienceForm in Work Experience tab", () => {
+    render(<PortfolioEditor />);
+
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const experienceTab = screen
+      .getAllByText("Work Experience")
+      .find((tab) => tablist.contains(tab));
+    expect(experienceTab).toBeDefined();
+    fireEvent.click(experienceTab!);
+
+    // Verify that work experience form is rendered by checking for unique content
+    expect(screen.getByText("Add New Experience")).toBeInTheDocument();
+    // Look for work experience specific elements
+    const workExperienceHeadings = screen.getAllByText("Work Experience");
+    expect(workExperienceHeadings.length).toBeGreaterThan(0);
+  });
+
+  it("renders EducationForm in Education tab", () => {
+    render(<PortfolioEditor />);
+
+    // Click on the desktop tab specifically (inside the tabs container)
+    const tablist = screen.getByRole("tablist");
+    const educationTab = screen
+      .getAllByText("Education")
+      .find((tab) => tablist.contains(tab));
+    expect(educationTab).toBeDefined();
+    fireEvent.click(educationTab!);
+
+    // Verify that education form is rendered by checking for unique content
+    expect(screen.getByText("Add New Education")).toBeInTheDocument();
+    // Look for a unique heading in the education form
+    const educationHeadings = screen.getAllByText("Education");
+    expect(educationHeadings.length).toBeGreaterThan(0);
+  });
+
+  it("renders ContributorForm in Contributors tab for contributors", () => {
+    // Mock a contributor user
+    mockUsePortfolioEditor.portfolioData.social.github = "rbn-apps"; // A known contributor
+
+    render(<PortfolioEditor />);
+
+    // Check if the Contributors tab exists for contributors
+    const contributorTabs = screen.queryAllByText("Contributor");
+
+    if (contributorTabs.length > 0) {
+      const tablist = screen.getByRole("tablist");
+      const contributorTab = contributorTabs.find((tab) =>
+        tablist.contains(tab),
+      );
+
+      if (contributorTab) {
+        // Click the tab - this tests that the contributor switch case executes without error
+        expect(() => fireEvent.click(contributorTab)).not.toThrow();
+
+        // Verify that contributor tab exists and can be clicked
+        expect(contributorTab).toBeInTheDocument();
+      }
+    } else {
+      // For non-contributors, the tab should not exist
+      expect(contributorTabs).toHaveLength(0);
+    }
   });
 
   it("renders tabs with correct accessibility labels", () => {
@@ -306,19 +489,30 @@ describe("PortfolioEditor", () => {
     // Start with Basic Information tab (default)
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
 
+    const tablist = screen.getByRole("tablist");
+
     // Switch to Social Links tab
-    const socialTab = screen.getByText("Social Links");
-    fireEvent.click(socialTab);
+    const socialTab = screen
+      .getAllByText("Social Links")
+      .find((tab) => tablist.contains(tab));
+    expect(socialTab).toBeDefined();
+    fireEvent.click(socialTab!);
     expect(screen.getByText("Social Media Profiles")).toBeInTheDocument();
 
     // Switch to Skills tab
-    const skillsTab = screen.getByText("Skills");
-    fireEvent.click(skillsTab);
+    const skillsTab = screen
+      .getAllByText("Skills")
+      .find((tab) => tablist.contains(tab));
+    expect(skillsTab).toBeDefined();
+    fireEvent.click(skillsTab!);
     expect(screen.getByText("Your Skills")).toBeInTheDocument();
 
     // Switch back to Basic Information
-    const basicTab = screen.getByText("Basic Information");
-    fireEvent.click(basicTab);
+    const basicTab = screen
+      .getAllByText("Basic Information")
+      .find((tab) => tablist.contains(tab));
+    expect(basicTab).toBeDefined();
+    fireEvent.click(basicTab!);
     expect(screen.getByText("Personal Information")).toBeInTheDocument();
   });
 

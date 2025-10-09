@@ -36,6 +36,7 @@ docs/dependency-metrics.json
 /backend/users.json
 /backend/node_modules
 /backend/frontend/portfolio*
+/backend/frontend/github-repos*
 
 # SonarQube
 /.scannerwork/

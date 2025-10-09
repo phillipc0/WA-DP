@@ -1,3 +1,10 @@
+import { SKILL_LEVELS } from "@/utils/skills.ts";
+
+/**
+ * Downloads JSON data as a file
+ * @param data - Data to download as JSON
+ * @param filename - Name of the downloaded file
+ */
 export function downloadJSON(
   data: any,
   filename: string = "portfolio-data.json",
@@ -15,6 +22,11 @@ export function downloadJSON(
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Validates portfolio data structure
+ * @param data - Portfolio data to validate
+ * @returns Object with validation result and error messages
+ */
 export function validatePortfolioData(data: any): {
   isValid: boolean;
   errors: string[];
@@ -83,12 +95,11 @@ export function validatePortfolioData(data: any): {
         }
         if (skill.level !== undefined && skill.level !== null) {
           if (
-            typeof skill.level !== "number" ||
-            skill.level < 0 ||
-            skill.level > 100
+            typeof skill.level !== "string" ||
+            !SKILL_LEVELS.includes(skill.level)
           ) {
             errors.push(
-              `Skill ${index + 1}: level must be a number between 0 and 100`,
+              `Skill ${index + 1}: level must be a valid level, such as "Beginner"`,
             );
           }
         }
@@ -162,6 +173,11 @@ export function validatePortfolioData(data: any): {
   return { isValid: errors.length === 0, errors };
 }
 
+/**
+ * Parses a JSON file and returns the data
+ * @param file - File to parse
+ * @returns Promise resolving to parsed JSON data
+ */
 export function parseJSONFile(file: File): Promise<any> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

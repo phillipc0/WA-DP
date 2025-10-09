@@ -17,14 +17,15 @@ export const siteConfig = {
       discord: "99010890275225600",
       reddit: "johndoe",
       youtube: "johndoe",
+      steam: "76561197984767093",
     },
     skills: [
-      { name: "React", level: 90 },
-      { name: "TypeScript", level: 85 },
-      { name: "Node.js", level: 80 },
-      { name: "CSS/Tailwind", level: 85 },
-      { name: "UI/UX Design", level: 75 },
-      { name: "GraphQL", level: 70 },
+      { name: "React", level: "Master" },
+      { name: "TypeScript", level: "Expert" },
+      { name: "Node.js", level: "Expert" },
+      { name: "CSS/Tailwind", level: "Advanced" },
+      { name: "UI/UX Design", level: "Intermediate" },
+      { name: "GraphQL", level: "Beginner" },
     ],
     cv: [
       {

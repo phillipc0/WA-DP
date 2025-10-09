@@ -4,6 +4,18 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export type SkillLevel =
+  | "Beginner"
+  | "Intermediate"
+  | "Advanced"
+  | "Expert"
+  | "Master";
+
+export interface Skill {
+  name: string;
+  level: SkillLevel;
+}
+
 export interface Experience {
   company: string;
   position: string;
@@ -19,31 +31,4 @@ export interface Education {
   duration: string;
   location: string;
   description: string;
-}
-
-export interface Skill {
-  name: string;
-  level: number;
-}
-
-//TODO: consider removing or using this
-export interface PortfolioData {
-  name: string;
-  title: string;
-  bio: string;
-  location: string;
-  email: string;
-  avatar: string;
-  social: {
-    github: string;
-    twitter: string;
-    twitterPlatform: "twitter" | "x";
-    linkedin: string;
-    discord: string;
-    reddit: string;
-    youtube: string;
-  };
-  skills: Skill[];
-  cv: Experience[];
-  education: Education[];
 }

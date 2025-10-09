@@ -10,7 +10,12 @@ export default {
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        ml: "900px", // min-width: 900px breakpoint
+        mdx: "700px", // min-width: 700px breakpoint
+      },
+    },
   },
   darkMode: "class",
   plugins: [heroui()],
