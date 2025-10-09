@@ -93,7 +93,6 @@ If Cypress fails to install, document this limitation but proceed with other tes
    ```
 
 2. **Verify Frontend**: Visit http://localhost:5173
-
    - Portfolio displays with default user "John Doe"
    - Skills section shows progress bars
    - Work Experience and Education sections are visible

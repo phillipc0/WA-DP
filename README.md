@@ -7,8 +7,8 @@ A modern full-stack web application to create and customize your personal develo
 ## Deadlines
 
 - ✅ Important Functionalities (FE/BE Split & CV): 06.07.2025
-- Feature Complete (at-least medium & high): 10.08.2025
-- In-depth Documentation: 22.08.2025
+- ✅ Feature Complete (at-least medium & high): 10.08.2025
+- ✅ In-depth Documentation: 22.08.2025
 
 ## Features
 
@@ -90,7 +90,7 @@ Checks for every push on a pull request or the the main branch:
 - E2E tests using Cypress
 - Lighthouse report (>80%)
 - SonarCloud static code analysis (A-Marks)
-- On the main branch: Website is deployed
+- ~~On the main branch: Website is deployed~~
 
 The dependencies between the pipelines are as follows:
 
@@ -147,13 +147,11 @@ This project includes SonarQube integration for code quality analysis and covera
    ```
 
 2. **Access SonarQube:**
-
    - Open http://localhost:9000 in your browser
    - Login with default credentials: `admin/admin`
    - Change password when prompted
 
 3. **Generate Authentication Token:**
-
    - Go to: User → My Account → Security → Generate Tokens
    - Enter a name and select "User Token" in the dropdown then click "Generate"
    - Copy the generated token
