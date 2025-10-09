@@ -39,7 +39,7 @@ describe("/api/portfolio handler", () => {
   });
 
   describe("GET /api/portfolio", () => {
-    it("sollte 200 und die Portfolio-Daten zurückgeben, wenn die Datei existiert", async () => {
+    it("should return 200 and the portfolio data when the file exists", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue(
         JSON.stringify(mockPortfolioData),
@@ -54,7 +54,7 @@ describe("/api/portfolio handler", () => {
       expect(res.json).toHaveBeenCalledWith(mockPortfolioData);
     });
 
-    it("sollte 404 zurückgeben, wenn die Portfolio-Datei nicht existiert", async () => {
+    it("should return 404 if the portfolio file does not exist", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
       const req = { method: "GET" } as AuthenticatedRequest;
@@ -68,9 +68,9 @@ describe("/api/portfolio handler", () => {
       });
     });
 
-    it("sollte 500 zurückgeben, wenn die Datei korrupt ist (ungültiges JSON)", async () => {
+    it("It should return 500 if the file is corrupt (invalid JSON)", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readFileSync).mockReturnValue("dies ist kein json");
+      vi.mocked(fs.readFileSync).mockReturnValue("this is not json");
 
       const req = { method: "GET" } as AuthenticatedRequest;
       const res = createMockRes();
@@ -83,7 +83,7 @@ describe("/api/portfolio handler", () => {
       });
     });
 
-    it("sollte 500 zurückgeben, wenn das Lesen der Datei fehlschlägt", async () => {
+    it("should return 500 if reading the file fails", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockImplementation(() => {
         throw new Error("Read error");
@@ -102,7 +102,7 @@ describe("/api/portfolio handler", () => {
   });
 
   describe.each(["POST", "PUT"])("%s /api/portfolio", (method) => {
-    it(`sollte Daten speichern und 200 zurückgeben, wenn das Verzeichnis existiert`, async () => {
+    it(`should save data and return 200 if the directory exists`, async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       const writeFileSyncSpy = vi
         .spyOn(fs, "writeFileSync")
@@ -124,7 +124,7 @@ describe("/api/portfolio handler", () => {
       );
     });
 
-    it(`sollte das 'data'-Verzeichnis erstellen, wenn es nicht existiert`, async () => {
+    it(`should create the 'data' directory if it does not exist`, async () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
       const mkdirSyncSpy = vi
         .spyOn(fs, "mkdirSync")
@@ -146,7 +146,7 @@ describe("/api/portfolio handler", () => {
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("sollte 500 zurückgeben, wenn das Schreiben der Datei fehlschlägt", async () => {
+    it("should return 500 if writing the file fails", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       // KORREKTUR: Verwende vi.spyOn() anstelle von vi.mocked()
       vi.spyOn(fs, "writeFileSync").mockImplementation(() => {
@@ -166,7 +166,7 @@ describe("/api/portfolio handler", () => {
   });
 
   describe("Unsupported Methods", () => {
-    it("sollte 405 für die DELETE-Methode zurückgeben", async () => {
+    it("It should return 405 for the DELETE method", async () => {
       const req = { method: "DELETE" } as AuthenticatedRequest;
       const res = createMockRes();
 
@@ -181,7 +181,7 @@ describe("/api/portfolio handler", () => {
       ]);
     });
 
-    it("sollte 405 für die PATCH-Methode zurückgeben", async () => {
+    it("should return 405 for the PATCH method", async () => {
       const req = { method: "PATCH" } as AuthenticatedRequest;
       const res = createMockRes();
 

@@ -41,10 +41,7 @@ React and Next.js.
 
 ## Installation for Users (Manual)
 
-1. Visit the [latest Release](https://github.com/phillipc0/WA-DP/releases) and download the build.zip (for the latest
-   version,
-   visit [Deploy Actions](https://github.com/phillipc0/WA-DP/actions/workflows/test-build-deploy.yml?query=branch%3Amain+is%3Asuccess)
-   and download the "build" artifact from the top pipeline)
+1. Visit the [latest Release](https://github.com/phillipc0/WA-DP/releases) and download the build.zip (for the latest version, visit [Deploy Actions](https://github.com/phillipc0/WA-DP/actions/workflows/test-build-deploy.yml?query=branch%3Amain+is%3Asuccess) and download the "build" artifact from the top pipeline)
 2. Unzip it in a new directory
 3. Make the subdirectory /frontend available via a web server e.g. nginx
 4. Run the Backend via `npm start`
@@ -63,7 +60,7 @@ This project is deployed as a Docker container, you will need Docker installed o
 2. **Run the Docker Container**
 
    ```bash
-   docker run -d --name wa-dp -p 3000:80 --restart always ghcr.io/phillipc0/wa-dp:latest
+   docker run -d --name WA-DP -p 3000:80 --restart always ghcr.io/phillipc0/wa-dp:latest
    ```
 
 3. **Configure a Reverse Proxy (Nginx)**
@@ -124,7 +121,7 @@ This method persists your data on the host machine, throughout container updates
 - **Run the container with a volume:**
   Replace `/path/on/your/server/wa-dp-data` with the actual path you just created.
   ```bash
-  docker run -d --name wa-dp -p 3000:80 --restart always \
+  docker run -d --name WA-DP -p 3000:80 --restart always \
     -v /path/on/your/server/wa-dp-data:/app/data \
     ghcr.io/phillipc0/wa-dp:latest
   ```
@@ -259,14 +256,16 @@ This project includes SonarQube integration for code quality analysis and covera
    ```
 
 2. **Access SonarQube:**
-   - Open http://localhost:9000 in your browser
-   - Login with default credentials: `admin/admin`
-   - Change password when prompted
+
+- Open http://localhost:9000 in your browser
+- Login with default credentials: `admin/admin`
+- Change password when prompted
 
 3. **Generate Authentication Token:**
-   - Go to: User → My Account → Security → Generate Tokens
-   - Enter a name and select "User Token" in the dropdown then click "Generate"
-   - Copy the generated token
+
+- Go to: User → My Account → Security → Generate Tokens
+- Enter a name and select "User Token" in the dropdown then click "Generate"
+- Copy the generated token
 
 4. **Configure Authentication:**
 

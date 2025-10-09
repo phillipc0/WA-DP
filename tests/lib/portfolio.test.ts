@@ -116,7 +116,7 @@ describe("portfolio", () => {
 
       expect(result).toEqual(null);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/portfolio?_t="), // Geändert
+        expect.stringContaining("/api/portfolio?_t="),
         {
           method: "GET",
         },
@@ -129,7 +129,7 @@ describe("portfolio", () => {
       // Mock first call
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ data: "first" }), // Geändert
+        json: () => Promise.resolve({ data: "first" }),
       } as any);
 
       // First call
@@ -138,7 +138,7 @@ describe("portfolio", () => {
 
       // Verify cache busting URL was used
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringMatching(/\/api\/portfolio\?_t=\d+/), // Geändert
+        expect.stringMatching(/\/api\/portfolio\?_t=\d+/),
         {
           method: "GET",
         },
@@ -147,7 +147,7 @@ describe("portfolio", () => {
       // Mock second call for when cache is cleared
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ data: "second" }), // Geändert
+        json: () => Promise.resolve({ data: "second" }),
       } as any);
 
       // Second call after cache is cleared
