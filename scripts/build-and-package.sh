@@ -16,6 +16,9 @@ npm ci
 log "Installing backend dependencies (npm ci --prefix backend)"
 npm ci --prefix backend
 
+log "Creating data directory"
+mkdir -p backend/data
+
 log "Building backend (npm run build --prefix backend)"
 npm run build --prefix backend
 
