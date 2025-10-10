@@ -107,6 +107,7 @@ function SkillCard({ skill, index, isSmallScreen }: SkillCardProps) {
           disableThumbScale
           isDisabled
           showSteps
+          aria-label={`Skill level for ${skill.name}`}
           className="opacity-100 px-4"
           color={getChipColorForSkill(index)}
           marks={getSliderMarks(skill.level, isSmallScreen)}

@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 
-const USERS_FILE = path.join(process.cwd(), "users.json");
+const DATA_DIR = path.join(process.cwd(), "data");
+const USERS_FILE = path.join(DATA_DIR, "users.json");
 
 export interface StoredUser {
   username: string;
@@ -30,6 +31,9 @@ export const getUsersFromFile = (): StoredUser[] => {
 
 export const saveUsersToFile = (users: StoredUser[]): void => {
   try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
   } catch (error) {
     console.error("Error writing users file:", error);
