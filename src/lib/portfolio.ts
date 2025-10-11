@@ -18,17 +18,14 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
       // Add cache busting to prevent stale data after portfolio changes
       // The cache only gets used if the file is requested again within 1 second
       let portfolioUrl =
-        window.getPortfolioUrl?.() ?? "/portfolio.json?_t=" + Date.now();
+        window.getPortfolioUrl?.() ??
+        "/api/portfolio?_t=" + Math.floor(Date.now() / 1000);
       const response = await fetch(portfolioUrl, {
         method: "GET",
       });
 
-      const content = await response.text();
-      if (content?.toLowerCase().startsWith("<!doctype html>")) {
-        return null; // Case: No portfolio.json available, browser supplies index.html
-      }
       if (response.ok) {
-        return await JSON.parse(content);
+        return await response.json();
       } else {
         console.error("Failed to fetch portfolio data:", response.statusText);
         return null;
