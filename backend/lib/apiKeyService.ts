@@ -2,7 +2,8 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-const USERS_FILE = path.join(process.cwd(), "users.json");
+const DATA_DIR = path.join(process.cwd(), "data");
+const USERS_FILE = path.join(DATA_DIR, "users.json");
 const ENV_FILE = path.join(process.cwd(), ".env.local");
 
 // Generate a secure random encryption key
@@ -75,6 +76,9 @@ export const decryptApiKey = (encryptedApiKey: string): string => {
 // Function to save API key securely in user data
 export const saveApiKey = (username: string, apiKey: string): void => {
   try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
     const users = JSON.parse(fs.readFileSync(USERS_FILE, "utf8"));
     const encryptedKey = encryptApiKey(apiKey);
 

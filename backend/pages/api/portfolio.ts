@@ -9,11 +9,27 @@ import {
   handleError,
 } from "../../lib/auth";
 
-const PORTFOLIO_FILE = path.join(process.cwd(), "/frontend/portfolio.json");
+const DATA_DIR = path.join(process.cwd(), "data");
+const PORTFOLIO_FILE = path.join(DATA_DIR, "portfolio.json");
+
+const getPortfolioDataFromFile = (): JSON | null => {
+  try {
+    if (fs.existsSync(PORTFOLIO_FILE)) {
+      const data = fs.readFileSync(PORTFOLIO_FILE, "utf8");
+      return JSON.parse(data);
+    }
+    return null;
+  } catch (error) {
+    console.error("Error reading portfolio file:", error);
+    throw error;
+  }
+};
 
 const savePortfolioData = (data: JSON): void => {
   try {
-    fs.mkdirSync(path.dirname(PORTFOLIO_FILE), { recursive: true });
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
     fs.writeFileSync(PORTFOLIO_FILE, JSON.stringify(data, null, 2));
   } catch (error) {
     console.error("Error writing portfolio file:", error);
@@ -21,8 +37,21 @@ const savePortfolioData = (data: JSON): void => {
   }
 };
 
-async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
+const handler = async (
+  req: AuthenticatedRequest,
+  res: NextApiResponse,
+): Promise<void> => {
   try {
+    if (req.method === "GET") {
+      const portfolioData = getPortfolioDataFromFile();
+      if (portfolioData) {
+        res.status(200).json(portfolioData);
+      } else {
+        res.status(404).json({ error: "Portfolio data not found" });
+      }
+      return;
+    }
+
     if (req.method === "POST" || req.method === "PUT") {
       const portfolioData = req.body as JSON;
 
@@ -34,19 +63,19 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       return;
     }
 
+    res.setHeader("Allow", ["GET", "POST", "PUT"]);
     res.status(405).json({ error: "Method not allowed" });
   } catch (error) {
     handleError(res, error, "Portfolio operation failed");
   }
-}
+};
 
-export default function protectedHandler(
-  req: AuthenticatedRequest,
-  res: NextApiResponse,
-) {
+const protectedHandler = (req: AuthenticatedRequest, res: NextApiResponse) => {
   if (req.method === "GET") {
     return handler(req, res);
   }
 
   return authenticateToken(handler)(req, res);
-}
+};
+
+export default protectedHandler;
