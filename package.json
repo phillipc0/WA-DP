@@ -2,7 +2,7 @@
   "type": "module",
   "name": "wa-dp",
   "private": true,
-  "version": "2.1.0",
+  "version": "3.0.0",
   "prettier": {
     "endOfLine": "auto"
   },
