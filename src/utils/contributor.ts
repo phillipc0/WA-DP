@@ -5,7 +5,12 @@
 /**
  * List of GitHub usernames that are contributors to the WA-DP project
  */
-export const CONTRIBUTOR_USERS = ["phillipc0", "rbn-apps", "freakmedialp"];
+export const CONTRIBUTOR_USERS = [
+  "phillipc0",
+  "rbn-apps",
+  "freakmedialp",
+  "joos-too",
+];
 
 /**
  * Checks if a GitHub username is a contributor to the WA-DP project

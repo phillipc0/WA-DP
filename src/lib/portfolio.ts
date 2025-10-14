@@ -19,7 +19,7 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
       // The cache only gets used if the file is requested again within 1 second
       let portfolioUrl =
         window.getPortfolioUrl?.() ??
-        "/api/portfolio?_t=" + Math.floor(Date.now() / 1000);
+        "/portfolio.json?_t=" + Math.floor(Date.now() / 1000);
       const response = await fetch(portfolioUrl, {
         method: "GET",
       });
@@ -27,7 +27,10 @@ export const getPortfolioData = async (): Promise<JSON | null> => {
       if (response.ok) {
         return await response.json();
       } else {
-        console.error("Failed to fetch portfolio data:", response.statusText);
+        console.error(
+          "Failed to fetch static portfolio.json:",
+          response.statusText,
+        );
         return null;
       }
     } catch (error) {

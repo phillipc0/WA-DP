@@ -13,12 +13,12 @@
       const l = document.createElement("link");
       l.rel = "preload";
       l.as = "fetch";
-      l.href = `/api/portfolio?_t=${oneSecondBucket()}`;
+      l.href = `/portfolio.json?_t=${oneSecondBucket()}`;
       l.type = "application/json";
       l.crossOrigin = "anonymous";
       document.head.appendChild(l);
 
-      window.getPortfolioUrl = () => `/api/portfolio?_t=${oneSecondBucket()}`;
+      window.getPortfolioUrl = () => `/portfolio.json?_t=${oneSecondBucket()}`;
     </script>
     <script>
       (function () {

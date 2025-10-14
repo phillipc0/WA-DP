@@ -7,14 +7,15 @@
     "endOfLine": "auto"
   },
   "scripts": {
-    "dev:frontend": "vite",
+    "sync:portfolio": "node scripts/sync-portfolio.mjs",
+    "dev:frontend": "npm run sync:portfolio && vite",
     "dev:backend": "cd backend && npm run dev",
     "inst:frontend": "npm install",
     "inst:backend": "cd backend && npm install",
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "npm run sync:portfolio && concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "format": "prettier --write .",
     "install-dev": "concurrently \"npm run inst:frontend\" \"npm run inst:backend\"",
-    "build": "tsc && vite build",
+    "build": "npm run sync:portfolio && tsc && vite build",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "lint-fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
     "preview": "vite preview",

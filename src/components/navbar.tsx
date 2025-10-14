@@ -11,12 +11,13 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@heroui/navbar";
+import { Tooltip } from "@heroui/tooltip";
 import { link as linkStyles } from "@heroui/theme";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Logo } from "@/components/icons";
+import { Logo, UserIcon } from "@/components/icons";
 import { LoginModal } from "@/components/login-modal";
 import {
   isAuthenticated,
@@ -160,34 +161,38 @@ export const Navbar = () => {
             <ThemeSwitch />
           </NavbarItem>
           <NavbarItem className="hidden sm:flex">
-            <span
-              aria-hidden={backendAvailable}
-              className="inline-block"
-              title={!backendAvailable ? "Backend nicht erreichbar" : undefined}
+            <Tooltip
+              color="danger"
+              content={
+                <div className="px-1 py-2 text-center">
+                  <div className="text-small font-bold">Backend offline!</div>
+                  <div className="text-tiny">
+                    You are seeing the standalone frontend, to make
+                  </div>
+                  <div className="text-tiny">
+                    changes you need to start the backend and login.
+                  </div>
+                </div>
+              }
+              isDisabled={backendAvailable}
+              placement="bottom"
             >
-              {/* Screen-reader accessible description when backend is down */}
-              {!backendAvailable && (
-                <span className="sr-only" id="backend-unavailable">
-                  Backend nicht erreichbar
-                </span>
-              )}
-              <Button
-                aria-describedby={
-                  !backendAvailable ? "backend-unavailable" : undefined
-                }
-                className={
-                  !backendAvailable
-                    ? "opacity-50 cursor-not-allowed"
-                    : undefined
-                }
-                color={isAdmin ? "danger" : "primary"}
-                data-testid={isAdmin ? "logout-button" : "login-button"}
-                disabled={!backendAvailable}
-                onPress={handleLoginClick}
-              >
-                {isAdmin ? "Logout" : "Login"}
-              </Button>
-            </span>
+              <span className="inline-block">
+                <Button
+                  className={
+                    !backendAvailable ? "cursor-not-allowed" : undefined
+                  }
+                  color={isAdmin ? "danger" : "primary"}
+                  data-testid={isAdmin ? "logout-button" : "login-button"}
+                  disabled={!backendAvailable}
+                  endContent={<UserIcon />}
+                  variant={!backendAvailable ? "bordered" : "solid"}
+                  onPress={handleLoginClick}
+                >
+                  {isAdmin ? "Logout" : "Login"}
+                </Button>
+              </span>
+            </Tooltip>
           </NavbarItem>
         </NavbarContent>
 
@@ -211,44 +216,26 @@ export const Navbar = () => {
                 // render Login/Logout button in menu
                 return (
                   <NavbarMenuItem key={`${item.label}-${index}`}>
-                    <span
-                      aria-hidden={backendAvailable}
-                      className="block w-full"
-                      title={
-                        !backendAvailable
-                          ? "Backend nicht erreichbar"
-                          : undefined
-                      }
+                    <Tooltip
+                      color="danger"
+                      content="Backend is offline. Login/Logout is disabled."
+                      isDisabled={backendAvailable}
+                      placement="bottom"
                     >
-                      {!backendAvailable && (
-                        <span
-                          className="sr-only"
-                          id="backend-unavailable-mobile"
+                      <span className="block w-full">
+                        <Button
+                          className={"w-full justify-start"}
+                          color={isAdmin ? "danger" : "primary"}
+                          disabled={!backendAvailable}
+                          endContent={<UserIcon />}
+                          size="lg"
+                          variant={!backendAvailable ? "bordered" : "solid"}
+                          onPress={handleLoginClick}
                         >
-                          Backend nicht erreichbar
-                        </span>
-                      )}
-                      <Button
-                        aria-describedby={
-                          !backendAvailable
-                            ? "backend-unavailable-mobile"
-                            : undefined
-                        }
-                        className={
-                          "w-full justify-start " +
-                          (!backendAvailable
-                            ? "opacity-50 cursor-not-allowed"
-                            : "")
-                        }
-                        color={isAdmin ? "danger" : "primary"}
-                        disabled={!backendAvailable}
-                        size="lg"
-                        variant="light"
-                        onPress={handleLoginClick}
-                      >
-                        {isAdmin ? "Logout" : "Login"}
-                      </Button>
-                    </span>
+                          {isAdmin ? "Logout" : "Login"}
+                        </Button>
+                      </span>
+                    </Tooltip>
                   </NavbarMenuItem>
                 );
               }
