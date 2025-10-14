@@ -2,7 +2,7 @@
   "type": "module",
   "name": "vite-template",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.1.0",
   "prettier": {
     "endOfLine": "auto"
   },
@@ -60,7 +60,6 @@
     "framer-motion": "~12.23.22",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.5.4",
-    "nvm": "~0.0.4",
     "react": "~19.2.0",
     "react-dom": "~19.2.0",
     "react-router-dom": "~7.9.3",
