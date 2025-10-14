@@ -7,7 +7,7 @@
     "endOfLine": "auto"
   },
   "scripts": {
-    "sync:portfolio": "node scripts/sync-portfolio.mjs",
+    "sync:portfolio": "node scripts/sync-portfolio.cjs",
     "dev:frontend": "npm run sync:portfolio && vite",
     "dev:backend": "cd backend && npm run dev",
     "inst:frontend": "npm install",
