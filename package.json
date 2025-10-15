@@ -28,7 +28,7 @@
     "deps:madge": "node scripts/generate-madge.cjs"
   },
   "dependencies": {
-    "@heroui/alert": "2.2.23",
+    "@heroui/alert": "2.2.27",
     "@heroui/button": "2.2.27",
     "@heroui/card": "2.2.25",
     "@heroui/chip": "2.2.22",
