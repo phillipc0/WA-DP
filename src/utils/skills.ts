@@ -18,13 +18,14 @@ export const SKILL_LEVELS: SkillLevel[] = [
 export function useIsSmallScreen(pixels: number = 500) {
   const checkMaxWidth = () => {
     if (
-      typeof window === "undefined" ||
-      typeof window.matchMedia !== "function"
+      typeof globalThis.window === "undefined" ||
+      typeof globalThis.window.matchMedia !== "function"
     ) {
       return false;
     }
 
-    return window.matchMedia("(max-width: " + pixels + "px)").matches;
+    return globalThis.window.matchMedia("(max-width: " + pixels + "px)")
+      .matches;
   };
 
   const [isSmallScreen, setIsSmallScreen] = useState(checkMaxWidth());

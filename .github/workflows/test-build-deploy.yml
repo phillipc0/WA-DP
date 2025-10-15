@@ -362,7 +362,6 @@ jobs:
           projectBaseDir: .
           args: >
             -Dproject.settings=sonar-project-sonarcloud.properties
-            -Dsonar.pullrequest.github.reportAs=comment
 
   # currently only builds the project
   deploy:

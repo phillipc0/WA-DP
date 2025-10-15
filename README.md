@@ -213,7 +213,7 @@ Manual jobs:
 
 The dependencies between the pipelines are as follows:
 
-<img width="420" alt="image" src="https://github.com/user-attachments/assets/9e4d2585-dd14-478d-88e9-aa000095584b" />
+<img width="420" alt="image" src="https://github.com/user-attachments/assets/3329ac74-8235-4973-9b0d-8078e805b3a5" />
 
 The pipeline configuration is located in `.github/workflows/test-build-deploy.yml`.
 
