@@ -6,6 +6,12 @@ import {
   handleError,
 } from "../../lib/auth";
 
+/**
+ * Handles bio generation requests using Gemini AI API
+ * @param req - Authenticated request
+ * @param res - API response object
+ * @returns Promise that resolves when the request is handled
+ */
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   try {
     if (req.method !== "GET") {

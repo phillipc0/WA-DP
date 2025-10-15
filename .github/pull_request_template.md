@@ -2,5 +2,5 @@
 
 - [ ] Did you fulfill the user story and its acceptance criteria?
 - [ ] Did you write all code and comments in english?
-- [ ] Did you write/extend tests for the implemented feature?
+- [ ] Did you [update the **major/minor/patch** version](https://github.com/phillipc0/WA-DP/blob/main/CONTRIBUTING.md#development-workflow) in the package.json?
 - [ ] **Did you review the merge request yourself in GitHub (& IDE)?**

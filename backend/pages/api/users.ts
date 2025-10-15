@@ -12,6 +12,12 @@ import {
   hasAnyUsers,
 } from "../../lib/userService";
 
+/**
+ * Handles bio generation requests using Gemini AI API
+ * @param req - Authenticated request
+ * @param res - API response object
+ * @returns Promise that resolves when the request is handled
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
