@@ -16,7 +16,18 @@ export const SKILL_LEVELS: SkillLevel[] = [
  * @returns Boolean indicating if screen is smaller than threshold
  */
 export function useIsSmallScreen(pixels: number = 500) {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const checkMaxWidth = () => {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
+      return false;
+    }
+
+    return window.matchMedia("(max-width: " + pixels + "px)").matches;
+  };
+
+  const [isSmallScreen, setIsSmallScreen] = useState(checkMaxWidth());
 
   useEffect(() => {
     if (
@@ -28,9 +39,6 @@ export function useIsSmallScreen(pixels: number = 500) {
 
     const mediaQuery = window.matchMedia("(max-width: " + pixels + "px)");
     const handleChange = (e: any) => setIsSmallScreen(e.matches);
-
-    // Set initial state based on current screen size
-    setIsSmallScreen(mediaQuery.matches);
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
