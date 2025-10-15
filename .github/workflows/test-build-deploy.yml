@@ -1,544 +1,545 @@
 name: Test, Build and Deploy to Server
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  workflow_dispatch: # manual trigger
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch: # manual trigger
 
 jobs:
-  lint:
-    name: Lint Codebase
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Install ESLint
-        run: npm install --no-save eslint-formatter-junit
-
-      - name: Run ESLint (JUnit XML)
-        run: |
-          npx eslint \
-            --ext .js,.jsx,.ts,.tsx \
-            src \
-            --format junit \
-            --output-file eslint-report.xml
-
-      - name: Publish ESLint Report
-        uses: dorny/test-reporter@v2
-        if: always()
-        with:
-          name: ESLint
-          path: eslint-report.xml
-          reporter: java-junit
-
-  format:
-    name: Check Formatting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Check Prettier Formatting
-        run: |
-          FILES=$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.css" -o -name "*.scss" -o -name "*.md" | grep -v node_modules | grep -v dist | grep -v build)
-
-          TOTAL_FILES=0
-          FAILED_FILES=0
-          FAILED_FILE_LIST=""
-
-          cat > prettier-report.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <testsuites name="Prettier Formatting Check">
-            <testsuite name="prettier" tests="0" failures="0" errors="0" time="0">
-          EOF
-
-          for file in $FILES; do
-            TOTAL_FILES=$((TOTAL_FILES + 1))
-
-            if ! npx prettier --check "$file" > /dev/null 2>&1; then
-              FAILED_FILES=$((FAILED_FILES + 1))
-              FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
-
-              # Generate diff between current file and prettier formatted version
-              PRETTIER_FORMATTED=$(npx prettier "$file" 2>/dev/null || echo "Error formatting file")
-              DIFF_OUTPUT=$(diff -u "$file" <(echo "$PRETTIER_FORMATTED") 2>/dev/null | head -20 || echo "Unable to generate diff")
-
-              # Create a concise error message with line numbers and changes
-              ERROR_MESSAGE="Formatting issues found"
-              if [ -n "$DIFF_OUTPUT" ] && [ "$DIFF_OUTPUT" != "Unable to generate diff" ]; then
-                # Extract changes from diff output with proper line numbers
-                CHANGES=""
-                CURRENT_LINE=0
-                while IFS= read -r line; do
-                  if echo "$line" | grep -q "^@@"; then
-                    # Extract starting line number from diff header (e.g., @@ -10,4 +10,4 @@)
-                    CURRENT_LINE=$(echo "$line" | sed 's/^@@ -\([0-9]*\),.*/\1/')
-                  elif echo "$line" | grep -q "^---\|^+++"; then
-                    # Skip file header lines
-                    continue
-                  elif echo "$line" | grep -q "^-"; then
-                    # Removed line - preserve exact content including quotes
-                    CONTENT="${line#-}"
-                    CHANGES="${CHANGES}L${CURRENT_LINE}: Remove '${CONTENT}'; "
-                    CURRENT_LINE=$((CURRENT_LINE + 1))
-                  elif echo "$line" | grep -q "^+"; then
-                    # Added line - preserve exact content including quotes
-                    CONTENT="${line#+}"
-                    CHANGES="${CHANGES}Add '${CONTENT}'; "
-                  elif echo "$line" | grep -q "^ "; then
-                    # Context line - increment line number
-                    CURRENT_LINE=$((CURRENT_LINE + 1))
-                  fi
-                done <<< "$DIFF_OUTPUT"
-
-                if [ -n "$CHANGES" ]; then
-                  ERROR_MESSAGE="$CHANGES"
-                fi
-              fi
-
-              # Escape XML characters in error message
-              ESCAPED_MESSAGE=$(echo "$ERROR_MESSAGE" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
-
-              cat >> prettier-report.xml << EOF
-              <testcase classname="prettier" name="$file" time="0">
-                <failure message="$ESCAPED_MESSAGE" type="formatting">
-          Run 'npx prettier --write $file' to fix formatting.
-                </failure>
-              </testcase>
-          EOF
-            else
-              cat >> prettier-report.xml << EOF
-              <testcase classname="prettier" name="$file" time="0"/>
-          EOF
-            fi
-          done
-
-          cat >> prettier-report.xml << 'EOF'
-            </testsuite>
-          </testsuites>
-          EOF
-
-          sed -i "s/tests=\"0\"/tests=\"$TOTAL_FILES\"/" prettier-report.xml
-          sed -i "s/failures=\"0\"/failures=\"$FAILED_FILES\"/" prettier-report.xml
-
-          echo "Prettier Check Results:"
-          echo "Total files checked: $TOTAL_FILES"
-          echo "Files with formatting issues: $FAILED_FILES"
-
-          if [ $FAILED_FILES -gt 0 ]; then
-            echo "Files that need formatting:"
-            echo -e "$FAILED_FILE_LIST"
-            exit 1
-          else
-            echo "All files are properly formatted!"
-          fi
-
-      - name: Upload Prettier Report
-        uses: dorny/test-reporter@v2
-        if: always()
-        with:
-          name: Prettier Formatting
-          path: prettier-report.xml
-          reporter: java-junit
-
-  lighthouse_summary:
-    name: Lighthouse Report
-    runs-on: ubuntu-latest
-    needs: [lint, format]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install dependencies
-        run: npm ci && cd backend && npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Install serve
-        run: npm install -g serve
-
-      - name: Start server
-        run: |
-          serve -s dist -l 5000 &
-          echo $! > serve.pid
-
-      - name: Run Lighthouse multiple times
-        run: |
-          RUNS=3
-          for i in $(seq 1 $RUNS); do
-            echo "Running Lighthouse (iteration $i/$RUNS)"
-            npx lighthouse http://localhost:5000 \
-              --preset=desktop \
-              --output html json \
-              --output-path ./lighthouse-report-${i} \
-              --chrome-flags="--headless"
-          done
-
-      - name: Stop server
-        run: |
-          kill $(cat serve.pid)
-
-      - name: Write report summary (average performance)
-        run: |
-          RUNS=3
-          PERF_TOTAL=0
-          for i in $(seq 1 $RUNS); do
-            SCORE=$(jq '.categories.performance.score' < ./lighthouse-report-${i}.report.json)
-            PERF_TOTAL=$(echo "$PERF_TOTAL + $SCORE" | bc -l)
-          done
-          PERFORMANCE=$(echo "scale=2; $PERF_TOTAL / $RUNS" | bc -l)
-
-          # Use the first run for the other categories (feel free to average these too)
-          ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report-1.report.json)
-          BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report-1.report.json)
-          SEO=$(jq '.categories.seo.score' < ./lighthouse-report-1.report.json)
-
-          MIN_SCORE=0.8
-
-          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
-          ## Lighthouse Report (average over $RUNS runs)
-
-          | Category        | Score |
-          | --------------- | ----- |
-          | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
-          EOF
-
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          failed=false
-
-          if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
-            echo "❌ PERFORMANCE average score ($PERFORMANCE) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-          if (( $(echo "$ACCESSIBILITY < $MIN_SCORE" | bc -l) )); then
-            echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-          if (( $(echo "$BEST < $MIN_SCORE" | bc -l) )); then
-            echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-          if (( $(echo "$SEO < $MIN_SCORE" | bc -l) )); then
-            echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
-            failed=true
-          fi
-
-          if [ "$failed" = true ]; then
-            echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job." >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          else
-            echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE." >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-      - name: Upload Lighthouse reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report
-          path: |
-            lighthouse-report-*.report.html
-            lighthouse-report-*.report.json
-          retention-days: 14
-
-  unit:
-    name: Unit Tests & Coverage
-    runs-on: ubuntu-latest
-    needs: [lint, format]
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Unit Tests with Coverage
-        run: npm run test:cov
-
-      - name: Upload HTML Coverage Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: vitest-coverage-report-html
-          path: coverage
-          retention-days: 14
-
-      - name: Report Coverage Summary to Job
-        if: always()
-        uses: davelosert/vitest-coverage-report-action@v2
-        with:
-          json-summary-path: ./coverage/coverage-summary.json
-          file-coverage-mode: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'all' || 'changes' }}
-
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: [lint, format]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.19"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Install Backend Dependencies
-        run: cd backend && npm ci
-
-      - name: Create data directory for tests
-        run: mkdir -p backend/data
-
-      - name: Run Cypress E2E Tests
-        uses: cypress-io/github-action@v6.10.2
-        with:
-          start: npm run dev
-          wait-on: http://localhost:5173
-          wait-on-timeout: 60
-          command: npm run e2e:run
-
-      - name: Upload E2E Test Screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots/
-          retention-days: 14
-
-  sonarcloud:
-    name: SonarCloud Analysis
-    runs-on: ubuntu-latest
-    if: github.actor != 'dependabot[bot]'
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: SonarCloud Scan
-        continue-on-error: true
-        uses: SonarSource/sonarqube-scan-action@v5.3.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: .
-          args: >
-            -Dproject.settings=sonar-project-sonarcloud.properties
-
-  # currently only builds the project
-  deploy:
-    name: Build and Deploy
-    needs: [unit, e2e, lighthouse_summary]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Frontend Dependencies
-        run: npm ci
-
-      - name: Install Backend Dependencies
-        run: cd backend && npm ci
-
-      - name: Create data directory
-        run: mkdir -p backend/data
-
-      - name: Build Backend
-        run: cd backend && npm run build
-
-      - name: Build Frontend
-        run: npm run build
-
-      - name: Move Frontend Build to Backend Frontend Directory
-        run: |
-          mkdir -p backend/frontend
-          cp -r dist/* backend/frontend/
-          mv backend/ wa-dp/
-
-      - name: Upload Build to Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: wa-dp/*
-          retention-days: 14
-  #      - name: Remove Old Files on Server
-  #        uses: appleboy/ssh-action@v1.2.2
-  #        with:
-  #          host: ${{ secrets.SSH_HOST }}
-  #          username: ${{ secrets.SSH_USERNAME }}
-  #          key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #          port: ${{ secrets.SSH_PORT }}
-  #          script: |
-  #            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
-  #
-  #      - name: Transfer Backend with Frontend
-  #        run: |
-  #          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-  #          chmod 600 private_key.pem
-  #          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./wa-dp/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
-  #          rm -f private_key.pem
-  #
-  #      - name: Start Backend Server
-  #        uses: appleboy/ssh-action@v1.2.2
-  #        with:
-  #          host: ${{ secrets.SSH_HOST }}
-  #          username: ${{ secrets.SSH_USERNAME }}
-  #          key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #          port: ${{ secrets.SSH_PORT }}
-  #          script: |
-  #            # Kill existing tmux session if it exists
-  #            tmux kill-session -t WA-DP 2>/dev/null || true
-  #            # Start new tmux session with backend
-  #            tmux new-session -d -s WA-DP
-  #            tmux send-keys -t WA-DP "cd ~/Webserver/WA-DP" C-m
-  #            tmux send-keys -t WA-DP "clear" C-m
-  #            tmux send-keys -t WA-DP "npm start" C-m
-  #            tmux send-keys -t WA-DP "exec bash" C-m
-
-  build-and-push-docker:
-    name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-    needs: [unit, e2e, lighthouse_summary]
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest
-            type=sha,prefix=,format=short
-
-      - name: Build and push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-
-      - name: Clean up old Image versions
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: wa-dp
-          package-type: container
-          min-versions-to-keep: 2
-
-  loc:
-    name: LOC Statistics
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Count LOC
-        run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
-
-      - name: Create LOC Summary
-        run: node tools/loc-summary.mjs
-
-      - name: Add LOC Summary to Job Summary
-        run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: loc-summary
-          path: loc-summary.md
-          retention-days: 14
-
-  dependency-graph:
-    name: Generate Dependency Graph
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.15"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Install Graphviz
-        run: sudo apt-get update && sudo apt-get install -y graphviz
-
-      - name: Run Madge
-        run: npm run deps:madge
-
-      - name: Upload Dependency Graph as Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-graph-svg
-          path: docs/dependency-graph.svg
-          retention-days: 14
+    lint:
+        name: Lint Codebase
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install Dependencies
+                run: npm ci
+
+            -   name: Install ESLint
+                run: npm install --no-save eslint-formatter-junit
+
+            -   name: Run ESLint (JUnit XML)
+                run: |
+                    npx eslint \
+                      --ext .js,.jsx,.ts,.tsx \
+                      src \
+                      --format junit \
+                      --output-file eslint-report.xml
+
+            -   name: Publish ESLint Report
+                uses: dorny/test-reporter@v2
+                if: always()
+                with:
+                    name: ESLint
+                    path: eslint-report.xml
+                    reporter: java-junit
+
+    format:
+        name: Check Formatting
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+
+            -   name: Setup Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install Dependencies
+                run: npm ci
+
+            -   name: Check Prettier Formatting
+                run: |
+                    FILES=$(find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.css" -o -name "*.scss" -o -name "*.md" | grep -v node_modules | grep -v dist | grep -v build)
+                    
+                    TOTAL_FILES=0
+                    FAILED_FILES=0
+                    FAILED_FILE_LIST=""
+                    
+                    cat > prettier-report.xml << 'EOF'
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <testsuites name="Prettier Formatting Check">
+                      <testsuite name="prettier" tests="0" failures="0" errors="0" time="0">
+                    EOF
+                    
+                    for file in $FILES; do
+                      TOTAL_FILES=$((TOTAL_FILES + 1))
+                    
+                      if ! npx prettier --check "$file" > /dev/null 2>&1; then
+                        FAILED_FILES=$((FAILED_FILES + 1))
+                        FAILED_FILE_LIST="$FAILED_FILE_LIST$file\n"
+                    
+                        # Generate diff between current file and prettier formatted version
+                        PRETTIER_FORMATTED=$(npx prettier "$file" 2>/dev/null || echo "Error formatting file")
+                        DIFF_OUTPUT=$(diff -u "$file" <(echo "$PRETTIER_FORMATTED") 2>/dev/null | head -20 || echo "Unable to generate diff")
+                    
+                        # Create a concise error message with line numbers and changes
+                        ERROR_MESSAGE="Formatting issues found"
+                        if [ -n "$DIFF_OUTPUT" ] && [ "$DIFF_OUTPUT" != "Unable to generate diff" ]; then
+                          # Extract changes from diff output with proper line numbers
+                          CHANGES=""
+                          CURRENT_LINE=0
+                          while IFS= read -r line; do
+                            if echo "$line" | grep -q "^@@"; then
+                              # Extract starting line number from diff header (e.g., @@ -10,4 +10,4 @@)
+                              CURRENT_LINE=$(echo "$line" | sed 's/^@@ -\([0-9]*\),.*/\1/')
+                            elif echo "$line" | grep -q "^---\|^+++"; then
+                              # Skip file header lines
+                              continue
+                            elif echo "$line" | grep -q "^-"; then
+                              # Removed line - preserve exact content including quotes
+                              CONTENT="${line#-}"
+                              CHANGES="${CHANGES}L${CURRENT_LINE}: Remove '${CONTENT}'; "
+                              CURRENT_LINE=$((CURRENT_LINE + 1))
+                            elif echo "$line" | grep -q "^+"; then
+                              # Added line - preserve exact content including quotes
+                              CONTENT="${line#+}"
+                              CHANGES="${CHANGES}Add '${CONTENT}'; "
+                            elif echo "$line" | grep -q "^ "; then
+                              # Context line - increment line number
+                              CURRENT_LINE=$((CURRENT_LINE + 1))
+                            fi
+                          done <<< "$DIFF_OUTPUT"
+                    
+                          if [ -n "$CHANGES" ]; then
+                            ERROR_MESSAGE="$CHANGES"
+                          fi
+                        fi
+                    
+                        # Escape XML characters in error message
+                        ESCAPED_MESSAGE=$(echo "$ERROR_MESSAGE" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+                    
+                        cat >> prettier-report.xml << EOF
+                        <testcase classname="prettier" name="$file" time="0">
+                          <failure message="$ESCAPED_MESSAGE" type="formatting">
+                    Run 'npx prettier --write $file' to fix formatting.
+                          </failure>
+                        </testcase>
+                    EOF
+                      else
+                        cat >> prettier-report.xml << EOF
+                        <testcase classname="prettier" name="$file" time="0"/>
+                    EOF
+                      fi
+                    done
+                    
+                    cat >> prettier-report.xml << 'EOF'
+                      </testsuite>
+                    </testsuites>
+                    EOF
+                    
+                    sed -i "s/tests=\"0\"/tests=\"$TOTAL_FILES\"/" prettier-report.xml
+                    sed -i "s/failures=\"0\"/failures=\"$FAILED_FILES\"/" prettier-report.xml
+                    
+                    echo "Prettier Check Results:"
+                    echo "Total files checked: $TOTAL_FILES"
+                    echo "Files with formatting issues: $FAILED_FILES"
+                    
+                    if [ $FAILED_FILES -gt 0 ]; then
+                      echo "Files that need formatting:"
+                      echo -e "$FAILED_FILE_LIST"
+                      exit 1
+                    else
+                      echo "All files are properly formatted!"
+                    fi
+
+            -   name: Upload Prettier Report
+                uses: dorny/test-reporter@v2
+                if: always()
+                with:
+                    name: Prettier Formatting
+                    path: prettier-report.xml
+                    reporter: java-junit
+
+    lighthouse_summary:
+        name: Lighthouse Report
+        runs-on: ubuntu-latest
+        needs: [ lint, format ]
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v5
+
+            -   name: Setup Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install dependencies
+                run: npm ci && cd backend && npm ci
+
+            -   name: Build project
+                run: npm run build
+
+            -   name: Install serve
+                run: npm install -g serve
+
+            -   name: Start server
+                run: |
+                    serve -s dist -l 5000 &
+                    echo $! > serve.pid
+
+            -   name: Run Lighthouse multiple times
+                run: |
+                    RUNS=3
+                    for i in $(seq 1 $RUNS); do
+                      echo "Running Lighthouse (iteration $i/$RUNS)"
+                      npx lighthouse http://localhost:5000 \
+                        --preset=desktop \
+                        --output html json \
+                        --output-path ./lighthouse-report-${i} \
+                        --chrome-flags="--headless"
+                    done
+
+            -   name: Stop server
+                run: |
+                    kill $(cat serve.pid)
+
+            -   name: Write report summary (average performance)
+                run: |
+                    RUNS=3
+                    PERF_TOTAL=0
+                    for i in $(seq 1 $RUNS); do
+                      SCORE=$(jq '.categories.performance.score' < ./lighthouse-report-${i}.report.json)
+                      PERF_TOTAL=$(echo "$PERF_TOTAL + $SCORE" | bc -l)
+                    done
+                    PERFORMANCE=$(echo "scale=2; $PERF_TOTAL / $RUNS" | bc -l)
+                    
+                    # Use the first run for the other categories (feel free to average these too)
+                    ACCESSIBILITY=$(jq '.categories.accessibility.score' < ./lighthouse-report-1.report.json)
+                    BEST=$(jq '.categories."best-practices".score' < ./lighthouse-report-1.report.json)
+                    SEO=$(jq '.categories.seo.score' < ./lighthouse-report-1.report.json)
+                    
+                    MIN_SCORE=0.8
+                    
+                    cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+                    ## Lighthouse Report (average over $RUNS runs)
+                    
+                    | Category        | Score |
+                    | --------------- | ----- |
+                    | Performance     | $PERFORMANCE $(if (( $(echo "$PERFORMANCE >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$PERFORMANCE >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+                    | Accessibility   | $ACCESSIBILITY $(if (( $(echo "$ACCESSIBILITY >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$ACCESSIBILITY >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+                    | Best Practices  | $BEST $(if (( $(echo "$BEST >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$BEST >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+                    | SEO             | $SEO $(if (( $(echo "$SEO >= 0.9" | bc -l) )); then echo "🟢"; elif (( $(echo "$SEO >= $MIN_SCORE" | bc -l) )); then echo "🟡"; else echo "🔴"; fi) |
+                    EOF
+                    
+                    echo "" >> "$GITHUB_STEP_SUMMARY"
+                    
+                    failed=false
+                    
+                    if (( $(echo "$PERFORMANCE < $MIN_SCORE" | bc -l) )); then
+                      echo "❌ PERFORMANCE average score ($PERFORMANCE) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+                      failed=true
+                    fi
+                    if (( $(echo "$ACCESSIBILITY < $MIN_SCORE" | bc -l) )); then
+                      echo "❌ ACCESSIBILITY score ($ACCESSIBILITY) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+                      failed=true
+                    fi
+                    if (( $(echo "$BEST < $MIN_SCORE" | bc -l) )); then
+                      echo "❌ BEST PRACTICES score ($BEST) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+                      failed=true
+                    fi
+                    if (( $(echo "$SEO < $MIN_SCORE" | bc -l) )); then
+                      echo "❌ SEO score ($SEO) is below threshold ($MIN_SCORE)." >> "$GITHUB_STEP_SUMMARY"
+                      failed=true
+                    fi
+                    
+                    if [ "$failed" = true ]; then
+                      echo "One or more Lighthouse categories are below $MIN_SCORE. Failing the job." >> "$GITHUB_STEP_SUMMARY"
+                      exit 1
+                    else
+                      echo "All Lighthouse categories meet the minimum threshold of $MIN_SCORE." >> "$GITHUB_STEP_SUMMARY"
+                    fi
+
+            -   name: Upload Lighthouse reports
+                if: always()
+                uses: actions/upload-artifact@v4
+                with:
+                    name: lighthouse-report
+                    path: |
+                        lighthouse-report-*.report.html
+                        lighthouse-report-*.report.json
+                    retention-days: 14
+
+    unit:
+        name: Unit Tests & Coverage
+        runs-on: ubuntu-latest
+        needs: [ lint, format ]
+        permissions:
+            pull-requests: write
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install Dependencies
+                run: npm ci
+
+            -   name: Run Unit Tests with Coverage
+                run: npm run test:cov
+
+            -   name: Upload HTML Coverage Report
+                uses: actions/upload-artifact@v4
+                if: always()
+                with:
+                    name: vitest-coverage-report-html
+                    path: coverage
+                    retention-days: 14
+
+            -   name: Report Coverage Summary to Job
+                if: always()
+                uses: davelosert/vitest-coverage-report-action@v2
+                with:
+                    json-summary-path: ./coverage/coverage-summary.json
+                    file-coverage-mode: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'all' || 'changes' }}
+
+    e2e:
+        name: E2E Tests
+        runs-on: ubuntu-latest
+        needs: [ lint, format ]
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.19"
+
+            -   name: Install Dependencies
+                run: npm ci
+
+            -   name: Install Backend Dependencies
+                run: cd backend && npm ci
+
+            -   name: Create data directory for tests
+                run: mkdir -p backend/data
+
+            -   name: Run Cypress E2E Tests
+                uses: cypress-io/github-action@v6.10.2
+                with:
+                    start: npm run dev
+                    wait-on: http://localhost:5173
+                    wait-on-timeout: 60
+                    command: npm run e2e:run
+
+            -   name: Upload E2E Test Screenshots
+                uses: actions/upload-artifact@v4
+                if: failure()
+                with:
+                    name: cypress-screenshots
+                    path: cypress/screenshots/
+                    retention-days: 14
+
+    sonarcloud:
+        name: SonarCloud Analysis
+        runs-on: ubuntu-latest
+        if: github.actor != 'dependabot[bot]'
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+                with:
+                    fetch-depth: 0
+
+            -   name: SonarCloud Scan
+                continue-on-error: true
+                uses: SonarSource/sonarqube-scan-action@v5.3.0
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                with:
+                    projectBaseDir: .
+                    args: >
+                        -Dproject.settings=sonar-project-sonarcloud.properties
+
+    # currently only builds the project
+    deploy:
+        name: Build and Deploy
+        needs: [ unit, e2e, lighthouse_summary ]
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install Frontend Dependencies
+                run: npm ci
+
+            -   name: Install Backend Dependencies
+                run: cd backend && npm ci
+
+            -   name: Create data directory
+                run: mkdir -p backend/data
+
+            -   name: Build Backend
+                run: cd backend && npm run build
+
+            -   name: Build Frontend
+                run: npm run build
+
+            -   name: Move Frontend Build to Backend Frontend Directory
+                run: |
+                    mkdir -p backend/frontend
+                    cp -r dist/* backend/frontend/
+                    mv backend/ wa-dp/
+
+            -   name: Upload Build to Artifacts
+                uses: actions/upload-artifact@v4
+                with:
+                    name: build
+                    path: wa-dp/*
+                    retention-days: 14
+    #      - name: Remove Old Files on Server
+    #        uses: appleboy/ssh-action@v1.2.2
+    #        with:
+    #          host: ${{ secrets.SSH_HOST }}
+    #          username: ${{ secrets.SSH_USERNAME }}
+    #          key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #          port: ${{ secrets.SSH_PORT }}
+    #          script: |
+    #            find ~/Webserver/WA-DP -mindepth 1 -maxdepth 1 -exec rm -r {} \;
+    #
+    #      - name: Transfer Backend with Frontend
+    #        run: |
+    #          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+    #          chmod 600 private_key.pem
+    #          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no" ./wa-dp/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/Webserver/WA-DP/
+    #          rm -f private_key.pem
+    #
+    #      - name: Start Backend Server
+    #        uses: appleboy/ssh-action@v1.2.2
+    #        with:
+    #          host: ${{ secrets.SSH_HOST }}
+    #          username: ${{ secrets.SSH_USERNAME }}
+    #          key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #          port: ${{ secrets.SSH_PORT }}
+    #          script: |
+    #            # Kill existing tmux session if it exists
+    #            tmux kill-session -t WA-DP 2>/dev/null || true
+    #            # Start new tmux session with backend
+    #            tmux new-session -d -s WA-DP
+    #            tmux send-keys -t WA-DP "cd ~/Webserver/WA-DP" C-m
+    #            tmux send-keys -t WA-DP "clear" C-m
+    #            tmux send-keys -t WA-DP "npm start" C-m
+    #            tmux send-keys -t WA-DP "exec bash" C-m
+
+    build-and-push-docker:
+        name: Build and Push Docker Image
+        runs-on: ubuntu-latest
+        needs: [ unit, e2e, lighthouse_summary ]
+        if: github.ref == 'refs/heads/main'
+        permissions:
+            contents: read
+            packages: write
+
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Log in to GitHub Container Registry
+                uses: docker/login-action@v3
+                with:
+                    registry: ghcr.io
+                    username: ${{ github.actor }}
+                    password: ${{ secrets.GITHUB_TOKEN }}
+
+            -   name: Extract metadata (tags, labels) for Docker
+                id: meta
+                uses: docker/metadata-action@v5
+                with:
+                    images: ghcr.io/${{ github.repository }}
+                    tags: |
+                        type=raw,value=latest
+                        type=sha,prefix=,format=short
+
+            -   name: Build and push Docker Image
+                uses: docker/build-push-action@v5
+                with:
+                    context: .
+                    push: true
+                    tags: ${{ steps.meta.outputs.tags }}
+
+            -   name: Clean up old Image versions
+                uses: actions/delete-package-versions@v5
+                with:
+                    package-name: wa-dp
+                    package-type: container
+                    min-versions-to-keep: 2
+
+    loc:
+        name: LOC Statistics
+        if: github.event_name == 'workflow_dispatch'
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install Dependencies
+                run: npm ci
+
+            -   name: Count LOC
+                run: npx -y cloc src tests cypress --by-file --include-lang=TypeScript,JavaScript,TSX,JSX --exclude-dir=node_modules,dist,coverage --json --quiet --report-file=cloc-files.json
+
+            -   name: Create LOC Summary
+                run: node tools/loc-summary.mjs
+
+            -   name: Add LOC Summary to Job Summary
+                run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
+
+            -   uses: actions/upload-artifact@v4
+                with:
+                    name: loc-summary
+                    path: loc-summary.md
+                    retention-days: 14
+
+    dependency-graph:
+        name: Generate Dependency Graph
+        if: github.event_name == 'workflow_dispatch'
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v5
+
+            -   name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: "22.15"
+
+            -   name: Install Dependencies
+                run: npm ci
+
+            -   name: Install Graphviz
+                run: sudo apt-get update && sudo apt-get install -y graphviz
+
+            -   name: Run Madge
+                run: npm run deps:madge
+
+            -   name: Upload Dependency Graph as Artifact
+                if: always()
+                uses: actions/upload-artifact@v4
+                with:
+                    name: dependency-graph-svg
+                    path: docs/dependency-graph.svg
+                    retention-days: 14

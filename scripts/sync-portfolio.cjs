@@ -9,18 +9,53 @@ const defaultPortfolioData = {
   email: "john.doe@example.com",
   avatar: "",
   social: {
-    github: "",
-    twitter: "",
+    github: "johndoe",
+    twitter: "johndoe",
     twitterPlatform: "twitter",
-    linkedin: "",
-    discord: "",
-    reddit: "",
-    youtube: "",
-    steam: "",
+    linkedin: "johndoe",
+    discord: "99010890275225600",
+    reddit: "johndoe",
+    youtube: "johndoe",
+    steam: "76561197984767093",
   },
-  skills: [],
-  cv: [],
-  education: [],
+  skills: [
+    { name: "React", level: "Master" },
+    { name: "TypeScript", level: "Expert" },
+    { name: "Node.js", level: "Expert" },
+    { name: "CSS/Tailwind", level: "Advanced" },
+    { name: "UI/UX Design", level: "Intermediate" },
+    { name: "GraphQL", level: "Beginner" },
+  ],
+  cv: [
+    {
+      company: "Tech Innovators Inc.",
+      position: "Senior Full Stack Developer",
+      duration: "2022 - Present",
+      location: "New York, NY",
+      description:
+        "Lead development of modern web applications using React, TypeScript, and Node.js. Mentored junior developers and collaborated with design teams to create exceptional user experiences.",
+      technologies: ["React", "TypeScript", "Node.js"],
+    },
+    {
+      company: "StartupXYZ",
+      position: "Junior Web Developer",
+      duration: "2019 - 2022",
+      location: "Austin, TX",
+      description:
+        "Built and maintained company websites and web applications. Gained experience in full-stack development and agile methodologies.",
+      technologies: ["GraphQL"],
+    },
+  ],
+  education: [
+    {
+      institution: "University of Technology",
+      degree: "Bachelor of Science in Computer Science",
+      duration: "2017 - 2019",
+      location: "Frankfurt, Germany",
+      description:
+        "Specialized in Software Engineering and Machine Learning. Graduated with honors and completed thesis on distributed systems.",
+    },
+  ],
   contributor: {
     enableContributorStatus: false,
     showGoldenBoxShadow: false,
