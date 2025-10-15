@@ -35,6 +35,10 @@ We welcome any contributions to the Developer Portfolio project. Please follow t
 2. Make your changes following the existing code style and patterns
 3. Test your changes using the scripts listed in the "Development Scripts" section of the README
 4. Commit your changes with descriptive messages
+5. Update the version in the package.json manually or using:
+   - `npm version patch` for small fixes, updated docs, updated dependencies
+   - `npm version minor` for small changes or features
+   - `npm version major` for large, important or breaking changes or features
 
 ### Code Standards
 
@@ -69,7 +73,7 @@ We welcome any contributions to the Developer Portfolio project. Please follow t
 Your PR will automatically run through our pipeline including:
 
 - ESLint checks
-- Unit tests with coverage >80%
+- Unit tests
 - E2E tests
 - Lighthouse performance >80%
 - SonarCloud analysis

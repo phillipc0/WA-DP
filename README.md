@@ -193,17 +193,27 @@ This project includes a CI/CD pipeline powered by GitHub Actions.
 
 Checks for every push on a pull request or the the main branch:
 
+All branches:
+
 - Linting & Formatting using ESLint
-- Lines of code are measured
-- Unit tests using Vitest including coverage (>80%)
+- Unit tests using Vitest ~~including coverage (>80%)~~
 - E2E tests using Cypress
-- Lighthouse report (>80%)
-- SonarCloud static code analysis (A-Marks)
-- ~~On the main branch: Website is deployed~~
+- Lighthouse report, score over 80
+- SonarCloud static code analysis (not required)
+
+Only main branch:
+
+- Build the project for production
+- Push the docker image
+
+Manual jobs:
+
+- Lines of code are measurement
+- File Dependency Graph
 
 The dependencies between the pipelines are as follows:
 
-<img width="420" alt="image" src="https://github.com/user-attachments/assets/531eca22-d38a-4681-b5ce-9402d1e23c38" />
+<img width="420" alt="image" src="https://github.com/user-attachments/assets/3329ac74-8235-4973-9b0d-8078e805b3a5" />
 
 The pipeline configuration is located in `.github/workflows/test-build-deploy.yml`.
 

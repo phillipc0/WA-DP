@@ -264,7 +264,7 @@ describe("SocialLinksForm", () => {
   it("renders Twitter/X platform selector", () => {
     render(<SocialLinksForm {...defaultProps} />);
 
-    expect(screen.getByLabelText("Platform")).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Platform")[0]).toBeInTheDocument();
     const twitterOptions = screen.getAllByText("Twitter");
     expect(twitterOptions.length).toBeGreaterThan(0);
   });
@@ -279,7 +279,7 @@ describe("SocialLinksForm", () => {
     );
 
     // Test that the component renders with the callback prop
-    expect(screen.getByLabelText("Platform")).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Platform")[0]).toBeInTheDocument();
     expect(onSocialSelectChange).toBeDefined();
   });
 

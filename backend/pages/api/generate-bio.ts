@@ -15,6 +15,7 @@ const sanitizeInput = (input: string): string => {
  * Handles bio generation requests using Gemini AI API
  * @param req - Authenticated request containing name, title, and skills
  * @param res - API response object
+ * @returns Promise that resolves when the request is handled
  */
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
