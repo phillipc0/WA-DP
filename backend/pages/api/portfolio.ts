@@ -18,19 +18,6 @@ const PUBLIC_PORTFOLIO_FILE = path.join(
   "portfolio.json",
 );
 
-const getPortfolioDataFromFile = (): JSON | null => {
-  try {
-    if (fs.existsSync(PORTFOLIO_FILE)) {
-      const data = fs.readFileSync(PORTFOLIO_FILE, "utf8");
-      return JSON.parse(data);
-    }
-    return null;
-  } catch (error) {
-    console.error("Error reading portfolio file:", error);
-    throw error;
-  }
-};
-
 const savePortfolioData = (data: JSON): void => {
   try {
     if (!fs.existsSync(DATA_DIR)) {
@@ -56,16 +43,6 @@ const handler = async (
   res: NextApiResponse,
 ): Promise<void> => {
   try {
-    if (req.method === "GET") {
-      const portfolioData = getPortfolioDataFromFile();
-      if (portfolioData) {
-        res.status(200).json(portfolioData);
-      } else {
-        res.status(404).json({ error: "Portfolio data not found" });
-      }
-      return;
-    }
-
     if (req.method === "POST" || req.method === "PUT") {
       const portfolioData = req.body as JSON;
 
