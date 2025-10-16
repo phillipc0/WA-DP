@@ -14,7 +14,7 @@
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "format": "prettier --write .",
     "install-dev": "concurrently \"npm run inst:frontend\" \"npm run inst:backend\"",
-    "build": "npm run sync:portfolio && tsc && vite build",
+    "build": "tsc && vite build",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "lint-fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
     "preview": "vite preview",
