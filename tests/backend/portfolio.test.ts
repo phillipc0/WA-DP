@@ -38,69 +38,6 @@ describe("/api/portfolio handler", () => {
     vi.restoreAllMocks();
   });
 
-  describe("GET /api/portfolio", () => {
-    it("should return 200 and the portfolio data when the file exists", async () => {
-      vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readFileSync).mockReturnValue(
-        JSON.stringify(mockPortfolioData),
-      );
-
-      const req = { method: "GET" } as AuthenticatedRequest;
-      const res = createMockRes();
-
-      await protectedHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockPortfolioData);
-    });
-
-    it("should return 404 if the portfolio file does not exist", async () => {
-      vi.mocked(fs.existsSync).mockReturnValue(false);
-
-      const req = { method: "GET" } as AuthenticatedRequest;
-      const res = createMockRes();
-
-      await protectedHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Portfolio data not found",
-      });
-    });
-
-    it("It should return 500 if the file is corrupt (invalid JSON)", async () => {
-      vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readFileSync).mockReturnValue("this is not json");
-
-      const req = { method: "GET" } as AuthenticatedRequest;
-      const res = createMockRes();
-
-      await protectedHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Portfolio operation failed",
-      });
-    });
-
-    it("should return 500 if reading the file fails", async () => {
-      vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readFileSync).mockImplementation(() => {
-        throw new Error("Read error");
-      });
-
-      const req = { method: "GET" } as AuthenticatedRequest;
-      const res = createMockRes();
-
-      await protectedHandler(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Portfolio operation failed",
-      });
-    });
-  });
-
   describe.each(["POST", "PUT"])("%s /api/portfolio", (method) => {
     it(`should save data and return 200 if the directory exists`, async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -148,7 +85,6 @@ describe("/api/portfolio handler", () => {
 
     it("should return 500 if writing the file fails", async () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      // KORREKTUR: Verwende vi.spyOn() anstelle von vi.mocked()
       vi.spyOn(fs, "writeFileSync").mockImplementation(() => {
         throw new Error("Write error");
       });

@@ -12,25 +12,26 @@ import {
 const DATA_DIR = path.join(process.cwd(), "data");
 const PORTFOLIO_FILE = path.join(DATA_DIR, "portfolio.json");
 
-const getPortfolioDataFromFile = (): JSON | null => {
-  try {
-    if (fs.existsSync(PORTFOLIO_FILE)) {
-      const data = fs.readFileSync(PORTFOLIO_FILE, "utf8");
-      return JSON.parse(data);
-    }
-    return null;
-  } catch (error) {
-    console.error("Error reading portfolio file:", error);
-    throw error;
-  }
-};
+const PUBLIC_PORTFOLIO_FILE = path.join(
+  process.cwd(),
+  "frontend",
+  "portfolio.json",
+);
 
 const savePortfolioData = (data: JSON): void => {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    fs.writeFileSync(PORTFOLIO_FILE, JSON.stringify(data, null, 2));
+    const dataString = JSON.stringify(data, null, 2);
+
+    fs.writeFileSync(PORTFOLIO_FILE, dataString);
+
+    const publicDir = path.dirname(PUBLIC_PORTFOLIO_FILE);
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true });
+    }
+    fs.writeFileSync(PUBLIC_PORTFOLIO_FILE, dataString);
   } catch (error) {
     console.error("Error writing portfolio file:", error);
     throw new Error("Failed to save portfolio data");
@@ -42,16 +43,6 @@ const handler = async (
   res: NextApiResponse,
 ): Promise<void> => {
   try {
-    if (req.method === "GET") {
-      const portfolioData = getPortfolioDataFromFile();
-      if (portfolioData) {
-        res.status(200).json(portfolioData);
-      } else {
-        res.status(404).json({ error: "Portfolio data not found" });
-      }
-      return;
-    }
-
     if (req.method === "POST" || req.method === "PUT") {
       const portfolioData = req.body as JSON;
 

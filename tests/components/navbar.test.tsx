@@ -10,6 +10,7 @@ vi.mock("@/components/theme-switch", () => ({
 
 vi.mock("@/components/icons", () => ({
   Logo: () => <div data-testid="logo">Logo</div>,
+  UserIcon: () => <div data-testid="user-icon">UserIcon</div>,
 }));
 
 vi.mock("@/components/login-modal", () => ({

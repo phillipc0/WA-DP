@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getPortfolioData, savePortfolioData } from "@/lib/portfolio";
 
 // Mock authenticatedFetch
@@ -10,7 +10,7 @@ vi.mock("@/lib/auth", () => ({
 global.fetch = vi.fn();
 
 Object.defineProperty(window, "getPortfolioUrl", {
-  value: () => `/api/portfolio?_t=${Date.now()}`,
+  value: () => `/portfolio.json?_t=${Date.now()}`,
   writable: true,
 });
 
@@ -41,6 +41,10 @@ describe("portfolio", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe("getPortfolioData", () => {
     it("returns portfolio data on successful fetch", async () => {
       const mockFetch = vi.mocked(fetch);
@@ -53,7 +57,7 @@ describe("portfolio", () => {
 
       expect(result).toEqual(mockPortfolioData);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/portfolio?_t="),
+        expect.stringContaining("/portfolio.json?_t="),
         {
           method: "GET",
         },
@@ -76,7 +80,7 @@ describe("portfolio", () => {
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
-        "Failed to fetch portfolio data:",
+        "Failed to fetch static portfolio.json:",
         "Not Found",
       );
 
@@ -116,7 +120,7 @@ describe("portfolio", () => {
 
       expect(result).toEqual(null);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/portfolio?_t="),
+        expect.stringContaining("/portfolio.json?_t="),
         {
           method: "GET",
         },
@@ -138,7 +142,7 @@ describe("portfolio", () => {
 
       // Verify cache busting URL was used
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringMatching(/\/api\/portfolio\?_t=\d+/),
+        expect.stringMatching(/\/portfolio.json\?_t=\d+/),
         {
           method: "GET",
         },
