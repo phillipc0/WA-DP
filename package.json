@@ -7,12 +7,11 @@
     "endOfLine": "auto"
   },
   "scripts": {
-    "sync:portfolio": "node scripts/sync-portfolio.cjs",
-    "dev:frontend": "npm run sync:portfolio && vite",
+    "dev:frontend": "vite",
     "dev:backend": "cd backend && npm run dev",
     "inst:frontend": "npm install",
     "inst:backend": "cd backend && npm install",
-    "dev": "npm run sync:portfolio && concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "format": "prettier --write .",
     "install-dev": "concurrently \"npm run inst:frontend\" \"npm run inst:backend\"",
     "build": "npm run sync:portfolio && tsc && vite build",
