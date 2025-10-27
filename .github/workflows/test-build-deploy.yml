@@ -261,7 +261,7 @@ jobs:
 
       - name: Upload Lighthouse reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: lighthouse-report
           path: |
@@ -291,7 +291,7 @@ jobs:
         run: npm run test:cov
 
       - name: Upload HTML Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: vitest-coverage-report-html
@@ -336,7 +336,7 @@ jobs:
           command: npm run e2e:run
 
       - name: Upload E2E Test Screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: cypress-screenshots
@@ -401,7 +401,7 @@ jobs:
           mv backend/ wa-dp/
 
       - name: Upload Build to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build
           path: wa-dp/*
@@ -508,7 +508,7 @@ jobs:
       - name: Add LOC Summary to Job Summary
         run: cat loc-summary.md >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: loc-summary
           path: loc-summary.md
@@ -538,7 +538,7 @@ jobs:
 
       - name: Upload Dependency Graph as Artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dependency-graph-svg
           path: docs/dependency-graph.svg
