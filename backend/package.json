@@ -7,12 +7,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "@types/bcryptjs": "^2.4.6",
+    "@types/bcryptjs": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "bcryptjs": "^3.0.2",
-    "jsonwebtoken": "^9.0.2",
-    "next": "^15.3.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "next": "^16.0.7",
+    "react": "^19.2.1",
+    "react-dom": "19.2.1"
   }
 }

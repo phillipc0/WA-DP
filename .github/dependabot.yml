@@ -22,4 +22,3 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
-#cooldown? https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference#cooldown-
