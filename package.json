@@ -97,7 +97,7 @@
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",
     "vite": "^7.2.6",
-    "vite-tsconfig-paths": "^5.1.4",
+    "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^3.2.4",
     "webpack": "^5.103.0"
   }
