@@ -13,6 +13,11 @@ updates:
         update-types:
           - "minor"
           - "patch"
+        exclude-patterns:
+          - "@heroui/*"
+    ignore:
+      #ignore heroui dependencies, since any newer versions require tailwind 4 which is not supported
+      - "@heroui/*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
