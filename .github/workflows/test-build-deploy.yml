@@ -328,7 +328,7 @@ jobs:
         run: mkdir -p backend/data
 
       - name: Run Cypress E2E Tests
-        uses: cypress-io/github-action@v6.10.6
+        uses: cypress-io/github-action@v6.10.8
         with:
           start: npm run dev
           wait-on: http://localhost:5173
