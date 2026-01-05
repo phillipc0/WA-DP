@@ -17,7 +17,7 @@ updates:
           - "@heroui/*"
     ignore:
       #ignore heroui dependencies, since any newer versions require tailwind 4 which is not supported
-      - "@heroui/*"
+      - dependency-name: "@heroui/*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
