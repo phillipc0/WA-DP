@@ -62,7 +62,7 @@
     "tailwindcss": "~3.4.19"
   },
   "devDependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "^23.2.1",
+    "@badeball/cypress-cucumber-preprocessor": "^24.0.0",
     "@cypress/webpack-preprocessor": "^7.0.2",
     "@eslint/compat": "^2.0.2",
     "@eslint/eslintrc": "^3.3.3",
