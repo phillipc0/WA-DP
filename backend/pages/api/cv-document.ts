@@ -54,8 +54,7 @@ const sanitizePdfBaseName = (fileName: string): string => {
 };
 
 const buildStoredFileName = (fileName: string): string => {
-  const suffix = Math.random().toString(36).slice(2, 8);
-  return `${Date.now()}-${suffix}-${sanitizePdfBaseName(fileName)}.pdf`;
+  return `${Date.now()}-${sanitizePdfBaseName(fileName)}.pdf`;
 };
 
 const extractStoredPdfFileName = (fileUrl: string): string | null => {
