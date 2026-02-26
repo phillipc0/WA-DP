@@ -9,6 +9,7 @@ export const siteConfig = {
     location: "New York, USA",
     email: "john.doe@example.com",
     avatar: "",
+    cvDocument: null,
     social: {
       github: "johndoe",
       twitter: "johndoe",

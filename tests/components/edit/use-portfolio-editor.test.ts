@@ -38,6 +38,7 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/portfolio", () => ({
   getPortfolioData: vi.fn(() => Promise.resolve(null)),
   savePortfolioData: vi.fn(() => Promise.resolve(true)),
+  uploadCVDocument: vi.fn(() => Promise.resolve(null)),
 }));
 
 vi.mock("@/lib/cookie-persistence", () => ({
@@ -432,6 +433,75 @@ describe("usePortfolioEditor", () => {
     });
 
     expect(result.current.saveAlert).toBe(true);
+  });
+
+  it("uploads CV immediately via handleCvUpload and updates metadata", async () => {
+    const { uploadCVDocument, savePortfolioData } =
+      await vi.importMock("@/lib/portfolio");
+    const mockUploadCVDocument = uploadCVDocument as any;
+    const mockSavePortfolioData = savePortfolioData as any;
+    const uploadedDocument = {
+      fileName: "resume.pdf",
+      fileUrl: "/uploads/resume.pdf",
+      fileSize: 12345,
+      uploadedAt: "2026-02-26T00:00:00.000Z",
+    };
+
+    mockUploadCVDocument.mockResolvedValue(uploadedDocument);
+    mockSavePortfolioData.mockResolvedValue(true);
+
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockPdf = new File(["pdf"], "resume.pdf", {
+      type: "application/pdf",
+    });
+    Object.defineProperty(mockPdf, "size", { value: 1024 });
+
+    await act(async () => {
+      await result.current.handleCvUpload(mockPdf);
+    });
+
+    expect(mockUploadCVDocument).toHaveBeenCalledWith(mockPdf, undefined);
+    expect(result.current.portfolioData).toEqual(
+      expect.objectContaining({
+        cvDocument: uploadedDocument,
+      }),
+    );
+    expect(mockSavePortfolioData).not.toHaveBeenCalled();
+  });
+
+  it("shows error when CV upload fails via handleCvUpload", async () => {
+    const { uploadCVDocument, savePortfolioData } =
+      await vi.importMock("@/lib/portfolio");
+    const mockUploadCVDocument = uploadCVDocument as any;
+    const mockSavePortfolioData = savePortfolioData as any;
+
+    mockUploadCVDocument.mockResolvedValue(null);
+    mockSavePortfolioData.mockResolvedValue(true);
+
+    const { result } = renderHook(() => usePortfolioEditor());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const mockPdf = new File(["pdf"], "resume.pdf", {
+      type: "application/pdf",
+    });
+    Object.defineProperty(mockPdf, "size", { value: 1024 });
+
+    await act(async () => {
+      await result.current.handleCvUpload(mockPdf);
+    });
+
+    expect(mockUploadCVDocument).toHaveBeenCalledWith(mockPdf, undefined);
+    expect(mockSavePortfolioData).not.toHaveBeenCalled();
+    expect(result.current.fileAlert).toBe(true);
+    expect(result.current.fileAlertMessage).toBe("Failed to upload CV file.");
   });
 
   it("handles new skill input changes", async () => {

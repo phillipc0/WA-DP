@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getPortfolioData, savePortfolioData } from "@/lib/portfolio";
+import {
+  getPortfolioData,
+  savePortfolioData,
+  uploadCVDocument,
+} from "@/lib/portfolio";
 
 // Mock authenticatedFetch
 vi.mock("@/lib/auth", () => ({
@@ -8,6 +12,24 @@ vi.mock("@/lib/auth", () => ({
 
 // Mock global fetch
 global.fetch = vi.fn();
+
+class MockFileReader {
+  onload: ((event: ProgressEvent<FileReader>) => void) | null = null;
+  onerror: (() => void) | null = null;
+  result: string | ArrayBuffer | null = null;
+
+  readAsDataURL(_file: Blob) {
+    this.result = "data:application/pdf;base64,JVBERi0xLjQgbW9jaw==";
+    if (this.onload) {
+      this.onload({ target: { result: this.result } } as any);
+    }
+  }
+}
+
+Object.defineProperty(globalThis, "FileReader", {
+  value: MockFileReader,
+  writable: true,
+});
 
 Object.defineProperty(window, "getPortfolioUrl", {
   value: () => `/portfolio.json?_t=${Date.now()}`,
@@ -247,6 +269,68 @@ describe("portfolio", () => {
       );
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe("uploadCVDocument", () => {
+    it("returns document metadata on successful upload", async () => {
+      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
+      const mockAuthenticatedFetch = authenticatedFetch as any;
+      const mockCvDocument = {
+        fileName: "cv.pdf",
+        fileUrl: "/uploads/generated-cv.pdf",
+        fileSize: 1234,
+        uploadedAt: "2026-02-26T00:00:00.000Z",
+      };
+
+      mockAuthenticatedFetch.mockResolvedValueOnce({
+        ok: true,
+        json: vi.fn().mockResolvedValue({ cvDocument: mockCvDocument }),
+      } as any);
+
+      const file = new File(["%PDF-1.4 mock"], "cv.pdf", {
+        type: "application/pdf",
+      });
+      const result = await uploadCVDocument(file, "/uploads/old-cv.pdf");
+
+      expect(result).toEqual(mockCvDocument);
+      expect(mockAuthenticatedFetch).toHaveBeenCalledWith("/api/cv-document", {
+        method: "POST",
+        body: expect.any(String),
+      });
+
+      const requestBody = JSON.parse(
+        mockAuthenticatedFetch.mock.calls[0][1].body,
+      );
+      expect(requestBody.fileName).toBe("cv.pdf");
+      expect(requestBody.mimeType).toBe("application/pdf");
+      expect(requestBody.previousFileUrl).toBe("/uploads/old-cv.pdf");
+      expect(typeof requestBody.data).toBe("string");
+      expect(requestBody.data.length).toBeGreaterThan(0);
+    });
+
+    it("returns null when upload fails", async () => {
+      const { authenticatedFetch } = await vi.importMock("@/lib/auth");
+      const mockAuthenticatedFetch = authenticatedFetch as any;
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      mockAuthenticatedFetch.mockResolvedValueOnce({
+        ok: false,
+        json: vi.fn().mockResolvedValue({ error: "Upload failed" }),
+      } as any);
+
+      const file = new File(["%PDF-1.4 mock"], "cv.pdf", {
+        type: "application/pdf",
+      });
+      const result = await uploadCVDocument(file);
+
+      expect(result).toBeNull();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Failed to upload CV document:",
+        "Upload failed",
+      );
     });
   });
 });

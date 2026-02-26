@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import { siteConfig } from "@/config/site.ts";
 import { isAuthenticated, migrateOldAuth, validateToken } from "@/lib/auth.ts";
-import { getPortfolioData, savePortfolioData } from "@/lib/portfolio.ts";
+import {
+  getPortfolioData,
+  savePortfolioData,
+  uploadCVDocument,
+} from "@/lib/portfolio.ts";
 import {
   clearDraftFromCookies,
   loadDraftFromCookies,
@@ -27,6 +31,7 @@ export function usePortfolioEditor() {
   const [resetAlert, setResetAlert] = useState(false);
   const [fileAlert, setFileAlert] = useState(false);
   const [fileAlertMessage, setFileAlertMessage] = useState("");
+  const [isCvUploading, setIsCvUploading] = useState(false);
 
   // CV state
   const [newExperience, setNewExperience] = useState<Experience>({
@@ -180,6 +185,61 @@ export function usePortfolioEditor() {
     };
 
     reader.readAsDataURL(file);
+  };
+
+  const validateCvFile = (file: File) => {
+    const isPdfMimeType = file.type === "application/pdf";
+    const hasPdfExtension = file.name.toLowerCase().endsWith(".pdf");
+
+    if (!isPdfMimeType && !hasPdfExtension) {
+      setFileAlertMessage("Only PDF files are allowed for CV upload.");
+      setFileAlert(true);
+      return false;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setFileAlertMessage(
+        "CV file is too large. Please select a PDF under 10MB.",
+      );
+      setFileAlert(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleCvUpload = async (file: File) => {
+    if (!validateCvFile(file) || !portfolioData) {
+      return false;
+    }
+
+    try {
+      setIsCvUploading(true);
+      const previousFileUrl = portfolioData.cvDocument?.fileUrl;
+      const uploadedDocument = await uploadCVDocument(file, previousFileUrl);
+
+      if (!uploadedDocument) {
+        setFileAlertMessage("Failed to upload CV file.");
+        setFileAlert(true);
+        return false;
+      }
+
+      setPortfolioData((prev: any) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          cvDocument: uploadedDocument,
+        };
+      });
+      return true;
+    } catch (error) {
+      console.error("Error uploading CV document:", error);
+      setFileAlertMessage("Failed to upload CV file.");
+      setFileAlert(true);
+      return false;
+    } finally {
+      setIsCvUploading(false);
+    }
   };
 
   const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -570,8 +630,10 @@ export function usePortfolioEditor() {
     resetAlert,
     fileAlert,
     fileAlertMessage,
+    isCvUploading,
     handleBasicInfoChange,
     handleFileSelect,
+    handleCvUpload,
     handleSocialChange,
     handleSocialSelectChange,
     handleAddSkill,

@@ -145,6 +145,30 @@ export const UserIcon = ({
   );
 };
 
+export const DownloadIcon: React.FC<IconSvgProps> = ({
+  size = 20,
+  width,
+  height,
+  ...props
+}) => (
+  <svg
+    fill="none"
+    height={size || height}
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+    width={size || width}
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M12 3v11m0 0l4-4m-4 4l-4-4M4 17h16"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const TwitterIcon: React.FC<IconSvgProps> = ({
   size = 24,
   width,

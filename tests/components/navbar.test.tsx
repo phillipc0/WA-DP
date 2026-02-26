@@ -11,6 +11,7 @@ vi.mock("@/components/theme-switch", () => ({
 vi.mock("@/components/icons", () => ({
   Logo: () => <div data-testid="logo">Logo</div>,
   UserIcon: () => <div data-testid="user-icon">UserIcon</div>,
+  DownloadIcon: () => <div data-testid="download-icon">DownloadIcon</div>,
 }));
 
 vi.mock("@/components/login-modal", () => ({
@@ -57,6 +58,10 @@ vi.mock("@/lib/auth", () => ({
   validateToken: vi.fn(),
 }));
 
+vi.mock("@/hooks/usePortfolioData", () => ({
+  usePortfolioData: vi.fn(),
+}));
+
 // Mock react-router-dom
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -99,6 +104,21 @@ describe("Navbar", () => {
     };
   };
 
+  const setPortfolioData = async (cvDocument?: {
+    fileUrl?: string;
+    fileName?: string;
+  }) => {
+    const { usePortfolioData } = await vi.importMock(
+      "@/hooks/usePortfolioData",
+    );
+    (usePortfolioData as any).mockReturnValue({
+      portfolioData: {
+        cvDocument: cvDocument || null,
+      },
+      isLoading: false,
+    });
+  };
+
   // Helper to setup unauthenticated state
   const setupUnauthenticatedState = async () => {
     const { mockIsAuthenticated, mockValidateToken } =
@@ -117,9 +137,10 @@ describe("Navbar", () => {
     return { mockIsAuthenticated, mockValidateToken };
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     window.location.pathname = "/";
+    await setPortfolioData();
   });
 
   it("renders brand with logo and link", () => {
@@ -387,5 +408,71 @@ describe("Navbar", () => {
     await waitFor(() => {
       expect(screen.getByTestId("logout-button")).toBeInTheDocument();
     });
+  });
+
+  it("renders CV download button when a CV document exists", async () => {
+    await setPortfolioData({
+      fileName: "resume.pdf",
+      fileUrl: "https://example.com/resume.pdf",
+    });
+    await setupUnauthenticatedState();
+
+    renderNavbar();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("download-cv-button")).toBeInTheDocument();
+    });
+  });
+
+  it("does not render CV download button when no CV document exists", async () => {
+    await setupUnauthenticatedState();
+
+    renderNavbar();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId("download-cv-button"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("downloads CV file when download button is clicked", async () => {
+    await setPortfolioData({
+      fileName: "resume.pdf",
+      fileUrl: "https://example.com/resume.pdf",
+    });
+    await setupUnauthenticatedState();
+    const appendSpy = vi.spyOn(document.body, "appendChild");
+    const removeSpy = vi.spyOn(document.body, "removeChild");
+    const originalCreateElement = document.createElement.bind(document);
+    const link = originalCreateElement("a");
+    const clickSpy = vi.spyOn(link, "click").mockImplementation(() => {});
+    const createElementSpy = vi
+      .spyOn(document, "createElement")
+      .mockImplementation((tagName: any) => {
+        if (tagName === "a") {
+          return link;
+        }
+        return originalCreateElement(tagName);
+      });
+
+    renderNavbar();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("download-cv-button")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId("download-cv-button"));
+
+    expect(link.href).toBe("https://example.com/resume.pdf");
+    expect(link.download).toBe("resume.pdf");
+    expect(clickSpy).toHaveBeenCalled();
+    expect(appendSpy).toHaveBeenCalledWith(link);
+    expect(removeSpy).toHaveBeenCalledWith(link);
+
+    createElementSpy.mockRestore();
+    clickSpy.mockRestore();
+    appendSpy.mockRestore();
+    removeSpy.mockRestore();
   });
 });
