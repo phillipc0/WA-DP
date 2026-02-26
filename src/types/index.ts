@@ -32,3 +32,10 @@ export interface Education {
   location: string;
   description: string;
 }
+
+export interface CvDocument {
+  fileName: string;
+  fileUrl: string;
+  fileSize: number;
+  uploadedAt: string;
+}

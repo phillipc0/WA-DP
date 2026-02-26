@@ -170,6 +170,32 @@ export function validatePortfolioData(data: any): {
     }
   }
 
+  // Check optional CV document metadata
+  if (data.cvDocument !== undefined && data.cvDocument !== null) {
+    if (typeof data.cvDocument !== "object" || Array.isArray(data.cvDocument)) {
+      errors.push("CV document metadata must be an object");
+    } else {
+      const cvDocumentFields = ["fileName", "fileUrl", "uploadedAt"];
+      for (const field of cvDocumentFields) {
+        if (
+          data.cvDocument[field] !== undefined &&
+          data.cvDocument[field] !== null &&
+          typeof data.cvDocument[field] !== "string"
+        ) {
+          errors.push(`CV document field ${field} must be a string`);
+        }
+      }
+
+      if (
+        data.cvDocument.fileSize !== undefined &&
+        data.cvDocument.fileSize !== null &&
+        typeof data.cvDocument.fileSize !== "number"
+      ) {
+        errors.push("CV document field fileSize must be a number");
+      }
+    }
+  }
+
   return { isValid: errors.length === 0, errors };
 }
 

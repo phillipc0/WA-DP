@@ -59,6 +59,7 @@ const mockUsePortfolioEditor = {
   resetAlert: false,
   fileAlert: false,
   fileAlertMessage: "",
+  isCvUploading: false,
   SKILL_LEVELS: ["Beginner", "Intermediate", "Advanced", "Expert", "Master"],
   newExperience: {
     company: "",
@@ -77,6 +78,7 @@ const mockUsePortfolioEditor = {
   },
   selectedSkills: new Set(),
   handleBasicInfoChange: vi.fn(),
+  handleCvUpload: vi.fn(() => Promise.resolve(true)),
   handleFileSelect: vi.fn(),
   handleSocialChange: vi.fn(),
   handleAddSkill: vi.fn(),
@@ -191,6 +193,7 @@ describe("PortfolioEditor", () => {
     mockUsePortfolioEditor.saveAlert = false;
     mockUsePortfolioEditor.resetAlert = false;
     mockUsePortfolioEditor.fileAlert = false;
+    mockUsePortfolioEditor.isCvUploading = false;
   });
 
   afterEach(() => {

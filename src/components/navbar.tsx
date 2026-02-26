@@ -17,8 +17,9 @@ import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Logo, UserIcon } from "@/components/icons";
+import { DownloadIcon, Logo, UserIcon } from "@/components/icons";
 import { LoginModal } from "@/components/login-modal";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 import {
   isAuthenticated,
   logout,
@@ -29,9 +30,13 @@ import {
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { portfolioData } = usePortfolioData();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [backendAvailable, setBackendAvailable] = useState(true);
+  const hasCvDocument =
+    typeof portfolioData?.cvDocument?.fileUrl === "string" &&
+    portfolioData.cvDocument.fileUrl.trim() !== "";
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -104,6 +109,19 @@ export const Navbar = () => {
     navigate("/edit");
   };
 
+  const handleCvDownload = () => {
+    if (!hasCvDocument) {
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = portfolioData.cvDocument.fileUrl;
+    link.download = portfolioData.cvDocument.fileName || "cv.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <HeroUINavbar maxWidth="xl" position="sticky">
@@ -157,6 +175,22 @@ export const Navbar = () => {
           className="hidden sm:flex basis-1/5 sm:basis-full"
           justify="end"
         >
+          {hasCvDocument && (
+            <NavbarItem className="hidden sm:flex">
+              <Tooltip content="Download CV (PDF)" placement="bottom">
+                <Button
+                  isIconOnly
+                  aria-label="Download CV (PDF)"
+                  color="primary"
+                  data-testid="download-cv-button"
+                  variant="flat"
+                  onPress={handleCvDownload}
+                >
+                  <DownloadIcon size={18} />
+                </Button>
+              </Tooltip>
+            </NavbarItem>
+          )}
           <NavbarItem className="hidden sm:flex gap-2">
             <ThemeSwitch />
           </NavbarItem>
@@ -197,6 +231,21 @@ export const Navbar = () => {
         </NavbarContent>
 
         <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
+          {hasCvDocument && (
+            <Tooltip content="Download CV (PDF)" placement="bottom">
+              <Button
+                isIconOnly
+                aria-label="Download CV (PDF)"
+                color="primary"
+                data-testid="download-cv-button-mobile"
+                size="sm"
+                variant="flat"
+                onPress={handleCvDownload}
+              >
+                <DownloadIcon size={18} />
+              </Button>
+            </Tooltip>
+          )}
           <ThemeSwitch />
           <NavbarMenuToggle />
         </NavbarContent>

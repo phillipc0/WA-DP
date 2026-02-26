@@ -11,6 +11,7 @@ import WorkExperienceForm from "./work-experience-form";
 import EducationForm from "./education-form";
 import { ImportExportControls } from "./import-export-controls";
 import { ContributorForm } from "./contributor-form";
+import { CvUploadControl } from "./cv-upload-control";
 
 import { usePortfolioEditor } from "@/lib/use-portfolio-editor.ts";
 import { subtitle, title } from "@/components/primitives";
@@ -32,7 +33,9 @@ export function PortfolioEditor() {
     resetAlert,
     fileAlert,
     fileAlertMessage,
+    isCvUploading,
     handleBasicInfoChange,
+    handleCvUpload,
     handleSocialChange,
     handleSocialSelectChange,
     handleAddSkill,
@@ -241,6 +244,11 @@ export function PortfolioEditor() {
           <ImportExportControls
             portfolioData={portfolioData}
             onImport={handleImportPortfolioData}
+          />
+          <CvUploadControl
+            currentCvFileName={portfolioData.cvDocument?.fileName}
+            isUploading={isCvUploading}
+            onCvUpload={handleCvUpload}
           />
         </div>
         <Button color="success" onPress={handleSave}>

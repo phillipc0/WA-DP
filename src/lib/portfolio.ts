@@ -1,5 +1,7 @@
 import { authenticatedFetch } from "./auth";
 
+import { CvDocument } from "@/types";
+
 let pendingRequest: Promise<JSON | null> | null = null;
 
 declare global {
@@ -63,5 +65,60 @@ export const savePortfolioData = async (data: any): Promise<boolean> => {
   } catch (error) {
     console.error("Error saving portfolio data:", error);
     return false;
+  }
+};
+
+const fileToBase64 = async (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result !== "string") {
+        reject(new Error("Failed to read file"));
+        return;
+      }
+
+      const base64 = result.split(",")[1];
+      if (!base64) {
+        reject(new Error("Failed to encode file"));
+        return;
+      }
+
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+};
+
+export const uploadCVDocument = async (
+  file: File,
+  previousFileUrl?: string,
+): Promise<CvDocument | null> => {
+  try {
+    const base64Data = await fileToBase64(file);
+    const response = await authenticatedFetch("/api/cv-document", {
+      method: "POST",
+      body: JSON.stringify({
+        data: base64Data,
+        fileName: file.name,
+        mimeType: file.type || undefined,
+        previousFileUrl,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
+      console.error("Failed to upload CV document:", errorData.error);
+      return null;
+    }
+
+    const responseData = (await response.json()) as { cvDocument?: CvDocument };
+    return responseData.cvDocument ?? null;
+  } catch (error) {
+    console.error("Error uploading CV document:", error);
+    return null;
   }
 };

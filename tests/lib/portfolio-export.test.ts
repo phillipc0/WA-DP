@@ -353,6 +353,41 @@ describe("portfolio-export utilities", () => {
       );
     });
 
+    it("validates cvDocument metadata when present", () => {
+      const withCvDocument = {
+        ...validPortfolioData,
+        cvDocument: {
+          fileName: "cv.pdf",
+          fileUrl: "/uploads/cv.pdf",
+          fileSize: 1234,
+          uploadedAt: "2026-02-26T00:00:00.000Z",
+        },
+      };
+      const result = validatePortfolioData(withCvDocument);
+
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("rejects cvDocument metadata with invalid field types", () => {
+      const invalidCvDocument = {
+        ...validPortfolioData,
+        cvDocument: {
+          fileName: 123,
+          fileSize: "large",
+        },
+      };
+      const result = validatePortfolioData(invalidCvDocument);
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "CV document field fileName must be a string",
+      );
+      expect(result.errors).toContain(
+        "CV document field fileSize must be a number",
+      );
+    });
+
     it("handles null/undefined data", () => {
       const result = validatePortfolioData(null);
 
