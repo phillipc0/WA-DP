@@ -6,4 +6,4 @@ services:
       - "3000:80"
     restart: always
     volumes:
-      - ~/Docker/Webserver/WA-DP:/app/data
+      - ~/path-on-your-server/WA-DP:/app/data
