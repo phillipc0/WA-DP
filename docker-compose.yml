@@ -1,0 +1,9 @@
+services:
+  wa-dp:
+    image: ghcr.io/phillipc0/wa-dp:latest
+    container_name: WA-DP
+    ports:
+      - "3000:80"
+    restart: always
+    volumes:
+      - ~/path-on-your-server/WA-DP:/app/data
