@@ -328,7 +328,7 @@ jobs:
         run: mkdir -p backend/data
 
       - name: Run Cypress E2E Tests
-        uses: cypress-io/github-action@v7.1.8
+        uses: cypress-io/github-action@v7.1.9
         with:
           start: npm run dev
           wait-on: http://localhost:5173
@@ -355,7 +355,7 @@ jobs:
 
       - name: SonarCloud Scan
         continue-on-error: true
-        uses: SonarSource/sonarqube-scan-action@v7.0.0
+        uses: SonarSource/sonarqube-scan-action@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
