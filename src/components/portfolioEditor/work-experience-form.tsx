@@ -210,7 +210,7 @@ export default function WorkExperienceForm({
                           </p>
                         )}
                         {exp.description && (
-                          <p className="text-sm text-default-700 mb-3">
+                          <p className="text-sm text-default-700 mb-3 whitespace-pre-wrap">
                             {exp.description}
                           </p>
                         )}

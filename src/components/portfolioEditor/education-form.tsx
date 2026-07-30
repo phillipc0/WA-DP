@@ -154,7 +154,7 @@ export default function EducationForm({
                           </p>
                         )}
                         {edu.description && (
-                          <p className="text-sm text-default-700">
+                          <p className="text-sm text-default-700 whitespace-pre-wrap">
                             {edu.description}
                           </p>
                         )}
