@@ -138,7 +138,7 @@ export function PersonalInfo({ refreshTrigger }: PersonalInfoProps) {
         <>
           <Divider />
           <CardBody>
-            <p className="mb-4">{portfolioData.bio}</p>
+            <p className="mb-4 whitespace-pre-wrap">{portfolioData.bio}</p>
 
             <div className="flex flex-wrap gap-3">
               {portfolioData.social.github && (
