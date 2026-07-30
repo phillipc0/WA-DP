@@ -5,11 +5,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export type SkillLevel =
-  | "Beginner"
-  | "Intermediate"
-  | "Advanced"
-  | "Expert"
-  | "Master";
+  "Beginner" | "Intermediate" | "Advanced" | "Expert" | "Master";
 
 export interface Skill {
   name: string;

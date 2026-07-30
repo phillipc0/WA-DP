@@ -132,11 +132,7 @@ export function getColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 
   return colors[index % colors.length] as
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
+    "primary" | "secondary" | "success" | "warning" | "danger";
 }
 
 /**
@@ -159,9 +155,5 @@ export function getChipColorForSkill(index: number) {
   const colors = ["primary", "secondary", "success", "warning", "danger"];
 
   return colors[index % colors.length] as
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
+    "primary" | "secondary" | "success" | "warning" | "danger";
 }
