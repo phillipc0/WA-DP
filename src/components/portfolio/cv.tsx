@@ -90,7 +90,7 @@ export function CV({ refreshTrigger }: CVProps) {
                           </p>
                         </div>
 
-                        <p className="text-default-700 leading-relaxed text-sm">
+                        <p className="text-default-700 leading-relaxed text-sm whitespace-pre-wrap">
                           {item.description}
                         </p>
 
@@ -160,7 +160,7 @@ export function CV({ refreshTrigger }: CVProps) {
                           </p>
                         </div>
 
-                        <p className="text-default-700 leading-relaxed text-sm">
+                        <p className="text-default-700 leading-relaxed text-sm whitespace-pre-wrap">
                           {item.description}
                         </p>
 
@@ -229,7 +229,7 @@ export function CV({ refreshTrigger }: CVProps) {
                     <p className="text-sm text-default-500">{item.location}</p>
                   </div>
 
-                  <p className="text-default-700 leading-relaxed text-sm">
+                  <p className="text-default-700 leading-relaxed text-sm whitespace-pre-wrap">
                     {item.description}
                   </p>
 
