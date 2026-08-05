@@ -89,7 +89,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^17.8.0",
-    "jsdom": "^28.1.0",
+    "jsdom": "^30.0.1",
     "madge": "^8.0.0",
     "postcss": "^8.5.25",
     "prettier": "^3.9.6",
